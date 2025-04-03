@@ -14,7 +14,6 @@ def user_login(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
         user = authenticate(request, username=username, password=password)
-        print(user)
         if user is not None:
             print("logging in")
             login(request, user)
@@ -51,4 +50,6 @@ def register(request):
 
 @login_required(login_url='user-login')
 def home(request):
+    print("-------------------------")
+    print(request.user.is_normal_user)
     return render(request, './users/home.html')

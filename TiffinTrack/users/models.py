@@ -13,3 +13,15 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+    @property
+    def is_normal_user(self):
+        return self.user_type == 'normal'
+
+    @property
+    def is_restaurant_user(self):
+        return self.user_type == 'restaurant'
+
+    @property
+    def is_admin(self):
+        return self.user_type == 'admin'
