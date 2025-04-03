@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-# from .forms import UserRegisterForm
+from users.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 
 
@@ -36,3 +36,23 @@ def restaurant_logout(request):
     logout(request)
     request.session.flush() 
     return redirect('restaurant-login')
+
+
+def restaurant_register(request):
+    if request.user.is_authenticated:
+        return redirect('restaurant-home')
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)  
+        if form.is_valid():
+            user = form.save(commit=False)  # Don't save to database yet
+            user.user_type = 'restaurant'   # Set user_type explicitly
+            user.save()  # Now save to database
+            username = form.cleaned_data.get('username')
+            messages.success(request, f"Account created for {username}! Try login")
+            return redirect('restaurant-login')   
+    else:
+        form = UserRegisterForm()
+    context = {  
+        'form':form  
+    }  
+    return render(request, './restaurant/register.html', context)  
