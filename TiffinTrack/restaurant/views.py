@@ -9,9 +9,6 @@ from django.contrib.auth.decorators import login_required
 
 def restaurant_login(request):
     
-    if not request.user.is_restaurant_user:
-        #TODO set error message
-        return render(request, './restaurant/login.html')
     if request.user.is_authenticated:
         return redirect('restaurant-home')
     if request.method == "POST":
@@ -27,3 +24,15 @@ def restaurant_login(request):
             messages.error(request, "Invalid username or password")
     return render(request, './restaurant/login.html')
 
+
+@login_required(login_url='restaurant-login')
+def home(request):
+    if not request.user.is_restaurant_user:
+        #TODO set error message
+        return render(request, './restaurant/login.html')
+    return render(request, './restaurant/home.html')
+
+def restaurant_logout(request):
+    logout(request)
+    request.session.flush() 
+    return redirect('restaurant-login')
