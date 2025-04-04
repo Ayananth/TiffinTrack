@@ -25,51 +25,53 @@
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>Name</th>
-                                                    <th>Email</th>
-                                                    <th>User Type</th>
+                                                    <th>Resaurant Name</th>
+                                                    <th>Owner Name</th>
+                                                    <th>Phone</th>
                                                     <th>Option</th>
                                                 </tr>
                                             </thead>
 
                                             <tbody>
-                                                <tr>
-                                                    <td class="f-w-600">01.</td>
-                                                    <td>
-                                                        <div class="user-name">
-                                                            <span>Everett C. Green</span>
-                                                            <span>Essex Court</span>
-                                                        </div>
-                                                    </td>
+                                                {% for restaurant in restaurants %}
+                                                    <tr>
+                                                        <td class="f-w-600">{{restaurant.id}}</td>
+                                                        <td>
+                                                            <div class="user-name">
+                                                                <span>{{restaurant.restaurant_name}}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="user-name">
+                                                                <span>{{restaurant.owner_name}}</span>
+                                                            </div>
+                                                        </td>
 
-                                                    <td class="f-w-600">EverettCGreen@rhyta.com</td>
+                                                        <td class="f-w-600">{{restaurant.contact_number}}</td>
 
-                                                    <td class="f-w-600">Normal User</td>
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="order-detail.html">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
 
-                                                    <td>
-                                                        <ul>
-                                                            <li>
-                                                                <a href="order-detail.html">
-                                                                    <i class="ri-eye-line"></i>
-                                                                </a>
-                                                            </li>
+                                                                <li>
+                                                                    <a href="javascript:void(0)">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
 
-                                                            <li>
-                                                                <a href="javascript:void(0)">
-                                                                    <i class="ri-pencil-line"></i>
-                                                                </a>
-                                                            </li>
-
-                                                            <li>
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                    data-bs-target="#exampleModalToggle">
-                                                                    <i class="ri-delete-bin-line"></i>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </td>
-                                                </tr>
-
+                                                                <li>
+                                                                    <a href="{% url 'delete-restaurant' restaurant.id %}">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
 
                                             </tbody>
                                         </table>

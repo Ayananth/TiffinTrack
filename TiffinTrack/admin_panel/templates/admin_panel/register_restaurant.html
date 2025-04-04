@@ -20,42 +20,40 @@
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>Restaurant Name</th>
-                                                    <th>Requested on</th>
-                                                    <th>View details</th>
+                                                    <th>Resaurant Name</th>
+                                                    <th>Requested On</th>
+                                                    <th>Option</th>
                                                 </tr>
                                             </thead>
 
                                             <tbody>
-                                                <tr>
-                                                    <td class="f-w-600">01.</td>
-                                                    <td>
-                                                        <div class="user-name">
-                                                            <span>Everett C. Green</span>
-                                                            <span>Essex Court</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>10/04/2025</td>
+                                                {% for restaurant in restaurants %}
+                                                    <tr>
+                                                        <td class="f-w-600">{{restaurant.id}}</td>
+                                                        <td>
+                                                            <div class="user-name">
+                                                                <span>{{restaurant.restaurant_name}}</span>
+                                                            </div>
+                                                        </td>
 
+                                                        <td class="f-w-600">{{restaurant.created_at}}</td>
 
-                                                    <td>
-                                                        <ul>
-                                                            <li>
-                                                                <a href="order-detail.html">
-                                                                    <i class="ri-eye-line"></i>
-                                                                </a>
-                                                            </li>
-
-                                                            <li>
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                    data-bs-target="#exampleModalToggle">
-                                                                    <i class="ri-delete-bin-line"></i>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </td>
-                                                </tr>
-
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="{%url 'restaurant_approve' restaurant.id%}">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="{% url 'delete-restaurant' restaurant.id %}">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
 
                                             </tbody>
                                         </table>
