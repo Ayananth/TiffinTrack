@@ -30,6 +30,23 @@ def admin_logout(request):
     return redirect('admin-login')
 
 
+@never_cache
+@login_required(login_url='admin-login')
+def home(request):
+    if not request.user.is_authenticated:
+        return redirect('admin-login')
+    username = request.POST.get("username")
+    if request.method == 'POST' and username:
+        print(f"{username=}")
+        users = CustomUser.objects.filter(username=username)
+    else:
+        users = CustomUser.objects.all()
+    context = {
+        'users': users
+    }
+    return render(request, './admin_panel/users.html', context)
+
+
 
 @never_cache
 @login_required(login_url='admin-login')
