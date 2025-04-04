@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from users.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
+from .models import RestaurantProfile, MenuItem
+from .forms import UserProfileForm
 
 
 
@@ -27,10 +29,35 @@ def restaurant_login(request):
 
 @login_required(login_url='restaurant-login')
 def home(request):
+    print("Home page")
+    print(request.user)
     if not request.user.is_restaurant_user:
+        print("not restaurant user")
         #TODO set error message
         return render(request, './restaurant/login.html')
-    return render(request, './restaurant/home.html')
+    
+
+    restaurant = RestaurantProfile.objects.filter(user=request.user).first()
+    menu_items = {}
+    print(f"{restaurant=}")
+    if restaurant:
+        if restaurant.is_approved:
+            menu_items = MenuItem.objects.filter(restaurant=restaurant)
+            print(f"{menu_items=}")
+
+
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, './restaurant/home.html')
+    else:
+        form = UserProfileForm()
+
+   
+
+    return render(request, './restaurant/home.html', context={'form':form, 'restaurants': restaurant, 'menu_items':menu_items})
 
 def restaurant_logout(request):
     logout(request)
@@ -56,3 +83,5 @@ def restaurant_register(request):
         'form':form  
     }  
     return render(request, './restaurant/register.html', context)  
+
+

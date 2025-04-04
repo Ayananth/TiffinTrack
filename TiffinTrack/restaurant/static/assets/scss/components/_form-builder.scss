@@ -1,0 +1,22 @@
+/**=====================
+     Form Builder CSS Start
+==========================**/
+
+.drag {
+    form {
+        padding: 10px 5px;
+        border: 1px dotted $light-gray;
+        position: absolute;
+        background: $white;
+        box-shadow: 0 0 30px $light-gray;
+        overflow: hidden;
+
+        input {
+            border-radius: 5px;
+        }
+    }
+}
+
+/**=====================
+      Form Builder CSS Ends
+  ==========================**/
