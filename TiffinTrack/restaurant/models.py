@@ -12,6 +12,7 @@ class RestaurantProfile(models.Model):
     is_active = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    restaurant_image = models.ImageField(upload_to='uploads/', null=True)
 
 
     def __str__(self):

@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <title>Hello, world!</title>
+    <title>TiffinTrack</title>
   </head>
   <body>
 <div class="container">
@@ -50,26 +50,11 @@
   
               <div class="d-flex justify-content-around align-items-center mb-4">
                 <!-- Checkbox -->
-                <a href="#!">Create new account</a>
-                <a href="#!">Forgot password?</a>
+                <a href="{%url 'restaurant-register' %}">Create new account</a>
               </div>
   
               <!-- Submit button -->
               <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg btn-block col-md-12">Sign in</button>
-  
-              <div class="divider d-flex align-items-center my-4">
-                <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
-              </div>
-              <div class="row col-md-12">
-                <a data-mdb-ripple-init class="btn btn-primary btn-lg btn-block col-md-6" href="#!"
-                role="button">
-                <i class="fa-brands fa-facebook"></i> facebook
-              </a>
-              <a data-mdb-ripple-init class="btn btn-primary btn-lg btn-block col-md-6"  href="#!"
-                role="button">
-                <i class="fa-solid fa-phone"></i> Phone
-              </a>
-              </div>
             </form>
           </div>
         </div>

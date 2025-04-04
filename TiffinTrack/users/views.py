@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
+from restaurant.models import RestaurantProfile
 
 
 
@@ -20,7 +21,7 @@ def user_login(request):
             return redirect('user-home')
         else:
             print("Invalid credentials")
-            messages.error(request, "Invalid username or password")
+            messages.success(request, "Invalid username or password")
     return render(request, './users/login.html')
 
 def user_logout(request):
@@ -50,6 +51,6 @@ def register(request):
 
 @login_required(login_url='user-login')
 def home(request):
-    print("-------------------------")
-    print(request.user.is_normal_user)
-    return render(request, './users/home.html')
+    restaurants = RestaurantProfile.objects.filter(is_approved=True)
+    context = {'restaurants': restaurants}
+    return render(request, './users/home.html', context)
