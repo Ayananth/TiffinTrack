@@ -1,0 +1,89 @@
+
+{% extends "./base.html" %}
+
+{% block content %}
+
+<!-- Container-fluid starts-->
+            <div class="page-body">
+                <!-- All User Table Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>All Users</h5>
+                                        <!-- <form class="d-inline-flex">
+                                            <a href="add-new-user.html" class="align-items-center btn btn-theme d-flex">
+                                                <i data-feather="plus-square"></i>Add New
+                                            </a>
+                                        </form> -->
+                                    </div>
+                                    <div class="table-responsive theme-scrollbar table-product">
+                                        <table class="table category-table dataTable no-footer" id="table_id">
+                                            <thead>
+                                                <tr>
+                                                    <th>No.</th>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>User Type</th>
+                                                    <th>Option</th>
+                                                </tr>
+                                            </thead>
+
+                                            
+                                            <tbody>
+                                                {% for user in users %}
+
+                                                    <tr>
+                                                        <td class="f-w-600">{{ user.id }}</td>
+                                                        <td>
+                                                            <div class="user-name">
+                                                                <span>{{ user.username }}</span>
+                                                            </div>
+                                                        </td>
+
+                                                        <td class="f-w-600">{{ user.email }}</td>
+
+                                                        <td class="f-w-600">{{ user.user_type }}</td>
+
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="order-detail.html">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- All User Table Ends-->
+
+
+            </div>
+            <!-- Container-fluid end -->
+
+            {%endblock%}
