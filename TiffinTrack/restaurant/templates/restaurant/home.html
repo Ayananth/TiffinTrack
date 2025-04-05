@@ -1,117 +1,96 @@
-
 {% extends "./base.html" %}
 
 {% block content %}
 
-
-
-
-
 {% if restaurants %}
 
-        {%if restaurants.is_approved%}
-        
-        <div class="page-body">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="card card-table">
-                            <div class="card-body">
-                                <div class="title-header option-title d-sm-flex d-block">
-                                    <h5>Menu</h5>
-                                    <div class="right-options">
-                                        <ul>
-                                            <li>
-                                                <a class="btn btn-dashed" href="add-new-product.html">Add Product</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="table-responsive theme-scrollbar">
-                                        <table class="table category-table dataTable no-footer" id="table_id">
-                                            <thead>
-                                                <tr>
-                                                    <th><input id="checkall" class="custom-checkbox" type="checkbox" name="text"></th>
-                                                    <th>Id</th>
-                                                    <th>Food Item</th>
-                                                    <th>Food Category</th>
-                                                    <th>Price Category</th>
-                                                    <th>Price</th>
-                                                    <th>Option</th>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody>
-                                            {% for menu in menu_items%}
-                                                <tr>
-                                                    <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                    <td>
-                                                        {{menu.id}}
-                                                    </td>
-
-                                                    <td>{{menu.name}}</td>
-
-                                                    <td>{{menu.food_category}}</td>
-
-                                                    <td class="f-w-500">{{menu.price_category}}</td>
-
-                                                    <td class="td-price">{{menu.price}}</td>
-                                                    <td>
-                                                        <ul>
-                                                            <li>
-                                                                <a href="javascript:void(0)">
-                                                                    <i class="ri-pencil-line"></i>
-                                                                </a>
-                                                            </li>
-
-                                                            <li>
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                    data-bs-target="#exampleModalToggle">
-                                                                    <i class="ri-delete-bin-line"></i>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </td>
-                                                </tr>
-                                            {%endfor%}
-                                                
-                                            </tbody>
-                                        </table>
-                                    </div>
+    {% if restaurants.is_approved %}
+    
+    <div class="page-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card card-table">
+                        <div class="card-body">
+                            <div class="title-header option-title d-sm-flex d-block">
+                                <h5>Menu</h5>
+                                <div class="right-options">
+                                    <ul>
+                                        <li>
+                                            <a class="btn btn-dashed" href="add-new-product.html">Add Product</a>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                            <div>
+                                <div class="table-responsive theme-scrollbar">
+                                    <table class="table category-table dataTable no-footer" id="table_id">
+                                        <thead>
+                                            <tr>
+                                                <th><input id="checkall" class="custom-checkbox" type="checkbox" name="text"></th>
+                                                <th>Id</th>
+                                                <th>Food Item</th>
+                                                <th>Food Category</th>
+                                                <th>Price Category</th>
+                                                <th>Price</th>
+                                                <th>Option</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for menu in menu_items %}
+                                            <tr>
+                                                <td><input class="custom-checkbox" type="checkbox" name="text"></td>
+                                                <td>{{ menu.id }}</td>
+                                                <td>{{ menu.name }}</td>
+                                                <td>{{ menu.food_category }}</td>
+                                                <td class="f-w-500">{{ menu.price_category }}</td>
+                                                <td class="td-price">{{ menu.price }}</td>
+                                                <td>
+                                                    <ul>
+                                                        <li>
+                                                            <a href="javascript:void(0)">
+                                                                <i class="ri-pencil-line"></i>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModalToggle">
+                                                                <i class="ri-delete-bin-line"></i>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div> <!-- end card-body -->
+                    </div> <!-- end card -->
+                </div> <!-- end col-sm-12 -->
+            </div> <!-- end row -->
+        </div> <!-- end container-fluid -->
+
+        <div class="container-fluid">
+            <!-- footer start -->
+        </div>
+    </div> <!-- end page-body -->
+
+    {% else %}
+
+    <div class="page-body">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Your request is under review. Please wait!</h5>
                 </div>
             </div>
-            <!-- Container-fluid Ends-->
-
-            <div class="container-fluid">
-                <!-- footer start-->
-
-            </div>
         </div>
+    </div>
 
+    {% endif %}
 
-        {%else%}
-
-        <div class="page-body">
-            <div class="container-fluid">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Your request is under review. Please wait!</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-
-
-        {%endif%}
-{%else%}
+{% else %}
 
 <div class="page-body">
     <div class="container-fluid">
@@ -124,32 +103,30 @@
                     <div class="col-xxl-9 col-xl-8 col-12">
                         <div class="restaurant-tab">
                             <div class="tab-content" id="v-pills-tabContent">
-                                <div class="tab-pane fade show active" id="Settings" role="tabpanel"
-                                    aria-labelledby="Settings-tab">
+                                <div class="tab-pane fade show active" id="Settings" role="tabpanel" aria-labelledby="Settings-tab">
                                     <div class="input-items">
                                         <div class="row gy-3">
                                             <div class="col-md-6">
                                                 <div class="input-box">
                                                     <form method="post">
                                                         {% csrf_token %}
-                                                        {{form}}
+                                                        {{ form }}
                                                         <button class="btn restaurant-button" type="submit">Request</button>
                                                     </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                    </div>
-                    </div>     </div>
+                                                </div> <!-- end input-box -->
+                                            </div> <!-- end col-md-6 -->
+                                        </div> <!-- end row gy-3 -->
+                                    </div> <!-- end input-items -->
+                                </div> <!-- end tab-pane -->
+                            </div> <!-- end tab-content -->
+                        </div> <!-- end restaurant-tab -->
+                    </div> <!-- end col-xxl-9 -->
+                </div> <!-- end row -->
+            </div> <!-- end card-body -->
+        </div> <!-- end card -->
+    </div> <!-- end container-fluid -->
+</div> <!-- end page-body -->
 
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Container-fluid Ends-->
-</div>
+{% endif %}
 
-{%endif%}
-
-{%endblock%}
+{% endblock %}

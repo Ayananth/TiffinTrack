@@ -25,6 +25,11 @@
     </div>
   </nav>
   <!-- body -->
+  {% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{message.tags}}">{{message}}</div>
+  {% endfor %}
+{% endif %}
   <section class="">
       <div class="container">
         <div class="row d-flex align-items-center justify-content-center h-100">

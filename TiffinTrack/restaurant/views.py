@@ -23,7 +23,7 @@ def restaurant_login(request):
             return redirect('restaurant-home')
         else:
             print("Invalid credentials")
-            messages.error(request, "Invalid username or password")
+            messages.success(request, "Invalid username or password")
     return render(request, './restaurant/login.html')
 
 
@@ -33,7 +33,8 @@ def home(request):
     print(request.user)
     if not request.user.is_restaurant_user:
         print("not restaurant user")
-        #TODO set error message
+        messages.success(request, "not restaurant user")
+
         return render(request, './restaurant/login.html')
     
 
@@ -45,13 +46,15 @@ def home(request):
             menu_items = MenuItem.objects.filter(restaurant=restaurant)
             print(f"{menu_items=}")
 
-
-
+        
     if request.method == 'POST':
         form = UserProfileForm(request.POST)
         if form.is_valid():
-            form.save()
+            restaurant_profile = form.save(commit=False)  # Don't save yet
+            restaurant_profile.user = request.user        # Assign the user
+            restaurant_profile.save()                     # Now save it
             return render(request, './restaurant/home.html')
+
     else:
         form = UserProfileForm()
 
