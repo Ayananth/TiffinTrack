@@ -1,0 +1,262 @@
+/*=====================
+  3.4  form Style start
+==========================*/
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+
+  h2 {
+    font-size: calc(20px + (36 - 20) * ((100vw - 320px) / (1920 - 320)));
+    font-weight: 600;
+    color: rgba(var(--dark-text), 1);
+    margin-top: -6px;
+  }
+
+  h5 {
+    margin-top: 5px;
+    margin-bottom: calc(20px + (40 - 20) * ((100vw - 320px) / (1920 - 320)));
+    font-weight: 400;
+    color: rgba(var(--content-color), 1);
+  }
+
+  p {
+    margin-top: calc(10px + (15 - 10) * ((100vw - 320px) / (1920 - 320)));
+
+    [dir="rtl"] & {
+      text-align: right;
+    }
+  }
+
+  .form-label {
+    color: rgba(var(--content-color), 1);
+  }
+
+  .form-input {
+    position: relative;
+    width: 100%;
+    margin-bottom: calc(10px + (20 - 10) * ((100vw - 320px) / (1920 - 320)));
+
+    i {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      font-size: 24px;
+      padding-right: 10px;
+      color: rgba(var(--content-color), 1);
+
+      [dir="rtl"] & {
+        padding-left: 10px;
+        padding-right: unset;
+        left: unset;
+        right: 15px;
+      }
+    }
+
+    .form-control {
+      color: rgba(var(--content-color), 1);
+      background-color: rgba(var(--box-bg), 1);
+      border: none;
+      box-shadow: none;
+      font-size: calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320)));
+      padding: 20px 20px 20px 60px;
+
+      [dir="rtl"] & {
+        padding: 20px 60px 20px 20px;
+        text-align: right;
+      }
+
+      &:focus {
+        box-shadow: none;
+        border-color: none;
+      }
+
+      &::placeholder {
+        color: rgba(136, 136, 136, 1);
+      }
+
+      &.search {
+        width: 596px;
+        padding: calc(10px + (17 - 10) * ((100vw - 320px) / (1920 - 320)))
+          calc(10px + (20 - 10) * ((100vw - 320px) / (1920 - 320)))
+          calc(10px + (17 - 10) * ((100vw - 320px) / (1920 - 320)))
+          calc(40px + (50 - 40) * ((100vw - 320px) / (1920 - 320)));
+        border-radius: 4px;
+        background-color: rgba(17, 17, 17, 1);
+        color: rgba(var(--white), 1);
+        background: $light-gradient;
+        border: 1px solid rgba(226, 232, 255, 0.1);
+        border-radius: 100px;
+
+        [dir="rtl"] & {
+          padding: calc(10px + (17 - 10) * ((100vw - 320px) / (1920 - 320)))
+            calc(40px + (50 - 40) * ((100vw - 320px) / (1920 - 320)))
+            calc(10px + (17 - 10) * ((100vw - 320px) / (1920 - 320)))
+            calc(10px + (20 - 10) * ((100vw - 320px) / (1920 - 320)));
+        }
+
+        &::placeholder {
+          color: rgba(var(--white), 0.6);
+        }
+
+        @media (max-width: 991px) {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.otp-form {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  width: unset;
+  flex-direction: column;
+  width: 90%;
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
+
+  h2 {
+    margin-bottom: calc(10px + (20 - 10) * ((100vw - 320px) / (1920 - 320)));
+  }
+
+  h6 {
+    margin-bottom: 5px;
+    color: rgba(var(--content-color), 1);
+    font-weight: 400;
+    margin-top: 10px;
+  }
+
+  .otp-number {
+    color: rgba(61, 61, 61, 1);
+    font-weight: 500;
+  }
+
+  @media (max-width: 600px) {
+    gap: calc(10px + (20 - 10) * ((100vw - 320px) / (1920 - 320)));
+  }
+
+  .form-input {
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .form-control {
+      background: rgba(var(--box-bg), 1);
+      backdrop-filter: blur(2px);
+      border-radius: 6px;
+      border: none;
+      color: rgba(var(--dark-text), 1);
+      text-align: center;
+      height: calc(40px + (50 - 40) * ((100vw - 320px) / (1920 - 320)));
+      width: calc(50px + (90 - 50) * ((100vw - 320px) / (1920 - 320)));
+      padding: calc(5px + (15 - 5) * ((100vw - 320px) / (1920 - 320)));
+
+      &::placeholder {
+        color: rgba(136, 136, 136, 1);
+      }
+
+      &:focus {
+        box-shadow: none;
+        border: 1px solid rgba(var(--theme-color), 1);
+      }
+    }
+  }
+}
+
+.profile-form {
+  border-top: 1px dashed rgba(var(--dashed-line), 1);
+  padding-top: 20px;
+}
+
+.contact-detail {
+  margin-bottom: 30px;
+
+  .contact-detail-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: rgba(var(--white), 1);
+    padding: 14px;
+    border-radius: 8px;
+
+    .contact-detail-title {
+      h4 {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 4px;
+        color: rgba(var(--dark-text), 1);
+      }
+    }
+
+    .contact-detail-contain {
+      p {
+        font-size: 15px;
+        color: rgba(var(--content-color), 1);
+      }
+    }
+
+    .contact-icon {
+      background: $gradient-fill;
+      padding: 13px;
+      border-radius: 7px;
+      display: inline-flex;
+      color: #fff;
+      width: 50px;
+      height: 50px;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+  }
+}
+
+.contact-form {
+  background-color: rgba(var(--white), 1);
+  padding: calc(20px + (40 - 20) * ((100vw - 320px) / (1920 - 320)));
+
+  .form-label {
+    margin-top: calc(5px + (15 - 5) * ((100vw - 320px) / (1920 - 320)));
+    font-size: calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320)));
+    font-weight: 500;
+    color: rgba(var(--dark-text), 1);
+  }
+
+  .form-control {
+    border: none;
+    box-shadow: none;
+    padding: calc(6px + (12 - 6) * ((100vw - 320px) / (1920 - 320)))
+      calc(10px + (20 - 10) * ((100vw - 320px) / (1920 - 320)));
+    font-size: calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320)));
+    background-color: rgba(var(--box-bg), 1);
+
+    [dir="rtl"] & {
+      text-align: right;
+    }
+
+    &:focus {
+      box-shadow: none;
+      border: none;
+    }
+
+    &::placeholder {
+      color: rgba(136, 136, 136, 1);
+    }
+  }
+
+  .buttons {
+    margin-top: calc(10px + (20 - 10) * ((100vw - 320px) / (1920 - 320)));
+    padding-top: calc(10px + (20 - 10) * ((100vw - 320px) / (1920 - 320)));
+    border-top: 1px dashed rgba(var(--dashed-line), 1);
+  }
+}

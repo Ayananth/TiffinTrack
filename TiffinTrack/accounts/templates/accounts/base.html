@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Cuba admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+    <meta name="keywords"
+        content="admin template, Cuba admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="pixelstrap">
+    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
+    <title>TiffinTrack</title>
+
+    <!-- Google font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/vendors/bootstrap.css' %}">
+
+        <!-- remixicon css -->
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/remixicon.css' %}">
+
+    <!-- App css -->
+    <!-- <link rel="stylesheet" type="text/css" href="assets/css/style.css"> -->
+    <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/style.css' %}">
+
+</head>
+
+<body>
+
+    <!-- login section start -->
+    <section class="log-in-section section-b-space">
+        <a href="" class="logo-login"><img src="{% static 'backend/assets/images/logo/Tiffin-nav.png' %}" class="img-fluid" alt=""></a>
+        <div class="container w-100">
+            <div class="row">
+                {% block content %}
+                {% endblock content%}
+
+            </div>
+        </div>
+    </section>
+    <!-- login section end -->
+
+</body>
+
+</html>

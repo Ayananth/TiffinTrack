@@ -1,0 +1,106 @@
+/*-----------------------------------------------------------------------------------
+
+    Template Name:zomo - Online Food Delivery
+    Template URI: https://themes.pixelstrap.net/zomo
+    Description: This is Food Ordering Html Template
+    Author: Pixelstrap
+    Author URL: https://themeforest.net/user/pixelstrap
+
+----------------------------------------------------------------------------------- */
+///* Utils Files  *////
+/* 1.1 animation CSS  */
+/* 1.2 variable CSS  */
+
+////* Base Files  *////
+/* 2.1 reset CSS  */
+/* 2.2 typography CSS */
+
+////* Components Files  *////
+/* 3.1 accordion CSS  */
+/* 3.2 button CSS  */
+/* 3.3 category CSS  */
+/* 3.4 form CSS  */
+/* 3.5 modal CSS  */
+/* 3.6 nav CSS */
+/* 3.7 offcanvas CSS */
+/* 3.8 product-box CSS */
+/* 3.9 ratio CSS */
+/* 3.10 tabs CSS */
+/* 3.11 swiper-slider CSS */
+/* 3.12 title CSS */
+/* 3.13 loader CSS */
+
+////* Layout Files  *////
+/* 4.1 footer css */
+/* 4.2 header CSS */
+/* 4.3 mode-button CSS */
+/* 4.4 tap-to-top CSS */
+
+////* Pages Files  *////
+/* 5.1 about CSS */
+/* 5.2 authentication CSS */
+/* 5.3 blog-page CSS*/
+/* 5.4 cart CSS */
+/* 5.5 checkout CSS */
+/* 5.6 coupon CSS */
+/* 5.7 banner CSS */
+/* 5.8 home CSS */
+/* 5.9 menu CSS */
+/* 5.10 order-tracking CSS */
+/* 5.11 product-details CSS */
+/* 5.12 product-page CSS */
+/* 5.13 profile CSS */
+/* 5.14 shop-page CSS */
+/* 5.15 sub-page CSS */
+
+////* Themes Files  *////
+/* 6.1 dark CSS */
+
+/*utils scss files */
+@import "utils/animation";
+@import "utils/variables";
+
+/* base scss files */
+@import "base/reset";
+@import "base/typography";
+
+/* components scss files*/
+@import "components/accordion";
+@import "components/button";
+@import "components/category";
+@import "components/form";
+@import "components/modal";
+@import "components/nav";
+@import "components/offcanvas";
+@import "components/product-box";
+@import "components/ratio";
+@import "components/tabs";
+@import "components/swiper-slider";
+@import "components/title";
+@import "components/loader";
+
+/* layout scss files */
+@import "layout/footer";
+@import "layout/header";
+@import "layout/mode-button";
+@import "layout/tap-to-top";
+
+/* pages */
+@import "pages/about";
+@import "pages/authentication";
+@import "pages/blog-page";
+@import "pages/cart";
+@import "pages/checkout";
+@import "pages/coupon";
+@import "pages/banner";
+@import "pages/home";
+@import "pages/menu";
+@import "pages/order-tracking";
+@import "pages/product-details";
+@import "pages/product-page";
+@import "pages/profile";
+@import "pages/shop-page";
+@import "pages/sub-page";
+
+/* themes */
+@import "themes/dark";

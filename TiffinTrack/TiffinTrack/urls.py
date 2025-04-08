@@ -24,7 +24,7 @@ urlpatterns = [
     path('', include('users.urls')),
     path('restaurant/', include('restaurant.urls')),
     path('admin_panel/', include('admin_panel.urls')),
-
+    path('accounts/', include('accounts.urls')),
 ]
 
 if settings.DEBUG:  # Serve media files during development

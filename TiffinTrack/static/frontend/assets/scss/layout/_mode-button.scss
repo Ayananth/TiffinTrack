@@ -1,0 +1,50 @@
+/*=====================
+  4.3  mode button style start
+==========================*/
+.theme-btns {
+  position: fixed;
+  top: calc(50% + 70px);
+  right: 0;
+  transform: rotate(90deg);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 1;
+  transform-origin: right top;
+
+  [dir="rtl"] & {
+    right: unset;
+    left: 34px;
+    transform-origin: left top;
+    top: calc(50% - 70px);
+  }
+
+  .btntheme {
+    padding: 5px 14px;
+    color: rgba(var(--white), 1);
+    border-radius: 0 0 6px 6px;
+    border: none;
+    z-index: 3;
+    background: $gradient-fill;
+    outline: none;
+
+    [dir="rtl"] & {
+      border-radius: 6px 6px 0 0;
+    }
+  }
+
+  .icon {
+    font-size: calc(15px + (18 - 15) * ((100vw - 320px) / (1920 - 320)));
+    color: #fff;
+    padding: 0 0 2px 0;
+
+    [dir="rtl"] & {
+      transform: rotate(180deg);
+    }
+  }
+
+  .text-value {
+    font-size: calc(15px + (20 - 15) * ((100vw - 320px) / (1920 - 320)));
+    color: #fff;
+  }
+}

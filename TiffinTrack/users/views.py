@@ -51,6 +51,7 @@ def register(request):
 
 @login_required(login_url='user-login')
 def home(request):
+    print(request.user)
     restaurants = RestaurantProfile.objects.filter(is_approved=True)
     context = {'restaurants': restaurants}
     return render(request, './users/home.html', context)

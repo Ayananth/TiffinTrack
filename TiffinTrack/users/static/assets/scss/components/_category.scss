@@ -1,0 +1,157 @@
+/*=========================
+  3.3  Category Style start
+==========================*/
+.categories-section {
+  position: relative;
+
+  .category-top {
+    background-color: rgba(var(--white), 1);
+    z-index: 1;
+    padding: calc(15px + (20 - 15) * ((100vw - 320px) / (1920 - 320)));
+    border-radius: 13px;
+    box-shadow: 0 15px 60px -20px rgba(0, 0, 0, 0.1);
+    margin-top: calc(-45px + (-70 - -45) * ((100vw - 320px) / (1920 - 320)));
+  }
+
+  .item-2 {
+    position: absolute;
+    top: 30px;
+    right: -40px;
+
+    @media (max-width: 1250px) {
+      display: none;
+    }
+  }
+
+  .categories-style {
+    position: relative;
+    margin-top: -10px;
+
+    .food-categories {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: calc(10px + (20 - 10) * ((100vw - 320px) / (1920 - 320))) calc(8px + (15 - 8) * ((100vw - 320px) / (1920 - 320)));
+      margin-top: 10px;
+      border-radius: 8px;
+      background-color: rgba(var(--box-bg), 1);
+      transition: 0.4s ease;
+      border: 1px solid transparent;
+
+      &:hover {
+        transform: translateY(-5px);
+        transition: 0.4s ease;
+        background: rgba(var(--theme-color), 0.08);
+        border: 1px solid rgba(var(--theme-color), 0.3);
+
+        h4 {
+          color: rgba(var(--theme-color), 1) !important;
+          transition: 0.4s ease;
+          font-weight: 500;
+        }
+      }
+
+      @media (max-width: 420px) {
+        height: 100%;
+        width: 100%;
+      }
+
+      &.food {
+        background: rgba(var(--white), 1);
+        box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.06);
+        border-radius: 8px;
+      }
+
+      .categories-img {
+        width: 100%;
+        object-fit: contain;
+        height: 55px;
+      }
+
+      h4 {
+        display: block;
+        margin-top: 10px;
+        transition: 0.4s ease;
+      }
+    }
+
+    h6 {
+      color: rgba(var(--dark-text), 1);
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    &.category-inline {
+      .food-categories {
+        align-items: center;
+        gap: calc(8px + (10 - 8) * ((100vw - 320px) / (1920 - 320)));
+
+        .categories-img {
+          object-fit: contain;
+          height: calc(35px + (45 - 35) * ((100vw - 320px) / (1920 - 320)));
+          width: calc(35px + (45 - 35) * ((100vw - 320px) / (1920 - 320)));
+        }
+
+        h4 {
+          display: block;
+          margin-top: 0;
+          font-size: calc(16px + (18 - 16) * ((100vw - 320px) / (1920 - 320)));
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  &.category-outer {
+    .categories-style {
+      .food-categories {
+        margin-top: calc(30px + (50 - 30) * ((100vw - 320px) / (1920 - 320)));
+        padding-top: calc(10px + (20 - 10) * ((100vw - 320px) / (1920 - 320)));
+
+        .categories-img {
+          margin-top: -40px;
+          margin-bottom: 0px;
+        }
+      }
+    }
+  }
+}
+
+.scooter-img {
+  position: absolute;
+  top: calc(-30px + (-193 - -30) * ((100vw - 320px) / (1920 - 320)));
+  z-index: 12;
+  left: 40px;
+  width: 9%;
+  animation: 1s linear infinite alternate bike;
+  z-index: 1;
+
+  [dir="rtl"] & {
+    left: unset;
+    right: 40px;
+    transform: scaleX(-1);
+  }
+}
+
+.popcorn-img {
+  position: absolute;
+  top: -40px;
+  z-index: 1;
+  left: 0;
+
+  [dir="rtl"] & {
+    right: 0;
+    left: unset;
+    transform: scaleX(-1);
+  }
+
+  @media (max-width: 1299px) {
+    display: none;
+  }
+}

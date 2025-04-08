@@ -1,0 +1,90 @@
+/*========================
+   3.11 Swiper custom Style start
+==========================*/
+.theme-arrow {
+    position: relative;
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        position: absolute;
+        color: rgba(var(--dark-text), 1);
+        background-color: rgba(var(--white), 1);
+        border-radius: 100%;
+        border: 1px solid rgba(var(--dashed-line), 1);
+        bottom: 42px;
+        filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.07));
+        z-index: 1;
+        height: calc(32px + (42 - 32) * ((100vw - 320px) / (1920 - 320)));
+        width: calc(32px + (42 - 32) * ((100vw - 320px) / (1920 - 320)));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.4s ease;
+
+        &::after {
+            font-family: remixicon !important;
+            font-size: 24px;
+        }
+
+        &:hover {
+            background-color: rgba(var(--theme-color), 1);
+            color: #fff;
+            transition: 0.4s ease;
+            box-shadow: none;
+        }
+    }
+
+    .swiper-button-next {
+        right: 0px;
+        top: -50px;
+
+        [dir="rtl"] & {
+            right: unset;
+            left: calc(40px + (50 - 40) * ((100vw - 320px) / (1920 - 320)));
+        }
+
+        @media (max-width: 767px) {
+            top: -60px;
+        }
+
+        @media (max-width: 493px) {
+            top: -65px;
+        }
+
+        @media (max-width: 465px) {
+            top: -75px;
+        }
+
+        &::after {
+            content: "\ea6e";
+        }
+    }
+
+    .swiper-button-prev {
+        top: -50px;
+        right: 50px;
+        left: unset;
+
+        [dir="rtl"] & {
+            right: unset;
+            left: 0;
+        }
+
+        @media (max-width: 767px) {
+            top: -60px;
+        }
+
+        @media (max-width: 493px) {
+            top: -65px;
+            right: 40px;
+        }
+
+        @media (max-width: 465px) {
+            top: -75px;
+        }
+
+        &::after {
+            content: "\ea64";
+        }
+    }
+}

@@ -110,6 +110,7 @@
                   </div>
                   
                   <div class="row">
+                    {{user}}
                   
                   
                       {% for restaurant in restaurants %}
@@ -145,38 +146,6 @@
 
                     {%endfor%}
 
-                    {% for restaurant in restaurants %}
-                    <div class="col-lg-4 mb-5">
-                    <div class="vertical-product-box">
-                        <div class="vertical-product-box-img">
-                            <a href="menu-listing.html">
-                                <img class="product-img-top w-100 bg-img" src="{{ restaurant.restaurant_image.url }}" alt="vp1">
-                            </a>
-                        </div>
-                        <div class="vertical-product-body">
-                            <div class="d-flex align-items-center justify-content-between mt-sm-3 mt-2">
-                                <a href="menu-listing.html">
-                                    <h4 class="vertical-product-title">{{restaurant.restaurant_name}}</h4>
-                                </a>
-                                <h6 class="rating-star">
-                                    <span class="star"><i class="ri-star-s-fill"></i></span>3.9
-                                </h6>
-                            </div>
-                            <h5 class="product-items">
-                            </h5>
-                            <div
-                                class="location-distance d-flex align-items-center justify-content-between pt-sm-3 pt-2">
-                                <h5 class="place">Rs.3500/m</h5>
-                                <ul class="distance">
-                                    <li><i class="ri-map-pin-fill icon"></i> 3.2 km</li>
-                                    <li><i class="ri-time-fill icon"></i> All days</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>  
-                    </div>
-
-                {%endfor%}
 
 
 
