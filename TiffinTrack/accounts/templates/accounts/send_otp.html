@@ -1,0 +1,32 @@
+{% extends "./base.html" %}
+{% load static %}
+{% load socialaccount %}
+{% block content %}
+
+<div class="col-xl-5 col-lg-6 me-auto">
+    <div class="log-in-box">
+        <div class="log-in-title">
+            <h3>Welcome To TiffinTrack</h3>
+            <h5>Enter Mobile Number</h5>
+        </div>
+
+        <div class="input-box">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-12">
+                    <label class="col-form-label pt-0">Phone</label>
+                    <div class="form-floating theme-form-floating log-in-form">
+                        <input type="tel" name="phone" placeholder="Enter Phone"
+                        pattern="[6-9]{1}[0-9]{9}" maxlength="10" inputmode="numeric" required>                 
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-animation w-100 justify-content-center" type="submit">Send OTP</button>
+                    </div>
+                </form>
+
+
+    </div>
+</div>
+
+{% endblock content%}

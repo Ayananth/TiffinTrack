@@ -1,6 +1,7 @@
 
 {% extends "./base.html" %}
 {% load static %}
+{% load socialaccount %}
 
 {% block content %}
 <div class="col-xl-5 col-lg-6 me-auto">
@@ -10,12 +11,18 @@
             <h5>Enter your personal details to create account</h5>
         </div>
 
+        {% for message in messages %}
+        <div class="alert alert-{{message.tags}}">{{message}}</div>
+      {% endfor %}
         <div class="input-box">
-            <form class="row g-3">
+            <form class="row g-3" method="post">
+                {% csrf_token %}
+
                 <div class="col-12">
                     <label class="col-form-label pt-0">Your Name</label>
                     <div class="form-floating theme-form-floating log-in-form">
-                        <input type="text" name="text" placeholder="Enter Name">
+                        <input type="text" name="username" placeholder="Enter Name">
+                        <div class="text-danger">{{ form.username.errors }}</div>
                     </div>
                 </div>
 
@@ -24,12 +31,25 @@
                     <div class="form-floating theme-form-floating log-in-form">
                         <input type="email" name="email" placeholder="Enter Email">
                     </div>
+                    <div class="text-danger">{{ form.email.errors }}</div>
+
                 </div>
 
                 <div class="col-12">
                     <label class="col-form-label pt-0">Your Password</label>
                     <div class="form-floating theme-form-floating log-in-form">
-                        <input type="password" name="password" placeholder="Enter Password">
+                        <input type="password" name="password1" id="password1" placeholder="Enter Password">
+                    </div>
+                    <div class="text-danger">{{ form.password1.errors }}</div>
+
+                </div>
+
+                <div class="col-12">
+                    <label class="col-form-label pt-0">Confirm Password</label>
+                    <div class="form-floating theme-form-floating log-in-form">
+                        <input type="password" name="password2" id="password2" placeholder="Enter Password">
+                        <div class="text-danger">{{ form.password2.errors }}</div>
+
                     </div>
                 </div>
 
@@ -46,7 +66,7 @@
                 </div>
 
                 <div class="col-12">
-                    <a href="login.html" class="btn btn-animation w-100 justify-content-center" type="submit">Create Account</a>
+                    <button class="btn btn-animation w-100 justify-content-center" type="submit">Create Account</button>
                 </div>
             </form>
         </div>
@@ -58,15 +78,14 @@
         <div class="log-in-button">
             <ul>
                 <li>
-                    <a href="https://www.google.com/" class="btn google-button w-100" target="_blank">
+                    <a href="{% provider_login_url 'google' %}" class="btn google-button w-100" target="_blank">
                         <img src="{% static 'backend/assets/images/google.png' %}" class="blur-up lazyload"
                             alt=""> Log In with Google
                     </a>
                 </li>
                 <li>
-                    <a href="https://www.facebook.com/" class="btn google-button w-100" target="_blank">
-                        <img src="{% static 'backend/assets/images/facebook.png' %}" class="blur-up lazyload"
-                            alt=""> Log In with Facebook
+                    <a href="{% url 'send_otp'%}" class="btn google-button w-100">
+                        <i class="ri-phone-fill"></i>Log In Mobile OTP
                     </a>
                 </li>
             </ul>
@@ -75,7 +94,7 @@
         <div>
             <h6 class="text-center mt-3">
                 Already have account?
-                <a href="sign-up.html" class="font-primary f-w-600">Login</a>
+                <a href="{% url 'login' %}" class="font-primary f-w-600">Login</a>
             </h6>
         </div>
     </div>
