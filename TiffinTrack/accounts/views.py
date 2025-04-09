@@ -10,7 +10,7 @@ from django.contrib import messages
 def accounts_login(request):
 
     if request.user.is_authenticated and  not request.user.is_admin:
-        messages.success("Logged in as admin")
+        messages.success(request,"Logged in as admin")
         return login_redirect_view(request)
     if request.method == "POST":
         username = request.POST.get("username")
