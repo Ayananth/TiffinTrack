@@ -1,0 +1,227 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+     <!-- <link rel="stylesheet" href="theme.css">
+     <link rel="stylesheet" href="home.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <title>TiffinTrack</title>
+  </head>
+
+  <body class="d-flex flex-column h-100">
+    <main class="flex-shrink-0">
+        <!-- Navigation-->
+        <div class="header">
+          <nav class="navbar navbar-expand-lg navbar-dark">
+              <div class="container px-5">
+                  <a class="navbar-brand" href="index.html"><img src="{% static 'images/Tiffin-nav.png' %}" alt=""></a>
+                  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                          <li class="nav-item"><a class="nav-link" href="{% url 'user-home'%}">Home</a></li>
+                          <li class="nav-item"><a class="nav-link" href="#">Manage Subscription</a></li>
+                          <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+                          <li class="nav-item"><a class="nav-link" href="{% url 'user-logout' %}">Logout</a></li>
+
+                      </ul>
+                  </div>
+              </div>
+          </nav>
+              <!-- Header-->
+              <header class="home-section py-5">
+                <div class="container px-5">
+                    <div class="row gx-5 align-items-center justify-content-center">
+                        <div class="col-lg-8 col-xl-7 col-xxl-6">
+                            <div class="my-5 text-center text-xl-start">
+                                <h1 class="display-5 fw-bolder text-white mb-2">Find Your Monthly Food Partner</h1>
+                                <p class="lead fw-normal text-white-50 mb-4">Find Your Monthly Food Partner</p>
+                                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
+                                    <div class="ms-xl-4">
+                                      <div class="input-group mb-2">
+                                          <div class="location-group bg-light d-flex align-items-center border-end border-5">
+                                            <i class="fa-solid fa-location-dot ps-4" style="color: #fb1313;"></i>
+                                            <a target="_blank" href="#!" data-bs-toggle="modal" data-bs-target="#location"
+                                            class="btn bg-light d-flex align-content-center">
+                                            Thrissur
+                                            </a>
+                                          </div>
+
+                                          <div class="d-flex bg-light align-items-center">
+                                            <i class="fa-solid fa-magnifying-glass ps-4"></i>
+                                            <input class="form-control border-0" type="text" placeholder="Search for restaurant..." aria-label="Email address..." aria-describedby="button-newsletter" />
+                                          </div>
+                                          <button class="btn btn-outline-light" id="button-newsletter" type="button">Search</button>
+
+                                      </div>
+                                      <div class="small text-white-50">We care about privacy, and will never share your data.</div>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center"><img class="img-fluid rounded-3 my-5" src="{% static 'images/banner_girls.png'  %}" alt="..."/></div>
+                    </div>
+                </div>
+            </header>
+        </div>
+
+            <!-- Blog preview section-->
+            <section class="py-5">
+              <div class="container px-5 my-5">
+                  <div class="row gx-5 justify-content-start">
+                      <div class="">
+                        <div class="pb-4 d-flex align-items-center justify-content-between">
+                          <h2>Featured Restaurants</h2>
+                          <!-- <div class="loader-line"></div> -->
+                          <ul class="nav nav-pills" id="Tab" role="tablist">
+                              <li class="nav-item" role="presentation">
+                                  <button class="nav-link active" id="pill-delivery-tab" data-bs-toggle="pill"
+                                      data-bs-target="#delivery-tab">
+                                      Rating
+                                  </button>
+                              </li>
+                              <!-- <li class="nav-item" role="presentation">
+                                  <button class="nav-link" id="pill-rating-tab" data-bs-toggle="pill"
+                                      data-bs-target="#rating-tab">
+                                      Rating
+                                  </button>
+                              </li> -->
+                              <li class="nav-item" role="presentation">
+                                  <button class="nav-link" id="pill-veg-tab" data-bs-toggle="pill" data-bs-target="#veg-tab">
+                                      Distance
+                                  </button>
+                              </li>
+                              <li class="nav-item" role="presentation">
+                                  <button class="nav-link" id="pill-cost-tab" data-bs-toggle="pill" data-bs-target="#cost-tab">
+                                      Cost
+                                  </button>
+                              </li>
+                          </ul>
+                      </div>
+
+                  </div>
+                  
+                  <div class="row">
+                    {{user}}
+                  
+                  
+                      {% for restaurant in restaurants %}
+                        <div class="col-lg-4 mb-5">
+                        <div class="vertical-product-box">
+                            <div class="vertical-product-box-img">
+                                <a href="menu-listing.html">
+                                    <img class="product-img-top w-100 bg-img" src="{{ restaurant.restaurant_image.url }}" alt="vp1">
+                                </a>
+                            </div>
+                            <div class="vertical-product-body">
+                                <div class="d-flex align-items-center justify-content-between mt-sm-3 mt-2">
+                                    <a href="menu-listing.html">
+                                        <h4 class="vertical-product-title">{{restaurant.restaurant_name}}</h4>
+                                    </a>
+                                    <h6 class="rating-star">
+                                        <span class="star"><i class="ri-star-s-fill"></i></span>3.9
+                                    </h6>
+                                </div>
+                                <h5 class="product-items">
+                                </h5>
+                                <div
+                                    class="location-distance d-flex align-items-center justify-content-between pt-sm-3 pt-2">
+                                    <h5 class="place">Rs.3500/m</h5>
+                                    <ul class="distance">
+                                        <li><i class="ri-map-pin-fill icon"></i> 3.2 km</li>
+                                        <li><i class="ri-time-fill icon"></i> All days</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>  
+                        </div>
+
+                    {%endfor%}
+
+
+
+
+            </div>
+
+
+              </div>
+          </section>
+    </main>
+
+        <!-- Footer-->
+        <footer class="bg-dark py-4 mt-auto">
+          <div class="container px-5">
+              <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+                  <div class="col-auto"><div class="small m-0 text-white">Copyright &copy; Your Website 2023</div></div>
+                  <div class="col-auto">
+                      <a class="link-light small" href="#!">Privacy</a>
+                      <span class="text-white mx-1">&middot;</span>
+                      <a class="link-light small" href="#!">Terms</a>
+                      <span class="text-white mx-1">&middot;</span>
+                      <a class="link-light small" href="#!">Contact</a>
+                  </div>
+              </div>
+          </div>
+      </footer>
+
+
+
+      <div class="modal fade location-modal" id="location" data-bs-backdrop="static" data-bs-keyboard="false"
+      tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <div class="modal-title">
+                    
+                      <h5 class="fw-semibold">Select a Location</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+              </div>
+              <div class="modal-body">
+                  <div class="search-section">
+                      <form class="form_search" role="form">
+                          <input type="search" placeholder="Search Location" class="nav-search nav-search-field">
+                      </form>
+                  </div>
+                  <a href="#!" class="current-location">
+                      <div class="current-address">
+                          <i class="ri-focus-3-line focus"></i>
+                          <div>
+                              <h5>Use current-location</h5>
+                              <h6>Wellington St., Ottawa, Ontario, Canada</h6>
+                          </div>
+                      </div>
+                      <i class="ri-arrow-right-s-line arrow"></i>
+                  </a>
+                  <h5 class="mt-sm-3 mt-2 fw-medium recent-title dark-text">
+                      Recent Location
+                  </h5>
+                  <a href="#!" class="recent-location">
+                      <div class="recant-address">
+                          <i class="ri-map-pin-line theme-color"></i>
+                          <div>
+                              <h5>Bayshore</h5>
+                              <h6>kingston St., Ottawa, Ontario, Canada</h6>
+                          </div>
+                      </div>
+                  </a>
+              </div>
+              <div class="modal-footer">
+                  <a href="#" class="btn gray-btn" data-bs-dismiss="modal">Close</a>
+                  <a href="#" class="btn theme-btn mt-0" data-bs-dismiss="modal">Save</a>
+              </div>
+          </div>
+      </div>
+  </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  </body>
+</html>

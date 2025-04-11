@@ -8,11 +8,12 @@ from django.utils import timezone
 from users.models import CustomUser
 from datetime import timedelta
 from .forms import UserRegisterForm
+from .utils import send_otp_sms, verify_otp_sms
 
 
 
 #TODO dont give access to admin
-OTP_EXPIRY_SECONDS = 1000  # 5 minutes
+OTP_EXPIRY_SECONDS = 600  # 5 minutes
 
 def accounts_login(request):
 
@@ -27,6 +28,11 @@ def accounts_login(request):
             print("Invalid credentials")
             messages.success(request, "Invalid username or password")
     return render(request, './accounts/login.html')
+
+def accounts_logout(request):
+    logout(request)
+    request.session.flush() 
+    return redirect('login')
 
 def accounts_sign_up(request):
     print("register")
@@ -66,11 +72,18 @@ def send_otp(request):
             messages.error(request, "Invalid phone number")
             return render(request, "./accounts/send_otp.html")
 
-        otp_obj, created = PhoneOTP.objects.get_or_create(phone=phone)
-        otp_obj.generate_otp()
+        # otp_obj, created = PhoneOTP.objects.get_or_create(phone=phone)
+        # otp_obj.generate_otp()
+        status = send_otp_sms()
+        if status == "failed":
+            print("OTP failed")
+            messages.info("Please try again!")
+            return render(request, "./accounts/send_otp.html")
+            
+        print("OTP sent")
 
         # TODO: Replace with Twilio
-        print(f"OTP for {phone} is {otp_obj.otp}")
+        # print(f"OTP for {phone} is {otp_obj.otp}")
 
         request.session['phone'] = phone
         request.session['otp_sent'] = True
@@ -116,25 +129,16 @@ def verify_otp(request):
             request.session.pop('phone', None)
             return redirect('send_otp')
 
-        try:
-            otp_obj = PhoneOTP.objects.get(phone=phone)
-
-            if otp_obj.otp == entered_otp:
-                otp_obj.is_verified = True
-                otp_obj.save()
-
-                # Clear session and login
-                request.session.pop('otp_sent', None)
-                request.session.pop('otp_sent_time', None)
-                request.session.pop('phone', None)
-
-                user, created = CustomUser.objects.get_or_create(username=phone)
-                login(request, user)
-                return redirect("user-home")
-
-            return render(request, "./accounts/verify_otp.html", {"error": "Incorrect OTP!"})
-
-        except PhoneOTP.DoesNotExist:
-            return redirect("send_otp")
+        otp_status = verify_otp_sms(entered_otp)
+        if otp_status == "approved":
+            # Clear session and login
+            request.session.pop('otp_sent', None)
+            request.session.pop('otp_sent_time', None)
+            request.session.pop('phone', None)
+            user, created = CustomUser.objects.get_or_create(username=phone)
+            login(request, user)
+            return redirect("user-home")
+        else:
+            return render(request, "./accounts/verify_otp.html", {"error": otp_status})
 
     return render(request, "./accounts/verify_otp.html")

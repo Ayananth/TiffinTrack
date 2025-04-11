@@ -172,3 +172,8 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# settings.py
+TWILIO_ACCOUNT_SID = 'AC361b5dd32f369cee5bff0768b82e866f'
+TWILIO_AUTH_TOKEN = '1f6b473a0172d6d1752b41c3c6bdae95'
+TWILIO_PHONE_NUMBER = '+16593005248'
