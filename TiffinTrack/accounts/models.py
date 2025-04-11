@@ -55,6 +55,9 @@ class UserProfile(models.Model):
     location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default='thrissur')
     address = models.TextField()
 
+    def __str__(self):
+        return self.user.username
+
 class RestaurantProfile(models.Model):
     location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default='thrissur')
 
