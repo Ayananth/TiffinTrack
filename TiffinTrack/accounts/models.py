@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 import random
+from django.conf import settings
 
 
 
@@ -38,3 +39,23 @@ class PhoneOTP(models.Model):
         self.otp = str(random.randint(100000, 999999))
         self.timestamp = timezone.now()
         self.save()
+
+
+
+class Locations(models.Model):
+    name = models.CharField(default="thrissur", unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                on_delete=models.CASCADE)
+    location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default='thrissur')
+    address = models.TextField()
+
+class RestaurantProfile(models.Model):
+    location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default='thrissur')
+
+
