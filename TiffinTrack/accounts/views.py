@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import PhoneOTP
 from django.utils import timezone
-from users.models import CustomUser
+from accounts.models import CustomUser
 from datetime import timedelta
 from .forms import UserRegisterForm
 from .utils import send_otp_sms, verify_otp_sms

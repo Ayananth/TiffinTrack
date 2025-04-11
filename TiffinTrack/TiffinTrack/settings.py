@@ -118,11 +118,26 @@ WSGI_APPLICATION = 'TiffinTrack.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'TiffinTrack',        # PostgreSQL database name
+        'USER': 'postgres',        # PostgreSQL username
+        'PASSWORD': 'postgres',# PostgreSQL password
+        'HOST': 'localhost',           # Or your remote host
+        'PORT': '5432',                # Default PostgreSQL port
+    },
+    # 'repliica': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
 }
 
 
@@ -168,7 +183,7 @@ STATICFILES_DIRS = [BASE_DIR/"static"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

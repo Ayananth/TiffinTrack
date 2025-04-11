@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from users.forms import UserRegisterForm
+from accounts.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from .models import RestaurantProfile, MenuItem
 from .forms import UserProfileForm
