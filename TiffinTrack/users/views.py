@@ -49,7 +49,7 @@ from restaurant.models import RestaurantProfile
 #     return render(request, './users/register.html', context)  
 
 
-# @login_required(login_url='user-login')
+@login_required(login_url='login')
 def home(request):
     print(request.user)
     restaurants = RestaurantProfile.objects.filter(is_approved=True)

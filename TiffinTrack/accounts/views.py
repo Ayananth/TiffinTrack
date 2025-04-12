@@ -26,7 +26,7 @@ def accounts_login(request):
             return redirect(login_redirect_view(request))
         else:
             print("Invalid credentials")
-            messages.success(request, "Invalid username or password")
+            messages.error(request, "Invalid username or password")
     return render(request, './accounts/login.html')
 
 def accounts_logout(request):
@@ -77,7 +77,7 @@ def send_otp(request):
         status = send_otp_sms()
         if status == "failed":
             print("OTP failed")
-            messages.info("Please try again!")
+            messages.error("Please try again!")
             return render(request, "./accounts/send_otp.html")
             
         print("OTP sent")
