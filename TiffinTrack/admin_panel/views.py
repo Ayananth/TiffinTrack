@@ -137,6 +137,14 @@ def delete_restaurant(request, id):
     restaurant.delete()
     return redirect('restaurant_request')
 
+@never_cache
+@login_required(login_url='admin-login')
+def delete_user(request, id):
+    user = get_object_or_404(CustomUser, pk=id)
+    user.delete()
+    messages.success(request,"User deleted")
+    return redirect('all-users')
+
 
 
 
