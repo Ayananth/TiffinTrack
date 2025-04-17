@@ -22,9 +22,17 @@
 
                         
                         <div id="table_id_filter" class="dataTables_filter d-flex justify-content-end">
+                          <form id="search-form" method="post">
+                            {% csrf_token %}
                             <label for="user-search">Search User:
-                            <input id="user-search" type="search" class="" placeholder="" aria-controls="table_id">
+                              <input id="user-search" type="search" name="username" class="" placeholder="" aria-controls="table_id"
+                              {% if request.POST.username %} value="{{ request.POST.username }}"{% endif %}>
                             </label>
+                            <button class="" type="submit"><i class="ri-search-line"></i></button>
+                            <!-- Close button that resets and submits the form -->
+                            <button type="button" class="btn-close" id="close-btn" aria-label="Close"></button>
+
+                          </form>
                         </div>
 
                         <table class="table category-table dataTable no-footer" id="table_id">
@@ -40,7 +48,6 @@
         
                         <tbody>
                           {% for user in users %}
-        
                           <tr>
                             <td class="f-w-600">{{ user.id }}</td>
                             <td>
@@ -55,12 +62,7 @@
         
                             <td>
                               <ul>
-                                <li>
-                                  <a href="order-detail.html">
-                                    <i class="ri-eye-line"></i>
-                                  </a>
-                                </li>
-        
+       
                                 <li>
                                   <a href="{% url 'update-user' user.id%}">
                                     <i class="ri-pencil-line"></i>
@@ -88,5 +90,18 @@
         </div>
     </div>
 </div>
+
+<script>
+  // cancel icon
+    document.getElementById('close-btn').addEventListener('click', function () {
+    const form = document.getElementById('search-form');
+    
+    // Clear input manually (optional but reliable)
+    form.querySelector('input[name="username"]').value = '';
+
+    // Submit the form
+    form.submit();
+  });
+</script>
 <!-- All User Table Ends-->
 {%endblock%}
