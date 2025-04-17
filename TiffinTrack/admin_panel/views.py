@@ -7,6 +7,8 @@ from .forms import AdminUserRegisterForm, UserUpdateForm
 from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
 from restaurant.models import RestaurantProfile
+from django.core.paginator import Paginator
+
 
 
 
@@ -54,11 +56,16 @@ def all_users(request):
     username = request.POST.get("username")
     if request.method == 'POST' and username:
         print(f"{username=}")
-        users = CustomUser.objects.filter(username=username)
+        users = CustomUser.objects.filter(username=username).order_by('-created_at')
     else:
-        users = CustomUser.objects.all()
+        users = CustomUser.objects.all().order_by('-created_at')
+    # Pagination logic
+    paginator = Paginator(users, 10)  # Show 10 users per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     context = {
-        'users': users
+        # 'users': users,
+        'page_obj': page_obj
     }
     return render(request, './admin_panel/all_users.html', context)
 
