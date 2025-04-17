@@ -13,6 +13,7 @@ class CustomUser(AbstractUser):
         ('admin', 'Admin'),
     )
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='normal')
+    is_blocked = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
@@ -53,12 +54,28 @@ class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 on_delete=models.CASCADE)
     location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default='thrissur')
-    address = models.TextField()
+    address = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.user.username
 
 class RestaurantProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    restaurant_name = models.CharField(max_length=100)
+    owner_name = models.CharField(max_length=100)
+    licence_no = models.CharField(max_length=100)
+    contact_number = models.CharField(max_length=15)
+    email = models.EmailField()
+    address = models.TextField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    restaurant_image = models.ImageField(upload_to='uploads/', null=True)
     location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default='thrissur')
+
+
+    def __str__(self):
+        return self.restaurant_name
+
 
 

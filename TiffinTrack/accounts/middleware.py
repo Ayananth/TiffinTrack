@@ -1,5 +1,7 @@
 from django.shortcuts import redirect
 from django.urls import resolve
+from django.contrib.auth import logout
+from django.contrib import messages
 
 class RedirectAuthenticatedUserMiddleware:
     def __init__(self, get_response):
@@ -18,3 +20,22 @@ class RedirectAuthenticatedUserMiddleware:
         # Allow the request to continue to the next middleware/view
         response = self.get_response(request)
         return response
+
+
+
+
+
+class BlockedUserLogoutMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        print("Mildware is running")
+        if request.user.is_authenticated:
+            if hasattr(request.user, 'is_blocked') and request.user.is_blocked:
+                print(request.user.is_blocked)
+                print(request.user)
+                logout(request)
+                messages.error(request, "Your account has been blocked.")
+                return redirect('login')  # change this to your login or error page name
+        return self.get_response(request)

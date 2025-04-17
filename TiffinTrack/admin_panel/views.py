@@ -3,10 +3,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from accounts.forms import UserRegisterForm
+from .forms import AdminUserRegisterForm, UserUpdateForm
 from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
 from restaurant.models import RestaurantProfile
+
 
 
 def admin_login(request):
@@ -44,8 +45,47 @@ def home(request):
     context = {
         'users': users
     }
-    return render(request, './admin_panel/users.html', context)
+    return render(request, './admin_panel/dashboard.html', context)
 
+@login_required(login_url='admin-login')
+def all_users(request):
+    if not request.user.is_authenticated:
+        return redirect('admin-login')
+    username = request.POST.get("username")
+    if request.method == 'POST' and username:
+        print(f"{username=}")
+        users = CustomUser.objects.filter(username=username)
+    else:
+        users = CustomUser.objects.all()
+    context = {
+        'users': users
+    }
+    return render(request, './admin_panel/all_users.html', context)
+
+
+@login_required(login_url='admin-login')
+def add_users(request):
+    if request.method == "POST":
+        print(request.POST.dict())  # cleaner view
+        print("Adding new user by admin")
+        form = AdminUserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f"User created for {username}")
+            return redirect('all-users')
+        else:
+            print("Form not valid")
+            messages.error(request, "Form not valid")
+            return redirect('add-user')
+
+    print("Add new user menu from admin side")
+    form = AdminUserRegisterForm()
+    context = {
+        'form': form
+    }
+
+    return render(request, './admin_panel/add_user.html', context)
 
 
 @never_cache
@@ -96,3 +136,38 @@ def delete_restaurant(request, id):
     restaurant = get_object_or_404(RestaurantProfile, pk=id)
     restaurant.delete()
     return redirect('restaurant_request')
+
+
+
+
+@never_cache
+@login_required(login_url='admin-login')
+def update_user(request, id):
+    print("_-------------------------------")
+    user = get_object_or_404(CustomUser, id=id)
+    print(user.is_blocked)
+    print("_-------------------------------")
+    if request.method == 'POST':
+        print("Updating user by admin")
+        print(request.POST.dict())
+        print("Updating user by admin")
+        form = UserUpdateForm(request.POST, instance=user)  # Pre-fill with existing user data
+        if form.is_valid():
+            print("Form is valid")
+            form.save()
+            messages.success(request, "User updated successfully")
+            return redirect('update-user', id=id)  # Redirect to the profile page
+        else:
+            messages.error(request, "Form not valid")
+            print("Form not valid")
+            print(form.errors)
+            return redirect('update-user', id=id)   
+        
+    else:
+        print("Else")
+        form = UserUpdateForm(instance=user)  # Pre-fill with existing user data
+
+    return render(request, './admin_panel/update_user.html', {'form': form})
+
+
+

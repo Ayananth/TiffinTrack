@@ -1,0 +1,178 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Add New User</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="nav nav-pills flex-nowrap mb-3" id="pills-tab" role="tablist">
+                                        <li class="nav-item m-0" role="presentation">
+                                            <button class="nav-link active" id="pills-home-tab"
+                                                data-bs-toggle="pill" data-bs-target="#pills-home"
+                                                type="button">Account</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-12">
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
+                                            <div class="input-items">
+                                                <form method="post">
+                                                    <div class="row gy-3">
+                                                        {% csrf_token %}
+
+                                                        
+                                                        <div class="col-12">
+                                                            <div class="input-box">
+                                                                <h6>User Name</h6>
+                                                                <input type="text" name="username" placeholder="Enter username" value="{{form.username.value}}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="input-box">
+                                                                <h6>Email</h6>
+                                                                <input type="email" name="email" placeholder="Enter Email" value="{{form.email.value}}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="input-box">
+                                                                <h6>User Type</h6>
+                                                                <div>
+
+                                                                        <label>
+                                                                            <input type="radio" name="user_type"  value="normal" {% if form.user_type.value == "normal" %}checked{% endif %}>
+                                                                            <i></i>
+                                                                            <span>Normal</span>
+                                                                        </label>
+        
+                                                                        <label>
+                                                                            <input type="radio" name="user_type" value="restaurant" {% if form.user_type.value == "restaurant" %}checked{% endif %}>
+                                                                            <i></i>
+                                                                            <span>Restaurant</span>
+                                                                        </label>
+                                                                        <label>
+                                                                            <input type="radio" name="user_type" value="admin" {% if form.user_type.value == "admin" %}checked{% endif %}>
+                                                                            <i></i>
+                                                                            <span>Admin</span>
+                                                                        </label>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="input-box">
+                                                                <h6>Blocked</h6>
+                                                                <div>
+
+                                                                        <label>
+                                                                            <input type="radio" name="is_blocked" id="block-true"  value="True" {% if form.is_blocked.value == True %}checked{% endif %}>
+                                                                            <i></i>
+                                                                            <span>True </span>
+                                                                        </label>
+        
+                                                                        <label>
+                                                                            <input type="radio" name="is_blocked" id="block-false" value="False" {% if form.is_blocked.value == False %}checked{% endif %}>
+                                                                            <i></i>
+                                                                            <span>False</span>
+                                                                        </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <button type="submit" class="btn restaurant-button">Save</a>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Block Modal Start -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5 class="modal-title" id="staticBackdropLabel">Block User</h5>
+                <p id="blockModalText">Are you sure?</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                <div class="button-box">
+                    <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn  btn--yes btn-primary">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal End -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const trueRadio = document.getElementById('block-true');
+        const falseRadio = document.getElementById('block-false');
+        const modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+        let selectedValue = null;
+        const modalText = document.getElementById('blockModalText');
+        const username = "{{ form.username.value|escapejs }}"; // safely pass username from Django
+
+        // Intercept clicks instead of "change" to prevent pre-checking
+        trueRadio.addEventListener('click', function (e) {
+            e.preventDefault(); // prevent automatic checking
+            selectedValue = 'True';
+            modalText.textContent = `Are you sure you want to block ${username}?`;
+            modal.show();
+        });
+
+        falseRadio.addEventListener('click', function (e) {
+            e.preventDefault();
+            selectedValue = 'False';
+            modalText.textContent = `Are you sure you want to unblock ${username}?`;
+            modal.show();
+        });
+
+        // If user confirms
+        document.querySelector('.btn--yes').addEventListener('click', function () {
+            if (selectedValue === 'True') {
+                trueRadio.checked = true;
+            } else if (selectedValue === 'False') {
+                falseRadio.checked = true;
+            }
+            modal.hide();
+        });
+
+        // If user cancels
+        document.querySelector('.btn--no').addEventListener('click', function () {
+            selectedValue = null; // Just clear the intent
+            modal.hide();
+        });
+    });
+</script>
+
+
+
+
+
+
+
+{%endblock%}
