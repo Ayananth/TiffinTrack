@@ -11,7 +11,7 @@ def login_redirect_view(request):
     if user.is_normal_user:
         return reverse('user-home')
     elif user.is_restaurant_user:
-        return render('restaurant-home')
+        return reverse('restaurant-home')
     elif user.is_admin:
         return reverse('admin-home')
     else:
