@@ -1,8 +1,15 @@
 from django import forms
-from .models import RestaurantProfile
+from .models import RestaurantProfile, MenuItem, MenuCategory
 
-class UserProfileForm(forms.ModelForm):
+class RestaurantProfileForm(forms.ModelForm):
     class Meta:
         model = RestaurantProfile
         fields = ['restaurant_name', 'owner_name', 'licence_no', 'contact_number', 
-                  'email','address',  ]
+                  'email', 'location', 'address','restaurant_image' ]
+
+
+
+class MenuCategoryForm(forms.ModelForm):
+    class Meta:
+        model = MenuCategory
+        fields = ['name']

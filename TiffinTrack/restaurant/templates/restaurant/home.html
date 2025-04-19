@@ -108,7 +108,7 @@
                                         <div class="row gy-3">
                                             <div class="col-md-6">
                                                 <div class="input-box">
-                                                    <form method="post">
+                                                    <form method="post" enctype="multipart/form-data">
                                                         {% csrf_token %}
                                                         {{ form }}
                                                         <button class="btn restaurant-button" type="submit">Request</button>

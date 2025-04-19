@@ -3,6 +3,7 @@ from django.urls import resolve
 from django.contrib.auth import logout
 from django.contrib import messages
 
+
 class RedirectAuthenticatedUserMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
