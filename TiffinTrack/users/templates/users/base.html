@@ -5,16 +5,16 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="zomo">
-    <meta name="keywords" content="zomo">
-    <meta name="author" content="zomo">
+    <meta name="description" content="TiffinTrack">
+    <meta name="keywords" content="TiffinTrack">
+    <meta name="author" content="TiffinTrack">
     <link rel="icon" href="assets/images/logo/favicon.png" type="image/x-icon">
-    <title>zomo Web</title>
+    <title>TiffinTrack Web</title>
     <link rel="apple-touch-icon" href="assets/images/logo/favicon.png">
     <meta name="theme-color" content="#ff8d2f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="zomo">
+    <meta name="apple-mobile-web-app-title" content="TiffinTrack">
     <meta name="msapplication-TileImage" content="assets/images/logo/favicon.png">
     <meta name="msapplication-TileColor" content="#FFFFFF">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -54,11 +54,11 @@
                     </span>
                 </button>
                 <a href="index.html">
-                    <img class="img-fluid logo" src="{% static 'frontend/assets/images/svg/logo.svg'%}" alt="logo">
+                    <img class="img-fluid logo" src="{% static 'frontend/assets/images/logo/Tiffin.png'%}" alt="logo" style="width: auto; height: 100px;">
                 </a>
                 <a target="_blank" href="#!" data-bs-toggle="modal" data-bs-target="#location"
                     class="btn btn-sm theme-btn location-btn mt-0 ms-3 d-flex align-content-center gap-1">
-                    <i class="ri-map-pin-line"></i> Location
+                    <i class="ri-map-pin-line"></i> {{location}}
                 </a>
                 <div class="nav-option order-md-2">
                     <div class="dropdown-button">
@@ -162,7 +162,7 @@
                     <div class="profile-part dropdown-button order-md-2">
                         <img class="img-fluid profile-pic" src="assets/images/icons/p5.png" alt="profile">
                         <div>
-                            <h6 class="fw-normal">Hi, Mark Jecno</h6>
+                            <h6 class="fw-normal">{{user.username}}</h6>
                             <h5 class="fw-medium">My Account</h5>
                         </div>
                         <div class="onhover-box onhover-sm">
@@ -184,7 +184,7 @@
                                 </li>
                             </ul>
                             <div class="bottom-btn">
-                                <a href="signin.html" class="theme-color fw-medium d-flex"><i
+                                <a href="{% url 'logout' %}" class="theme-color fw-medium d-flex"><i
                                         class="ri-login-box-line me-2"></i>Logout</a>
                             </div>
                         </div>
@@ -389,7 +389,7 @@
             </div>
             <div class="bottom-footer-part">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                    <h6>@ Copyright 2024 ZOMO. All rights Reserved.</h6>
+                    <h6>@ Copyright 2024 TiffinTrack. All rights Reserved.</h6>
                     <img class="img-fluid cards" src="assets/images/icons/footer-card.png" alt="card">
                 </div>
             </div>
@@ -459,37 +459,35 @@
                     </div>
                 </div>
                 <div class="modal-body">
-                    <div class="search-section">
-                        <form class="form_search" role="form">
-                            <input type="search" placeholder="Search Location" class="nav-search nav-search-field">
-                        </form>
-                    </div>
-                    <a href="#!" class="current-location">
-                        <div class="current-address">
-                            <i class="ri-focus-3-line focus"></i>
-                            <div>
-                                <h5>Use current-location</h5>
-                                <h6>Wellington St., Ottawa, Ontario, Canada</h6>
+                   
+                    <!-- All Locations Section -->
+                    <form id="location-selection-form" method="post" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_id" value="location_form">
+                        <div class="location-list">
+                            {% for loc in all_locations %}
+                            <div class="location-item">
+                                <input type="radio" name="selected_location" id="location{{ forloop.counter }}" value="{{ loc.id }}" class="location-radio"
+                                
+                                    {% if loc.name == location %}
+                                    checked
+                                    {% endif %}>
+                                <label for="location{{ forloop.counter }}" class="location-label">
+                                    <div class="location-address d-flex align-items-center gap-2 mb-2">
+                                        <i class="ri-map-pin-line theme-color"></i>
+                                        <div>
+                                            <h5>{{ loc.name }}</h5>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
+                            {% endfor %}
                         </div>
-                        <i class="ri-arrow-right-s-line arrow"></i>
-                    </a>
-                    <h5 class="mt-sm-3 mt-2 fw-medium recent-title dark-text">
-                        Recent Location
-                    </h5>
-                    <a href="#!" class="recent-location">
-                        <div class="recant-address">
-                            <i class="ri-map-pin-line theme-color"></i>
-                            <div>
-                                <h5>Bayshore</h5>
-                                <h6>kingston St., Ottawa, Ontario, Canada</h6>
-                            </div>
-                        </div>
-                    </a>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" class="btn gray-btn" data-bs-dismiss="modal">Close</a>
-                    <a href="#" class="btn theme-btn mt-0" data-bs-dismiss="modal">Save</a>
+                    <button type="button" class="btn gray-btn" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="location-selection-form" class="btn theme-btn mt-0">Save</button>
                 </div>
             </div>
         </div>
