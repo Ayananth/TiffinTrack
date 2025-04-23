@@ -1,0 +1,492 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- banner section starts -->
+    <section class="product-banner-section">
+        <div class="container">
+            <div class="restaurant-box">
+                <div class="restaurant-image">
+                    <img class="img-fluid img" src="{{restaurant.restaurant_image.url}}" alt="brand13">
+                </div>
+                <div class="restaurant-details">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div>
+                            <h2 class="restaurant-name">
+                                {{restaurant.restaurant_name}}
+                            </h2>
+                            <h4 class="restaurant-place">{{restaurant.address}}</h4>
+                        </div>
+                        <div class="restaurant-description">
+                            <div class="categories-icon">
+                                <a href="#!" id="liveToastBtn">
+                                    <i class="ri-share-line icon text-white"></i>
+                                </a>
+                                <a href="#!" class="like-btn animate inactive">
+                                    <i class="ri-heart-3-fill fill-icon"></i>
+                                    <i class="ri-heart-3-line text-white outline-icon"></i>
+                                    <div class="effect-group">
+                                        <span class="effect"></span>
+                                        <span class="effect"></span>
+                                        <span class="effect"></span>
+                                        <span class="effect"></span>
+                                        <span class="effect"></span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="distance d-flex align-items-center">
+                                <h4 class="text-white shop-time">{{restaurant.location}}</h4>
+                                <h4 class="rating-star">
+                                    <span class="star"><i class="ri-star-s-fill"></i></span>{{rating}}
+                                    ({{reviews}}+ Reviews)
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- banner section end -->
+
+
+    <!-- tab section starts -->
+    <section class="tab-details-section section-b-space">
+        <div class="container">
+            <div class="category-detail-tab">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="menu-button d-inline-block d-lg-none">
+                            <a href="#!"><i class="ri-book-open-line"></i> Menu</a>
+                        </div>
+                        <ul class="nav nav-tabs tab-style1" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="order-tab" data-bs-toggle="tab"
+                                    data-bs-target="#online" type="button" role="tab">
+                                    Browse Menu
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="overview-tab" data-bs-toggle="tab"
+                                    data-bs-target="#overview" type="button" role="tab">
+                                    Overview
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="items-tab" data-bs-toggle="tab" data-bs-target="#photo"
+                                    type="button" role="tab">
+                                    Photos
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#review"
+                                    type="button" role="tab">
+                                    Reviews
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content product-details-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="online" role="tabpanel" tabindex="0">
+                                <div class="row g-lg-3 g-2">
+                                    <div class="col-2">
+                                        <div class="product-sidebar sticky-top">
+                                            <nav id="navbar" class="product-items pb-0">
+                                                <ul class="nav nav-pills">
+                                                    {% for menu in menu_data %}
+                                                    <li>
+                                                        <a class="nav-link" href="#item-{{forloop.counter}}">{{menu.menu_category}}-{{menu.total_price}}</a>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                    <div class="col-10">
+                                        <div class="product-box-section section-b-space">
+                                            <div data-bs-spy="scroll" data-bs-target="#navbar"
+                                                data-bs-smooth-scroll="true" class="scrollspy-example-2" tabindex="0">
+                                                <div class="product-details-box-list">  
+                                                    <div class="product-details-box-title pt-0">
+
+                                                        <div class="table-responsive theme-scrollbar table-product">
+                                                            {% for menu in menu_data %}
+                                                            <h3>{{ menu.menu_category }} - ₹{{ menu.total_price }} per day, {%widthratio menu.total_price 1 30%} per month</h3>
+                                                        
+                                                            <table class="table category-table dataTable no-footer" id="item-{{ forloop.counter }}">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Day</th>
+                                                                        <th>
+                                                                            Breakfast 
+                                                                            {% if menu.category_prices.Breakfast %}- ₹{{ menu.category_prices.Breakfast }}{% endif %}
+                                                                        </th>
+                                                                        <th>
+                                                                            Lunch 
+                                                                            {% if menu.category_prices.Lunch %}- ₹{{ menu.category_prices.Lunch }}{% endif %}
+                                                                        </th>
+                                                                        <th>
+                                                                            Dinner 
+                                                                            {% if menu.category_prices.Dinner %}- ₹{{ menu.category_prices.Dinner }}{% endif %}
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for day, meals in menu.weekly_menu.items %}
+                                                                    <tr>
+                                                                        <td class="f-w-600">{{ day }}</td>
+                                                                        <td>{{ meals.Breakfast|join:", " }}</td>
+                                                                        <td>{{ meals.Lunch|join:", " }}</td>
+                                                                        <td>{{ meals.Dinner|join:", " }}</td>
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <td> 
+                                                                            <input type="submit" value="Subscribe {{menu.menu_category}} " class="btn theme-outline mt-0">
+                                                                        </td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        {% endfor %}
+                                                        
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="overview" role="tabpanel" tabindex="0">
+                                <div class="overview-section">
+                                    <div class="row g-3">
+                                        <div class="col-md-6 col-12">
+                                            <div class="overview-content mt-0">
+                                                <h6 class="overview-heading">Phone Number</h6>
+                                                <ul class="content-list">
+                                                    <li>+1 (692)52 - 95555</li>
+                                                </ul>
+                                            </div>
+                                            <div class="overview-content">
+                                                <h6 class="overview-heading">Cuisines</h6>
+                                                <ul class="content-list w-grid">
+                                                    <li>Mexican</li>
+                                                    <li>Italian</li>
+                                                    <li>Chinese</li>
+                                                    <li>Panjabi</li>
+                                                    <li>Street Food</li>
+                                                </ul>
+                                            </div>
+                                            <div class="overview-content">
+                                                <h6 class="overview-heading">Average Cost</h6>
+                                                <ul class="content-list">
+                                                    <li>$300 for Two people (approx.)</li>
+                                                    <li>Cash and Cards accepted</li>
+                                                    <li>Digital payments accepted</li>
+                                                </ul>
+                                            </div>
+                                            <div class="overview-content">
+                                                <h6 class="overview-heading">Known For</h6>
+                                                <ul class="content-list">
+                                                    <li class="w-75">
+                                                        Calming Atmosphere, Weekend Brunch, Elaborate
+                                                        Menu, Staff, Fresh Food, Good Quality
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="overview-content mt-0">
+                                                <h6 class="overview-heading">Address</h6>
+                                                <ul class="content-list">
+                                                    <li class="content-address">
+                                                        +874 Trans-Canada Hwy, Peterborough, ON K9J 6X8,
+                                                        Canada
+                                                    </li>
+                                                    <li>
+                                                        8970 Trans-Canada Hwy, Emo, ON P0W 1E0, Canada
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="overview-content">
+                                                <h6 class="overview-heading">More Info</h6>
+                                                <ul class="content-list w-grid">
+                                                    <li>Breakfast</li>
+                                                    <li>Takeaway</li>
+                                                    <li>Home Delivery</li>
+                                                    <li>Valet Parking</li>
+                                                    <li>Luxury Dining</li>
+                                                    <li>Table booking</li>
+                                                    <li>Brunch</li>
+                                                    <li>Buffet</li>
+                                                    <li>Indoor Seating</li>
+                                                    <li>Outdoor Seating</li>
+                                                    <li>4/5 Star</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="photo" role="tabpanel" tabindex="0">
+                                <div class="photos-section ratio_landscape">
+                                    <ul class="photos-list">
+                                        <li>
+                                            <a href="assets/images/service/6.jpg" data-fancybox="images"
+                                                data-type="image">
+                                                <img class="img-fluid bg-img" src="assets/images/service/6.jpg" alt="6">
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="assets/images/service/7.jpg" data-fancybox="images"
+                                                data-type="image">
+                                                <img class="img-fluid bg-img" src="assets/images/service/7.jpg" alt="7">
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="assets/images/service/8.jpg" data-fancybox="images"
+                                                data-type="image">
+                                                <img class="img-fluid bg-img" src="assets/images/service/8.jpg" alt="8">
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="assets/images/service/9.jpg" data-fancybox="images"
+                                                data-type="image">
+                                                <img class="img-fluid bg-img" src="assets/images/service/9.jpg" alt="9">
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="assets/images/service/10.jpg" data-fancybox="images"
+                                                data-type="image">
+                                                <img class="img-fluid bg-img" src="assets/images/service/10.jpg"
+                                                    alt="10">
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="assets/images/service/11.jpg" data-fancybox="images"
+                                                data-type="image">
+                                                <img class="img-fluid bg-img" src="assets/images/service/11.jpg"
+                                                    alt="11">
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="assets/images/service/12.jpg" data-fancybox="images"
+                                                data-type="image">
+                                                <img class="img-fluid bg-img" src="assets/images/service/12.jpg"
+                                                    alt="12">
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="assets/images/service/13.jpg" data-fancybox="images"
+                                                data-type="image">
+                                                <img class="img-fluid bg-img" src="assets/images/service/13.jpg"
+                                                    alt="13">
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="review" role="tabpanel" tabindex="0">
+                                <div class="review-section">
+                                    <ul class="review-box-list">
+                                        <li>
+                                            <div class="review-box">
+                                                <div class="review-head">
+                                                    <div class="review-image">
+                                                        <img class="img-fluid img" src="assets/images/icons/p1.png"
+                                                            alt="p1">
+                                                    </div>
+                                                    <div
+                                                        class="d-flex align-sm-items-center justify-content-between w-100">
+                                                        <div>
+                                                            <h6 class="reviewer-name">Gunjan Puri</h6>
+                                                            <ul class="rating-star">
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div>
+                                                            <h6>1 month ago</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="review-content">
+                                                    <h6>Wonderful Experience...!!</h6>
+                                                    <p>
+                                                        Serve a healthy and good food. Having a parking
+                                                        facility and there are also waiting area
+                                                        available. These place is perfect for Celebration
+                                                        of birthday. Serve a healthy and good food. Having
+                                                        a parking facility and there are also waiting area
+                                                        available.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="review-box">
+                                                <div class="review-head">
+                                                    <div class="review-image">
+                                                        <img class="img-fluid img" src="assets/images/icons/p2.png"
+                                                            alt="p2">
+                                                    </div>
+                                                    <div
+                                                        class="d-flex align-sm-items-center justify-content-between w-100">
+                                                        <div>
+                                                            <h6 class="reviewer-name">Gunjan Puri</h6>
+                                                            <ul class="rating-star">
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div>
+                                                            <h6>1 month ago</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="review-content">
+                                                    <h6>Wonderful Experience...!!</h6>
+                                                    <p>
+                                                        Serve a healthy and good food. Having a parking
+                                                        facility and there are also waiting area
+                                                        available. These place is perfect for Celebration
+                                                        of birthday. Serve a healthy and good food. Having
+                                                        a parking facility and there are also waiting area
+                                                        available.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="review-box">
+                                                <div class="review-head">
+                                                    <div class="review-image">
+                                                        <img class="img-fluid img" src="assets/images/icons/p5.png"
+                                                            alt="p5">
+                                                    </div>
+                                                    <div
+                                                        class="d-flex align-sm-items-center justify-content-between w-100">
+                                                        <div>
+                                                            <h6 class="reviewer-name">Gunjan Puri</h6>
+                                                            <ul class="rating-star">
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div>
+                                                            <h6>1 month ago</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="review-content">
+                                                    <h6>Wonderful Experience...!!</h6>
+                                                    <p>
+                                                        Serve a healthy and good food. Having a parking
+                                                        facility and there are also waiting area
+                                                        available. These place is perfect for Celebration
+                                                        of birthday. Serve a healthy and good food. Having
+                                                        a parking facility and there are also waiting area
+                                                        available.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="review-box">
+                                                <div class="review-head">
+                                                    <div class="review-image">
+                                                        <img class="img-fluid img" src="assets/images/icons/p4.png"
+                                                            alt="p4">
+                                                    </div>
+                                                    <div
+                                                        class="d-flex align-sm-items-center justify-content-between w-100">
+                                                        <div>
+                                                            <h6 class="reviewer-name">Gunjan Puri</h6>
+                                                            <ul class="rating-star">
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                                <li>
+                                                                    <i class="ri-star-fill star"></i>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div>
+                                                            <h6>1 month ago</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="review-content">
+                                                    <h6>Wonderful Experience...!!</h6>
+                                                    <p>
+                                                        Serve a healthy and good food. Having a parking
+                                                        facility and there are also waiting area
+                                                        available. These place is perfect for Celebration
+                                                        of birthday. Serve a healthy and good food. Having
+                                                        a parking facility and there are also waiting area
+                                                        available.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- tab section end -->
+
+{%endblock%}

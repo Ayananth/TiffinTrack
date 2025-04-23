@@ -20,6 +20,16 @@ class MenuItem(models.Model):
 
 
 
+
+
+
+
+
+
+    
+
+
+
 class FoodCategory(models.Model):
     name = models.CharField(max_length=50)  # e.g., Breakfast, Lunch, Dinner
     price = models.DecimalField(max_digits=6, decimal_places=2)
@@ -63,6 +73,19 @@ class MenuCategory(models.Model):
 
 
 class FoodItem(models.Model):
+
+    DAY_CHOICES = [
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday'),
+        ('Sunday', 'Sunday'),
+    ]
+
+
+
     restaurant = models.ForeignKey(
         RestaurantProfile,
         on_delete=models.CASCADE,
@@ -89,6 +112,8 @@ class FoodItem(models.Model):
         related_name='food_items'
     )
 
+    day = models.CharField(max_length=10, choices=DAY_CHOICES, null=True, blank=True)
+
     def __str__(self):
         food_cat = self.food_category.name if self.food_category else "No FoodCat"
         menu_cat = self.menu_category.name if self.menu_category else "No MenuCat"
@@ -96,3 +121,15 @@ class FoodItem(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+
+class Review(models.Model):
+    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rating = models.PositiveSmallIntegerField()  # e.g., 1 to 5
+    comment = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user} rated {self.restaurant.restaurant_name} {self.rating}/5'

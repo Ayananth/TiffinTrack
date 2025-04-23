@@ -18,6 +18,7 @@
     <meta name="msapplication-TileImage" content="assets/images/logo/favicon.png">
     <meta name="msapplication-TileColor" content="#FFFFFF">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!--Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,12 +38,14 @@
     <!-- remixicon css -->
     <link rel="stylesheet" type="text/css" href="{% static 'frontend/assets/css/vendors/remixicon.css' %}">
 
+    <!-- <link rel="stylesheet" id="change-link" type="text/css" href="{% static 'backend/assets/css/style.css' %}"> -->
+
     <!-- Theme css -->
     <link rel="stylesheet" id="change-link" type="text/css" href="{% static 'frontend/assets/css/style.css' %}">
 
 </head>
 
-<body class="position-relative">
+<body class="bg-color position-relative">
     <!-- Header section start -->
     <header>
         <div class="container">
@@ -53,7 +56,7 @@
                         <i class="ri-menu-line"></i>
                     </span>
                 </button>
-                <a href="index.html">
+                <a href="{% url 'user-home' %}">
                     <img class="img-fluid logo" src="{% static 'frontend/assets/images/logo/Tiffin.png'%}" alt="logo" style="width: auto; height: 100px;">
                 </a>
                 <a target="_blank" href="#!" data-bs-toggle="modal" data-bs-target="#location"
@@ -61,106 +64,9 @@
                     <i class="ri-map-pin-line"></i> {{location}}
                 </a>
                 <div class="nav-option order-md-2">
-                    <div class="dropdown-button">
-                        <div class="cart-button">
-                            <span>5</span>
-                            <i class="ri-shopping-cart-line text-white cart-bag"></i>
-                        </div>
-                        <div class="onhover-box">
-                            <ul class="cart-list">
-                                <li class="product-box-contain">
-                                    <div class="drop-cart">
-                                        <a href="#!" class="drop-image">
-                                            <img src="{% static 'frontend/assets/images/product/vp-3.png' %}" class="blur-up lazyloaded" alt="">
-                                        </a>
-                                        <div class="drop-contain">
-                                            <a href="#!">
-                                                <h5>Egg Sandwich</h5>
-                                            </a>
-                                            <h6><span>1 x </span> $80.58</h6>
-                                            <button class="close-button close_button">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="product-box-contain">
-                                    <div class="drop-cart">
-                                        <a href="#!" class="drop-image">
-                                            <img src="{% static 'frontend/assets/images/product/vp-2.png' %}" class="blur-up lazyloaded" alt="">
-                                        </a>
-                                        <div class="drop-contain">
-                                            <a href="#!">
-                                                <h5>Grilled Chicken Quesadilla</h5>
-                                            </a>
-                                            <h6><span>1 x </span> $25.64</h6>
-                                            <button class="close-button close_button">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="product-box-contain">
-                                    <div class="drop-cart">
-                                        <a href="#!" class="drop-image">
-                                            <img src="assets/images/product/vp-4.png" class="blur-up lazyloaded" alt="">
-                                        </a>
-                                        <div class="drop-contain">
-                                            <a href="#!">
-                                                <h5>Spicy Ahi Roll</h5>
-                                            </a>
-                                            <h6><span>1 x </span> $12.00</h6>
-                                            <button class="close-button close_button">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="product-box-contain">
-                                    <div class="drop-cart">
-                                        <a href="#!" class="drop-image">
-                                            <img src="assets/images/product/vp-5.png" class="blur-up lazyloaded" alt="">
-                                        </a>
-                                        <div class="drop-contain">
-                                            <a href="#!">
-                                                <h5>Spicy Dumplings</h5>
-                                            </a>
-                                            <h6><span>1 x </span> $16.28</h6>
-                                            <button class="close-button close_button">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="product-box-contain">
-                                    <div class="drop-cart">
-                                        <a href="#!" class="drop-image">
-                                            <img src="assets/images/product/vp-6.png" class="blur-up lazyloaded" alt="">
-                                        </a>
-                                        <div class="drop-contain">
-                                            <a href="#!">
-                                                <h5>Chicken Nugget</h5>
-                                            </a>
-                                            <h6><span>1 x </span> $20.50</h6>
-                                            <button class="close-button close_button">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                            <div class="price-box">
-                                <h5>Total :</h5>
-                                <h4 class="theme-color fw-semibold">$155.00</h4>
-                            </div>
-                            <div class="button-group">
-                                <a href="checkout.html" class="btn btn-sm theme-btn w-100 d-block rounded-2">View
-                                    Cart</a>
-                            </div>
-                        </div>
-                    </div>
                     <div class="profile-part dropdown-button order-md-2">
-                        <img class="img-fluid profile-pic" src="assets/images/icons/p5.png" alt="profile">
+                        <img class="img-fluid profile-pic" src="{{ user.userprofile.profile_pic.url }}" alt="profile">
+
                         <div>
                             <h6 class="fw-normal">{{user.username}}</h6>
                             <h5 class="fw-medium">My Account</h5>
@@ -168,19 +74,7 @@
                         <div class="onhover-box onhover-sm">
                             <ul class="menu-list">
                                 <li>
-                                    <a class="dropdown-item" href="profile.html">Profile</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="my-order.html">My orders</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="saved-address.html">Saved Address</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="saved-card.html">Saved cards</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="setting.html">Settings</a>
+                                    <a class="dropdown-item" href="{% url 'user-profile' %}">Profile</a>
                                 </li>
                             </ul>
                             <div class="bottom-btn">
@@ -429,16 +323,6 @@
     <!-- mobile fix menu end -->
 
     <!-- theme btn start -->
-    <div class="theme-btns">
-        <button type="button" class="btntheme mode-change-button">
-            <i id="themeIcon" class="ri-moon-line icon mode-icon"></i>
-            <span class="text-value">Dark</span>
-        </button>
-        <button type="button" id="rtl-btn" class="btntheme rtlBtnEl">
-            <i class="ri-repeat-line icon"></i>
-            <span class="text-value">RTL</span>
-        </button>
-    </div>
     <!-- theme btn end -->
 
     <!-- tap to top start -->
@@ -463,7 +347,7 @@
                     <!-- All Locations Section -->
                     <form id="location-selection-form" method="post" action="">
                         {% csrf_token %}
-                        <input type="hidden" name="form_id" value="location_form">
+                        <input type="hidden" name="form_id" value="search_form">
                         <div class="location-list">
                             {% for loc in all_locations %}
                             <div class="location-item">
@@ -513,6 +397,30 @@
 
     <!-- script js -->
     <script src="{% static 'frontend/assets/js/script.js' %}"></script>
+
+    <script>
+        let e = document.getElementById("error-message")
+        console.log(e);
+        if(e){
+            setTimeout(() => {
+               e.remove() 
+            }, 5000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+    const closeIcons = document.querySelectorAll('.close-icon');
+    closeIcons.forEach(function (icon) {
+      icon.addEventListener('click', function () {
+        const errorMessage = document.getElementById('error-message');
+        if (errorMessage) {
+          errorMessage.remove();
+            }
+        });
+        });
+    });
+
+        
+    </script>
 
 </body>
 

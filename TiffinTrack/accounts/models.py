@@ -45,7 +45,7 @@ class PhoneOTP(models.Model):
 
 
 class Locations(models.Model):
-    name = models.CharField(default="thrissur", unique=True)
+    name = models.CharField(unique=True, default="thrissur")
 
     def __str__(self):
         return self.name
@@ -54,14 +54,20 @@ class Locations(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 on_delete=models.CASCADE)
-    location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default='thrissur')
+    location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default=None)
     address = models.TextField(null=True, blank=True)
+    phone = models.CharField(max_length=15, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default.png')
+
 
     def __str__(self):
         return self.user.username
 
 class RestaurantProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    description = models.TextField(null=True, blank=True)
     restaurant_name = models.CharField(max_length=100)
     owner_name = models.CharField(max_length=100)
     licence_no = models.CharField(max_length=100)
@@ -72,7 +78,9 @@ class RestaurantProfile(models.Model):
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     restaurant_image = models.ImageField(upload_to='uploads/', null=True)
-    location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default='thrissur')
+    location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default=None)
+    profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default-restaurant.png')
+
 
 
     def __str__(self):

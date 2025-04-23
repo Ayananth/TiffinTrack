@@ -71,7 +71,7 @@ def home(request):
 def restaurant_logout(request):
     logout(request)
     request.session.flush() 
-    return redirect('restaurant-login')
+    return redirect('login')
 
 
 def restaurant_register(request):
@@ -85,7 +85,7 @@ def restaurant_register(request):
             user.save()  # Now save to database
             username = form.cleaned_data.get('username')
             messages.success(request, f"Account created for {username}! Try login")
-            return redirect('restaurant-login')   
+            return redirect('login')   
     else:
         form = UserRegisterForm()
     context = {  
