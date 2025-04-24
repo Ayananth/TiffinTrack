@@ -8,10 +8,7 @@ class AdminUserRegisterForm(UserCreationForm):
         model = CustomUser
         fields = ['username', 'email', 'user_type', 'is_staff', 'is_active', 'is_blocked']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            print(f"Field: {field_name}, Type: {type(field)}")
+
 
     def clean(self):
         cleaned_data = super().clean()
