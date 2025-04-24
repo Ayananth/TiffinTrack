@@ -32,7 +32,7 @@ def accounts_login(request):
 def accounts_logout(request):
     logout(request)
     request.session.flush() 
-    return redirect('login')
+    return redirect('user-home')
 
 def accounts_sign_up(request):
     print("register")

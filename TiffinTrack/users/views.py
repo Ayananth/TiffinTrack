@@ -54,7 +54,6 @@ from decimal import Decimal
 #     }  
 #     return render(request, './users/register.html', context)  
 
-
 def home(request):
     print(request.user)
     all_locations = Locations.objects.all()
@@ -152,7 +151,6 @@ def update_profile(request):
 
 
 
-@login_required(login_url='login')
 def restaurant_details(request, pk):
     restaurant = get_object_or_404(RestaurantProfile, pk=pk)
     avg_rating = restaurant.reviews.aggregate(Avg('rating'))['rating__avg']

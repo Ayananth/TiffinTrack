@@ -74,6 +74,7 @@ def restaurant_logout(request):
     return redirect('login')
 
 
+@login_required(login_url='login')
 def restaurant_register(request):
     if request.user.is_authenticated:
         return redirect('restaurant-home')

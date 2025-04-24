@@ -60,38 +60,74 @@
                     <img class="img-fluid logo" src="{% static 'frontend/assets/images/logo/Tiffin.png'%}" alt="logo" style="width: auto; height: 100px;">
                 </a>
                 <a target="_blank" href="#!" data-bs-toggle="modal" data-bs-target="#location"
-                    class="btn btn-sm theme-btn location-btn mt-0 ms-3 d-flex align-content-center gap-1">
-                    <i class="ri-map-pin-line"></i> {{location}}
-                </a>
-                <div class="nav-option order-md-2">
-                    <div class="profile-part dropdown-button order-md-2">
-                        <img class="img-fluid profile-pic" src="{{ user.userprofile.profile_pic.url }}" alt="profile">
+                class="btn btn-sm theme-btn location-btn mt-0 ms-3 d-flex align-content-center gap-1">
+                <i class="ri-map-pin-line"></i> {{location}}
+            </a>
 
-                        <div>
-                            <h6 class="fw-normal">{{user.username}}</h6>
-                            <h5 class="fw-medium">My Account</h5>
+                {% if user.is_authenticated %}
+                    <div class="nav-option order-md-2">
+                        <div class="dropdown-button">
+                            <div class="cart-button">
+                                <i class="text-white cart-bag"></i>
+                            </div>
                         </div>
-                        <div class="onhover-box onhover-sm">
-                            <ul class="menu-list">
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'user-profile' %}">Profile</a>
-                                </li>
-                            </ul>
-                            <div class="bottom-btn">
-                                <a href="{% url 'logout' %}" class="theme-color fw-medium d-flex"><i
-                                        class="ri-login-box-line me-2"></i>Logout</a>
+                        <div class="profile-part dropdown-button order-md-2">
+                            <img class="img-fluid profile-pic" src="{{ user.userprofile.profile_pic.url }}" alt="profile">
+                            <div>
+                                <h6 class="fw-normal">{{user.username}}</h6>
+                                <h5 class="fw-medium">My Account</h5>
+                            </div>
+                            <div class="onhover-box onhover-sm">
+                                <ul class="menu-list">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'user-profile' %}">Profile</a>
+                                    </li>
+                                </ul>
+                                <div class="bottom-btn">
+                                    <a href="{% url 'logout' %}" class="theme-color fw-medium d-flex"><i
+                                            class="ri-login-box-line me-2"></i>Logout</a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                            <button class="navbar-toggler btn-close" id="offcanvas-close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="contact.html">Register Restaurant</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                {% else %}
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
                     <div class="offcanvas-header">
                         <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
                         <button class="navbar-toggler btn-close" id="offcanvas-close"></button>
                     </div>
                     <div class="offcanvas-body">
+                        <ul class="navbar-nav justify-content-end flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login'%}">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'register'%}">Sign Up</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'restaurant-register'%}">Register Restaurant</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
+
+                {%endif%}
+
+
             </nav>
         </div>
     </header>
