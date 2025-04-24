@@ -30,64 +30,17 @@
                                                 <form method="post">
                                                     <div class="row gy-3">
                                                         {% csrf_token %}
-
-                                                        
-                                                        <div class="col-12">
+                                                        {% for field in form %}
+                                                        <div class="col-12 gy-3">
                                                             <div class="input-box">
-                                                                <h6>User Name</h6>
-                                                                <input type="text" name="username" placeholder="Enter username" value="{{form.username.value}}">
+                                                                <h6>{{ field.label }}</h6>
+                                                                <span>{{ field }}</span>
+                                                                {% if field.errors %}
+                                                                    <div class="text-danger">{{ field.errors }}</div>
+                                                                {% endif %}
                                                             </div>
                                                         </div>
-                                                        <div class="col-12">
-                                                            <div class="input-box">
-                                                                <h6>Email</h6>
-                                                                <input type="email" name="email" placeholder="Enter Email" value="{{form.email.value}}">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <div class="input-box">
-                                                                <h6>User Type</h6>
-                                                                <div>
-
-                                                                        <label>
-                                                                            <input type="radio" name="user_type"  value="normal" {% if form.user_type.value == "normal" %}checked{% endif %}>
-                                                                            <i></i>
-                                                                            <span>Normal</span>
-                                                                        </label>
-        
-                                                                        <label>
-                                                                            <input type="radio" name="user_type" value="restaurant" {% if form.user_type.value == "restaurant" %}checked{% endif %}>
-                                                                            <i></i>
-                                                                            <span>Restaurant</span>
-                                                                        </label>
-                                                                        <label>
-                                                                            <input type="radio" name="user_type" value="admin" {% if form.user_type.value == "admin" %}checked{% endif %}>
-                                                                            <i></i>
-                                                                            <span>Admin</span>
-                                                                        </label>
-
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <div class="input-box">
-                                                                <h6>Blocked</h6>
-                                                                <div>
-
-                                                                        <label>
-                                                                            <input type="radio" name="is_blocked" id="block-true"  value="True" {% if form.is_blocked.value == True %}checked{% endif %}>
-                                                                            <i></i>
-                                                                            <span>True </span>
-                                                                        </label>
-        
-                                                                        <label>
-                                                                            <input type="radio" name="is_blocked" id="block-false" value="False" {% if form.is_blocked.value == False %}checked{% endif %}>
-                                                                            <i></i>
-                                                                            <span>False</span>
-                                                                        </label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                      {% endfor %}
                                                         <div class="col-12">
                                                             <button type="submit" class="btn restaurant-button">Save</a>
                                                         </div>

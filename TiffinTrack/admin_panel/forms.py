@@ -23,5 +23,4 @@ class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
     class Meta:
         model = CustomUser
-        fields = ['username', 'email','user_type',
-                  'is_blocked']
+        fields = '__all__'
