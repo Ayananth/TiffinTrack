@@ -84,7 +84,7 @@ def add_users(request):
         else:
             print("Form not valid")
             messages.error(request, "Form not valid")
-            return redirect('add-user')
+            return render(request, './admin_panel/add_user.html', {'form': form})
 
     print("Add new user menu from admin side")
     form = AdminUserRegisterForm()

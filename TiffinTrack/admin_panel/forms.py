@@ -6,7 +6,7 @@ class AdminUserRegisterForm(UserCreationForm):
     email = forms.EmailField()
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password1', 'password2','user_type']
+        fields = "__all__"
 
     def clean(self):
         cleaned_data = super().clean()
