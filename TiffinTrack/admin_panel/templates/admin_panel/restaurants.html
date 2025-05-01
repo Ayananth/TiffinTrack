@@ -65,19 +65,13 @@
 
                                                             <ul>
                                                                 <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
+                                                                    <a href="{% url 'restaurant-edit' restaurant.id%}">
                                                                         <i class="ri-pencil-line"></i>
                                                                     </a>
                                                                 </li>
 
                                                                 <li>
-                                                                    <a href="{% url 'delete-restaurant' restaurant.id %}">
+                                                                    <a href="{% url 'restaurant-delete' restaurant.id %}">
                                                                         <i class="ri-delete-bin-line"></i>
                                                                     </a>
                                                                 </li>

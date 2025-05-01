@@ -16,10 +16,11 @@ urlpatterns = [
     # path('update/<int:id>/', views.update, name='update-user'),
     # path('register/', views.register, name='register'),
     path('restaurants/', views.restaurants, name='restaurants'),
-    path('restaurants/add', views.restaurant_add, name='restaurant-add'),
+    path('restaurants/add', views.restaurant_add_or_update, name='restaurant-add'),
+    path('restaurants/edit/<int:pk>/', views.restaurant_add_or_update, name='restaurant-edit'),
     path('restaurant_request/', views.restaurant_requests, name='restaurant_request'),
     path('restaurant_approve/<int:pk>/', views.restaurant_approve, name='restaurant_approve'),
-    path('delete_restaurant/<int:id>/', views.delete_restaurant, name='delete-restaurant'),
+    path('restaurant/delete/<int:id>/', views.delete_restaurant, name='restaurant-delete'),
 
 
 ]

@@ -102,7 +102,7 @@ def restaurants(request):
         return redirect('admin-login')
     
 
-    restaurants = RestaurantProfile.objects.all().order_by('is_approved','created_at')
+    restaurants = RestaurantProfile.objects.all().order_by('is_approved','-created_at')
     context = {
         'restaurants': restaurants
     }
@@ -123,21 +123,26 @@ def restaurant_requests(request):
 
 
 @login_required()
-def restaurant_add(request):
-    if request.method=="POST":
-        form = RestaurantRegisterForm(request.POST, request.FILES)
+def restaurant_add_or_update(request, pk=None):
+    if pk:
+        restaurant_obj = get_object_or_404(RestaurantProfile, pk=pk)
+    else:
+        restaurant_obj = None
+
+    if request.method == "POST":
+        form = RestaurantRegisterForm(request.POST, request.FILES, instance=restaurant_obj)
         if form.is_valid():
-            restaurant = form.save(commit=False)     
-            restaurant.user_type = 'restaurant'  
-            restaurant.save()  
-            restaurant_name = form.cleaned_data.get('restaurant_name')
-            messages.success(request, f"Restaurant {restaurant_name} Created!")
+            restaurant = form.save(commit=False)
+            restaurant.user_type = 'restaurant'
+            restaurant.save()
+            name = form.cleaned_data.get('restaurant_name')
+            messages.success(request, f"Restaurant {name} {'Updated' if pk else 'Created'}!")
             return redirect('restaurants')
         else:
-            messages.error(request, f"Invalid inputs")
-            return render(request, './admin_panel/add-restaurant.html', {'form': form})
-    
-    form = RestaurantRegisterForm()
+            messages.error(request, "Invalid inputs.")
+    else:
+        form = RestaurantRegisterForm(instance=restaurant_obj)
+
     return render(request, './admin_panel/add-restaurant.html', {'form': form})
 
     
@@ -163,7 +168,7 @@ def restaurant_approve(request, pk):
 def delete_restaurant(request, id):
     restaurant = get_object_or_404(RestaurantProfile, pk=id)
     restaurant.delete()
-    return redirect('restaurant_request')
+    return redirect('restaurants')
 
 @never_cache
 @login_required(login_url='admin-login')
