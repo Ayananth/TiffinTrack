@@ -3,10 +3,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm
+from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm, FoodItemManageForm
 from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
-from restaurant.models import RestaurantProfile
+from restaurant.models import RestaurantProfile, FoodItem
 from django.core.paginator import Paginator
 
 
@@ -142,8 +142,11 @@ def restaurant_add_or_update(request, pk=None):
             messages.error(request, "Invalid inputs.")
     else:
         form = RestaurantRegisterForm(instance=restaurant_obj)
+        food_items = FoodItem.objects.select_related('menu_category').filter(restaurant=restaurant_obj)
+        print(food_items)
 
-    return render(request, './admin_panel/add-restaurant.html', {'form': form})
+    return render(request, './admin_panel/add-restaurant.html', {'form': form,
+                                                                 'food_items': food_items})
 
     
 
