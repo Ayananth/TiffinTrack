@@ -4,7 +4,6 @@
 {% block content %}
 
 <!-- Container-fluid starts-->
-            <div class="page-body">
                 <!-- All User Table Start -->
                 <div class="container-fluid">
                     <div class="row">
@@ -12,9 +11,9 @@
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title">
-                                        <h5>All Users</h5>
+                                        <h5>Restaurants</h5>
                                         <form class="d-inline-flex">
-                                            <a href="add-new-user.html" class="align-items-center btn btn-theme d-flex">
+                                            <a href="{% url 'restaurant-add'%}" class="align-items-center btn btn-theme d-flex">
                                                 <i data-feather="plus-square"></i>Add New
                                             </a>
                                         </form>
@@ -28,6 +27,8 @@
                                                     <th>Resaurant Name</th>
                                                     <th>Owner Name</th>
                                                     <th>Phone</th>
+                                                    <th>Location</th>
+                                                    <th>Status</th>
                                                     <th>Option</th>
                                                 </tr>
                                             </thead>
@@ -49,7 +50,19 @@
 
                                                         <td class="f-w-600">{{restaurant.contact_number}}</td>
 
+                                                        <td>{{restaurant.location}}</td>
+
+                                                        {% if restaurant.is_approved %}
+                                                            <td class="status-close">
+                                                                <span>Approved</span>
+                                                            </td>
+                                                        {% else %}
+                                                            <td class="status-danger">
+                                                                <span>Pending</span>
+                                                            </td>
+                                                        {% endif %}
                                                         <td>
+
                                                             <ul>
                                                                 <li>
                                                                     <a href="order-detail.html">
@@ -84,7 +97,6 @@
                 <!-- All User Table Ends-->
 
 
-            </div>
             <!-- Container-fluid end -->
 
             {%endblock%}

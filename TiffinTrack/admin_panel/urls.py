@@ -16,6 +16,7 @@ urlpatterns = [
     # path('update/<int:id>/', views.update, name='update-user'),
     # path('register/', views.register, name='register'),
     path('restaurants/', views.restaurants, name='restaurants'),
+    path('restaurants/add', views.restaurant_add, name='restaurant-add'),
     path('restaurant_request/', views.restaurant_requests, name='restaurant_request'),
     path('restaurant_approve/<int:pk>/', views.restaurant_approve, name='restaurant_approve'),
     path('delete_restaurant/<int:id>/', views.delete_restaurant, name='delete-restaurant'),

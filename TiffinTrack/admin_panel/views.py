@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import AdminUserRegisterForm, UserUpdateForm
+from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm
 from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
 from restaurant.models import RestaurantProfile
@@ -100,8 +100,9 @@ def add_users(request):
 def restaurants(request):
     if not request.user.is_authenticated:
         return redirect('admin-login')
+    
 
-    restaurants = RestaurantProfile.objects.all()
+    restaurants = RestaurantProfile.objects.all().order_by('is_approved','created_at')
     context = {
         'restaurants': restaurants
     }
@@ -120,6 +121,26 @@ def restaurant_requests(request):
     }
     return render(request, './admin_panel/register_restaurant.html', context)
 
+
+@login_required()
+def restaurant_add(request):
+    if request.method=="POST":
+        form = RestaurantRegisterForm(request.POST, request.FILES)
+        if form.is_valid():
+            restaurant = form.save(commit=False)     
+            restaurant.user_type = 'restaurant'  
+            restaurant.save()  
+            restaurant_name = form.cleaned_data.get('restaurant_name')
+            messages.success(request, f"Restaurant {restaurant_name} Created!")
+            return redirect('restaurants')
+        else:
+            messages.error(request, f"Invalid inputs")
+            return render(request, './admin_panel/add-restaurant.html', {'form': form})
+    
+    form = RestaurantRegisterForm()
+    return render(request, './admin_panel/add-restaurant.html', {'form': form})
+
+    
 
 @never_cache
 @login_required(login_url='admin-login')
