@@ -54,49 +54,69 @@ from decimal import Decimal
 #     }  
 #     return render(request, './users/register.html', context)  
 
+
+
+
+
 def home(request):
     print(request.user)
     all_locations = Locations.objects.all()
 
+    default_location = get_object_or_404(Locations, name="thrissur")
+    user_profile = None
+    current_location = default_location
 
-    # Default selected location as a Locations instance (not a string)
-    if hasattr(request.user, 'userprofile'):
-        selected_location = get_object_or_404(Locations, name=request.user.userprofile.location.name)
+    if request.user.is_authenticated:
         user_profile = UserProfile.objects.filter(user=request.user).select_related('location').first()
+        if user_profile and user_profile.location:
+            current_location = user_profile.location
 
-    else:
-        selected_location = get_object_or_404(Locations, name="thrissur")  # Default location if user profile doesn't exist
-        user_profile = None
-
+    restaurants = []
 
     if request.method == "POST":
         form_id = request.POST.get('form_id')
         print(f"Form ID: {form_id}")
+
         if form_id == 'location_form':
             print("Location form submitted")
             location_id = request.POST.get("selected_location")
-            # Fetch the selected location
-            selected_location_obj = Locations.objects.filter(id=location_id).first()
-            if selected_location_obj:
-                selected_location = selected_location_obj
-                # Update user's location in the UserProfile
-                user_profile = UserProfile.objects.filter(user=request.user).first()
-                if user_profile:
+            selected_location = Locations.objects.filter(id=location_id).first()
+
+            if selected_location:
+                current_location = selected_location
+                if request.user.is_authenticated and user_profile:
                     user_profile.location = selected_location
                     user_profile.save()
-                else:
+                    messages.success(request, "Location updated.")
+                elif request.user.is_authenticated:
                     messages.error(request, "User profile not found.")
             else:
-                selected_location = get_object_or_404(Locations, name="thrissur")
+                current_location = default_location
                 messages.error(request, "Invalid location selected.")
 
-    # Fetch user location (as a Locations instance, not just ID)
-    location = user_profile.location if user_profile and user_profile.location else selected_location
+        elif form_id == 'restaurant_form':
+            print("Restaurant search")
+            restaurant_name = request.POST.get('restaurant_name', '').strip()
+            if restaurant_name:
+                restaurants = RestaurantProfile.objects.filter(
+                    is_approved=True,
+                    location=current_location,
+                    restaurant_name__icontains=restaurant_name
+                ).annotate(avg_rating=Avg('reviews__rating'))
+            else:
+                restaurants = RestaurantProfile.objects.filter(
+                    is_approved=True,
+                    location=current_location
+                ).annotate(avg_rating=Avg('reviews__rating'))
 
-    # Filter restaurants
-    restaurants = RestaurantProfile.objects.filter(is_approved=True, location=location).annotate(avg_rating=Avg('reviews__rating'))
+    # Default restaurant list if not loaded in POST
+    if not restaurants:
+        restaurants = RestaurantProfile.objects.filter(
+            is_approved=True,
+            location=current_location
+        ).annotate(avg_rating=Avg('reviews__rating'))
 
-    # Add min and max total_price for each restaurant
+    # Add min and max total_price
     for restaurant in restaurants:
         menu_categories = restaurant.menu_categories.filter(is_active=True)
         total_prices = [category.total_price for category in menu_categories]
@@ -105,11 +125,12 @@ def home(request):
 
     context = {
         'restaurants': restaurants,
-        'location': location,
-        'all_locations': all_locations
+        'location': current_location,
+        'all_locations': all_locations,
+        'restaurant_name': restaurant_name if request.method == "POST" and form_id == "restaurant_form" else ''
     }
-    return render(request, './users/home.html', context)
 
+    return render(request, './users/home.html', context)
 
 
 @login_required(login_url='login')

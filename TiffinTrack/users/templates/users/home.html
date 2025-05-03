@@ -20,15 +20,15 @@
                     {% csrf_token %}
                     <div class="form-group">
                         <div class="form-input mb-0">
-                            <input type="hidden" name="form_id" value="location_form">
+                            <input type="hidden" name="form_id" value="restaurant_form">
                             <input type="search" name="restaurant_name" class="form-control search" id="inputusername"
-                                placeholder="Search for Restaurant">
+                                placeholder="Search for Restaurant" value="{{ restaurant_name }}">
                             <i class="ri-search-line search-icon"></i>
                         </div>
                     </div>
                     
                 </form>
-                <a class="btn theme-btn mt-0" href="#" role="button">Search</a>
+                <a class="btn theme-btn mt-0" href="#" role="button" onclick="document.querySelector('.search-head').submit(); return false;">Search</a>
             </div>
         </div>
     </section>
