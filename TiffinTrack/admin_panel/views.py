@@ -3,10 +3,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm, FoodItemManageForm
+from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm, FoodItemManageForm, MenuManageForm
 from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
-from restaurant.models import RestaurantProfile, FoodItem
+from restaurant.models import RestaurantProfile, FoodItem, MenuCategory
 from django.core.paginator import Paginator
 
 
@@ -98,7 +98,7 @@ def add_users(request):
 @never_cache
 @login_required(login_url='admin-login')
 def restaurants(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_superuser:
         return redirect('admin-login')
     
 
@@ -215,3 +215,93 @@ def update_user(request, id):
 
 
 
+
+
+# Food Items
+
+@never_cache
+@login_required(login_url='admin-login')
+def foods(request):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
+
+    foods = FoodItem.objects.all().order_by('-created_at')
+    context = {
+        'foods': foods
+    }
+    return render(request, './admin_panel/food_items.html', context)
+
+
+@login_required()
+def food_add_or_update(request, pk=None):
+    if pk:
+        food_obj = get_object_or_404(FoodItem, pk=pk)
+    else:
+        food_obj = None
+
+    if request.method == "POST":
+        form = FoodItemManageForm(request.POST, request.FILES, instance=food_obj)
+        if form.is_valid():
+            restaurant = form.save()
+            messages.success(request, f"Food  {'Updated' if pk else 'Created'} ")
+            return redirect('food_items')
+        else:
+            messages.error(request, "Invalid inputs.")
+    else:
+        form = FoodItemManageForm(instance=food_obj)
+
+
+    return render(request, './admin_panel/add-food.html', {'form': form})
+
+
+@login_required(login_url='admin-login')
+def delete_food_item(request, id):
+    food = get_object_or_404(FoodItem, pk=id)
+    food.delete()
+    return redirect('food_items')
+
+
+
+
+
+# menu Items
+
+@login_required(login_url='admin-login')
+def menus(request):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
+
+    menus = MenuCategory.objects.all().order_by('-created_at')
+    context = {
+        'menus': menus
+    }
+    return render(request, './admin_panel/menus.html', context)
+
+
+@login_required()
+def menu_add_or_update(request, pk=None):
+    if pk:
+        menu_obj = get_object_or_404(MenuCategory, pk=pk)
+    else:
+        menu_obj = None
+
+    if request.method == "POST":
+        form = MenuManageForm(request.POST, request.FILES, instance=menu_obj)
+        if form.is_valid():
+            menu = form.save()
+            messages.success(request, f"Menu  {'Updated' if pk else 'Created'} ")
+            return redirect('menu_items')
+        else:
+            messages.error(request, "Invalid inputs.")
+    else:
+        form = MenuManageForm(instance=menu_obj)
+
+
+    return render(request, './admin_panel/add-menu.html', {'form': form})
+
+
+@login_required(login_url='admin-login')
+def menu_food_item(request, id):
+    menu = get_object_or_404(MenuCategory, pk=id)
+    menu.delete()
+    return redirect('menu_items')

@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.utils import timezone
 from accounts.forms import UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
-from restaurant.models import RestaurantProfile, FoodItem, FoodCategory, MenuCategory
+from restaurant.models import RestaurantProfile, FoodItem, FoodCategory, MenuCategory, Subscriptions
 from accounts.models import UserProfile, Locations
 from django.db.models import Avg
 from collections import defaultdict
@@ -227,3 +228,21 @@ def restaurant_details(request, pk):
     
     
 
+
+
+@login_required
+def subscribe(request, plan_id):
+    plan = MenuCategory.objects.get(id=plan_id)
+    
+    
+    Subscriptions.objects.update_or_create(
+        user=request.user,
+        defaults={
+            'restaurant': plan.restaurant,
+            'menu_category': plan,
+            'start_date': timezone.now(),
+            'end_date': timezone.now() + timezone.timedelta(days=plan.duration_days),
+            'is_active': True,
+        }
+    )
+    return redirect('subscription_success')

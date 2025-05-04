@@ -23,5 +23,24 @@ urlpatterns = [
     path('restaurant/delete/<int:id>/', views.delete_restaurant, name='restaurant-delete'),
 
 
+    path('food_items/', views.foods, name='food_items'),
+    path('food_items/add', views.food_add_or_update, name='food_items-add'),
+    path('food_items/edit/<int:pk>/', views.food_add_or_update, name='food_items-edit'),
+    path('food_items/delete/<int:id>/', views.delete_food_item, name='food_items-delete'),
+
+
+    path('menu_items/', views.menus, name='menu_items'),
+    path('menu_items/add', views.menu_add_or_update, name='menu_items-add'),
+    path('menu_items/edit/<int:pk>/', views.menu_add_or_update, name='menu_items-edit'),
+    path('menu_items/delete/<int:id>/', views.menu_food_item, name='menu_items-delete'),
+
+
+
+    
+
+
+
+
+
 ]
 

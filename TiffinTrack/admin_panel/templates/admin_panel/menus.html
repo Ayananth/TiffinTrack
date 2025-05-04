@@ -1,0 +1,77 @@
+
+{% extends "./base.html" %}
+
+{% block content %}
+
+<!-- Container-fluid starts-->
+                <!-- All User Table Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>Menu Items</h5>
+                                        <form class="d-inline-flex">
+                                            <a href="{% url 'menu_items-add'%}" class="align-items-center btn btn-theme d-flex">
+                                                <i data-feather="plus-square"></i>Add New
+                                            </a>
+                                        </form>
+                                    </div>
+
+                                    <div class="table-responsive theme-scrollbar table-product">
+                                        <table class="table category-table dataTable no-footer" id="table_id">
+                                            <thead>
+                                                <tr>
+                                                    <th>No.</th>
+                                                    <th>Resaurant Name</th>
+                                                    <th>Menu Name</th>
+                                                    <th>Option</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for menu in menus %}
+                                                    <tr>
+                                                        <td class="f-w-600">{{menu.id}}</td>
+                                                        <td>
+                                                            <div class="user-name">
+                                                                <span>{{menu.restaurant.restaurant_name}}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="user-name">
+                                                                <span>{{menu.name}}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="{% url 'menu_items-edit' menu.id %}">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="{% url 'menu_items-delete' menu.id %}">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- All User Table Ends-->
+
+
+            <!-- Container-fluid end -->
+
+            {%endblock%}
