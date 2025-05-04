@@ -193,29 +193,15 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="category.html">Category List</a>
+                                            <a href="{%url 'food_category' %}">Category List</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-categorys.html">Create Category</a>
+                                            <a href="{% url 'food_category-add' %}">Create Category</a>
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-list-settings-line"></i>
-                                        <span>Attributes</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="attributes.html">Attributes</a>
-                                        </li>
 
-                                        <li>
-                                            <a href="add-new-attribute.html">Add Attributes</a>
-                                        </li>
-                                    </ul>
-                                </li>
 
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav d-flex justify-content-between align-items-center" href="{%url 'restaurants'%}">
