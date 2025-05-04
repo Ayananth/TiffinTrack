@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from accounts.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
-from .models import RestaurantProfile, MenuItem, MenuCategory, FoodCategory
+from .models import RestaurantProfile, MenuCategory, FoodCategory, FoodItem
 from .forms import RestaurantProfileForm, MenuCategoryForm
 
 
@@ -44,7 +44,7 @@ def home(request):
     print(f"{restaurant=}")
     if restaurant:
         if restaurant.is_approved:
-            menu_items = MenuItem.objects.filter(restaurant=restaurant)
+            menu_items = FoodItem.objects.filter(restaurant=restaurant)
             print(f"{menu_items=}")
 
         

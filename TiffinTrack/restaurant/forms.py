@@ -1,5 +1,5 @@
 from django import forms
-from .models import RestaurantProfile, MenuItem, MenuCategory
+from .models import RestaurantProfile, MenuCategory
 
 class RestaurantProfileForm(forms.ModelForm):
     class Meta:
