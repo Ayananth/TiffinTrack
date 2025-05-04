@@ -1,7 +1,7 @@
 from django import forms
 from accounts.models import CustomUser
 from django.contrib.auth.forms import UserCreationForm
-from restaurant.models import RestaurantProfile, FoodItem, MenuCategory
+from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory
 
 class AdminUserRegisterForm(UserCreationForm):
     email = forms.EmailField()
@@ -37,6 +37,11 @@ class RestaurantRegisterForm(forms.ModelForm):
 class FoodItemManageForm(forms.ModelForm):
     class Meta:
         model = FoodItem
+        fields = '__all__'
+
+class FoodCategoryManageForm(forms.ModelForm):
+    class Meta:
+        model = FoodCategory
         fields = '__all__'
 
 class MenuManageForm(forms.ModelForm):

@@ -3,10 +3,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm, FoodItemManageForm, MenuManageForm
+from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm, FoodItemManageForm, MenuManageForm, FoodCategoryManageForm
 from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
-from restaurant.models import RestaurantProfile, FoodItem, MenuCategory
+from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory
 from django.core.paginator import Paginator
 
 
@@ -219,7 +219,6 @@ def update_user(request, id):
 
 # Food Items
 
-@never_cache
 @login_required(login_url='admin-login')
 def foods(request):
     if not request.user.is_superuser:
@@ -305,3 +304,50 @@ def menu_food_item(request, id):
     menu = get_object_or_404(MenuCategory, pk=id)
     menu.delete()
     return redirect('menu_items')
+
+
+
+
+
+
+# Food category
+
+@login_required(login_url='admin-login')
+def food_category(request):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
+
+    foods = FoodCategory.objects.all().order_by('-created_at')
+    context = {
+        'foods': foods
+    }
+    return render(request, './admin_panel/food_categories.html', context)
+
+
+@login_required()
+def category_add_or_update(request, pk=None):
+    if pk:
+        food_obj = get_object_or_404(FoodCategory, pk=pk)
+    else:
+        food_obj = None
+
+    if request.method == "POST":
+        form = FoodCategoryManageForm(request.POST, request.FILES, instance=food_obj)
+        if form.is_valid():
+            restaurant = form.save()
+            messages.success(request, f"Category  {'Updated' if pk else 'Created'} ")
+            return redirect('food_category')
+        else:
+            messages.error(request, "Invalid inputs.")
+    else:
+        form = FoodCategoryManageForm(instance=food_obj)
+
+
+    return render(request, './admin_panel/add-category.html', {'form': form})
+
+
+@login_required(login_url='admin-login')
+def delete_food_category(request, id):
+    food = get_object_or_404(FoodCategory, pk=id)
+    food.delete()
+    return redirect('food_category')

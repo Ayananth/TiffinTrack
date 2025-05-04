@@ -32,13 +32,13 @@ urlpatterns = [
     path('menu_items/', views.menus, name='menu_items'),
     path('menu_items/add', views.menu_add_or_update, name='menu_items-add'),
     path('menu_items/edit/<int:pk>/', views.menu_add_or_update, name='menu_items-edit'),
-    path('menu_items/delete/<int:id>/', views.menu_food_item, name='menu_items-delete'),
-
-
-
+    path('menu_items/delete/<int:id>/', views.menu_food_item, name='menu_items-delete'),\
     
 
-
+    path('food_category/', views.food_category, name='food_category'),
+    path('food_category/add', views.category_add_or_update, name='food_category-add'),
+    path('food_category/edit/<int:pk>/', views.category_add_or_update, name='food_category-edit'),
+    path('food_category/delete/<int:id>/', views.delete_food_category, name='food_category-delete'),
 
 
 
