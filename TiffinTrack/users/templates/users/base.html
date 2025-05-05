@@ -383,7 +383,7 @@
                     <!-- All Locations Section -->
                     <form id="location-selection-form" method="post" action="">
                         {% csrf_token %}
-                        <input type="hidden" name="form_id" value="search_form">
+                        <input type="hidden" name="form_id" value="location_form">
                         <div class="location-list">
                             {% for loc in all_locations %}
                             <div class="location-item">
