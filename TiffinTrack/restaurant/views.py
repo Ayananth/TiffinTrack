@@ -76,8 +76,8 @@ def restaurant_logout(request):
 
 @login_required(login_url='login')
 def restaurant_register(request):
-    if request.user.is_authenticated:
-        return redirect('restaurant-home')
+    # if request.user.is_authenticated:
+    #     return redirect('restaurant-home')
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)  
         if form.is_valid():
