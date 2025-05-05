@@ -258,12 +258,11 @@
                                             <div class="input-items">
                                                 <div class="row gy-3 mb-4">
                                                     <!-- food items table here -->
-                                                     <form action="">
-                                                        {% csrf_token%}
-                                                        {%for food_item in food_items%}
-                                                            {{food_item.name}}
-                                                        {%endfor%}
-                                                     </form>
+                                                    <form class="d-inline-flex flex-row-reverse">
+                                                        <a href="{% url 'food_items-add'%}" class="align-items-center btn btn-theme d-flex">
+                                                            <i data-feather="plus-square"></i>Add New
+                                                        </a>
+                                                    </form>
 
                                                     <table class="table category-table dataTable no-footer" id="table_id">
                                                         <thead>
@@ -279,6 +278,13 @@
                                                         </thead>
                                         
                                                         <tbody>
+
+                                                            {% if not food_items %}
+                                                            <tr>
+                                                                <td colspan="7" class="f-w-600">No Food Items</td>
+                                                            </tr>
+                                                            {% endif %}
+
                                                           {% for food_item in food_items %}
                                                           
                                                           <tr>
@@ -299,13 +305,13 @@
                                                               <ul>
                                        
                                                                 <li>
-                                                                  <a href="{% url 'update-user' user.id%}">
+                                                                  <a href="{% url 'food_items-edit' food_item.id %}">
                                                                     <i class="ri-pencil-line"></i>
                                                                   </a>
                                                                 </li>
                                         
                                                                 <li>
-                                                                  <a href="{% url 'delete-user' user.id %}" onclick="return confirm('Are you sure you want to delete this user?');">
+                                                                  <a href="{% url 'food_items-delete' food_item.id %}" onclick="return confirm('Are you sure you want to delete this user?');">
                                                                     <i class="ri-delete-bin-line"></i>
                                                                   </a>
                                                                 </li>
