@@ -150,7 +150,6 @@ def restaurant_add_or_update(request, pk=None):
 
     
 
-@never_cache
 @login_required(login_url='admin-login')
 def restaurant_approve(request, pk):
     if not request.user.is_authenticated:

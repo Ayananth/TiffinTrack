@@ -43,6 +43,10 @@
     <!-- Theme css -->
     <link rel="stylesheet" id="change-link" type="text/css" href="{% static 'frontend/assets/css/style.css' %}">
 
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr1GyS1lbuAQ54o5NRV4XzVunn8v7THtA&libraries=places"
+    defer
+    ></script>
 </head>
 
 <body class="bg-color position-relative">
@@ -367,6 +371,7 @@
     </button>
     <!-- tap to top end -->
 
+
     <!-- location offcanvas start -->
     <div class="modal fade location-modal" id="location" data-bs-backdrop="static" data-bs-keyboard="false"
         tabindex="-1">
@@ -379,35 +384,33 @@
                     </div>
                 </div>
                 <div class="modal-body">
-                   
-                    <!-- All Locations Section -->
-                    <form id="location-selection-form" method="post" action="">
-                        {% csrf_token %}
-                        <input type="hidden" name="form_id" value="location_form">
-                        <div class="location-list">
-                            {% for loc in all_locations %}
-                            <div class="location-item">
-                                <input type="radio" name="selected_location" id="location{{ forloop.counter }}" value="{{ loc.id }}" class="location-radio"
-                                
-                                    {% if loc.name == location %}
-                                    checked
-                                    {% endif %}>
-                                <label for="location{{ forloop.counter }}" class="location-label">
-                                    <div class="location-address d-flex align-items-center gap-2 mb-2">
-                                        <i class="ri-map-pin-line theme-color"></i>
-                                        <div>
-                                            <h5>{{ loc.name }}</h5>
-                                        </div>
-                                    </div>
-                                </label>
+                    <div class="search-section">
+                        <form class="form_search" method="post" action="{%url 'update-location' %}" role="form" id="location-update-form">
+                            {%csrf_token%}
+                            <input type="text" id="searchInput" placeholder="{{location}}" value="{{location}}" autocomplete="off" />
+                        </form>
+                    </div>
+                    <div class="recent-location">
+                        <div class="recant-address">
+                            <div>
+                                <div id="suggestions"></div>
                             </div>
-                            {% endfor %}
                         </div>
-                    </form>
+                    </div>
+
+                    <a href="#" onclick="getLocation(event)" class="current-location">
+                        <div class="current-address">
+                            <i class="ri-focus-3-line focus"></i>
+                            <div>
+                                <h5>Use current-location</h5>
+                            </div>
+                        </div>
+                        <i class="ri-arrow-right-s-line arrow"></i>
+                    </a>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn gray-btn" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" form="location-selection-form" class="btn theme-btn mt-0">Save</button>
+                    <a href="#" class="btn gray-btn" data-bs-dismiss="modal">Close</a>
+                    <a href="#" id="update-location" class="btn theme-btn mt-0" data-bs-dismiss="modal">Save</a>
                 </div>
             </div>
         </div>
@@ -457,6 +460,154 @@
 
         
     </script>
+
+<script>
+    function initAutocomplete() {
+      const input = document.getElementById("autocomplete");
+      const autocomplete = new google.maps.places.Autocomplete(input);
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry || !place.geometry.location) {
+          alert("No details available for input: '" + place.name + "'");
+          return;
+        }
+
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+
+        document.getElementById("lat").textContent = lat;
+        document.getElementById("lng").textContent = lng;
+      });
+    }
+
+    // Wait for the Google Maps script to load and then initialize autocomplete
+    window.initAutocomplete = initAutocomplete;
+  </script>
+
+  <!-- This triggers initAutocomplete after the script loads -->
+  <script>
+    window.addEventListener("load", () => {
+      if (typeof google !== "undefined") {
+        initAutocomplete();
+      }
+    });
+  </script>
+
+<script>
+    const searchInput = document.getElementById("searchInput");
+    const suggestionsBox = document.getElementById("suggestions");
+    let debounceTimeout;
+
+    searchInput.addEventListener("input", () => {
+      clearTimeout(debounceTimeout);
+      const query = searchInput.value.trim();
+      if (query.length < 3) {
+        suggestionsBox.innerHTML = "";
+        return;
+      }
+
+      debounceTimeout = setTimeout(() => {
+        fetchSuggestions(query);
+      }, 300);
+    });
+
+    async function fetchSuggestions(query) {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        suggestionsBox.innerHTML = "";
+        data.forEach(place => {
+          const div = document.createElement("div");
+          div.className = "suggestion-item";
+          div.textContent = place.display_name;
+          div.onclick = () => {
+            searchInput.value = place.display_name;
+            suggestionsBox.innerHTML = "";
+            showLocationDetails(place);
+          };
+          suggestionsBox.appendChild(div);
+        });
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      }
+    }
+
+    function showLocationDetails(place) {
+      document.getElementById("lat").textContent = place.lat;
+      document.getElementById("lon").textContent = place.lon;
+      document.getElementById("address").textContent = place.display_name;
+    }
+
+    // Optional: hide suggestions if clicking outside
+    document.addEventListener("click", (e) => {
+      if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        suggestionsBox.innerHTML = "";
+      }
+    });
+  </script>
+
+<!-- current location -->
+
+<script>
+    function getLocation(event) {
+        console.log("Get current location");
+        
+      const locationDisplay = document.getElementById("searchInput");
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // Call Nominatim Reverse Geocoding API
+            const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+
+            fetch(url, {
+              headers: {
+                'User-Agent': 'location-app-demo' // Nominatim requires a user-agent header
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              const address = data.display_name;
+              console.log(address);
+              locationDisplay.value = `${address}`;
+            })
+            .catch(error => {
+              console.error('Error fetching location name:', error);
+              locationDisplay.value = "Unable to fetch location name.";
+            });
+
+          },
+          (error) => {
+            locationDisplay.value = "Error getting location.";
+          },
+          {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0
+  }
+        );
+      } else {
+        locationDisplay.value = "Geolocation is not supported by this browser.";
+      }
+    }
+  </script>
+
+<!-- set the location data -->
+<script>
+    document.getElementById("update-location").addEventListener("click", function(e){
+        console.log("submiting location form");
+        e.preventDefault();
+        document.getElementById("location-update-form").submit();
+    });
+</script>
+
+
 
 </body>
 
