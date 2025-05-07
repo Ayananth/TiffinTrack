@@ -3,6 +3,11 @@ from django.db import models
 from django.utils import timezone
 import random
 from django.conf import settings
+from django.contrib.gis.db import models as geomodels
+from django.contrib.gis.geos import Point
+
+
+
 
 
 
@@ -55,6 +60,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 on_delete=models.CASCADE)
     location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default=None)
+    point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
     address = models.TextField(null=True, blank=True)
     phone = models.CharField(max_length=15, null=True, blank=True)
     is_active = models.BooleanField(default=True)

@@ -387,7 +387,10 @@
                     <div class="search-section">
                         <form class="form_search" method="post" action="{%url 'update-location' %}" role="form" id="location-update-form">
                             {%csrf_token%}
-                            <input type="text" id="searchInput" placeholder="{{location}}" value="{{location}}" autocomplete="off" />
+                            <input type="text" name="address" id="searchInput" placeholder="{{location}}" value="{{location}}" autocomplete="off" />
+                            <input type="hidden" name="latitude" id="latitude"> 
+                            <input type="hidden" name="longitude" id="longitude">
+                            <!-- set the value of lat and long from backend for the default -->
                         </form>
                     </div>
                     <div class="recent-location">
@@ -536,8 +539,8 @@
     }
 
     function showLocationDetails(place) {
-      document.getElementById("lat").textContent = place.lat;
-      document.getElementById("lon").textContent = place.lon;
+      document.getElementById("latitude").value = place.lat;
+      document.getElementById("longitude").value = place.lon;
       document.getElementById("address").textContent = place.display_name;
     }
 
@@ -562,6 +565,8 @@
           (position) => {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
+            document.getElementById("latitude").value = latitude;
+            document.getElementById("longitude").value = longitude;
 
             // Call Nominatim Reverse Geocoding API
             const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;

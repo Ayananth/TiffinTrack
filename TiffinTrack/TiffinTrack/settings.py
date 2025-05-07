@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'django.contrib.gis',
+
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -133,7 +135,7 @@ WSGI_APPLICATION = 'TiffinTrack.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'TiffinTrack',        # PostgreSQL database name
         'USER': 'postgres',        # PostgreSQL username
         'PASSWORD': 'postgres',# PostgreSQL password

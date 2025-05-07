@@ -9,6 +9,7 @@ from accounts.models import UserProfile, Locations
 from django.db.models import Avg
 from collections import defaultdict
 from decimal import Decimal
+from django.contrib.gis.geos import Point
 
 
 
@@ -128,7 +129,15 @@ def update_profile(request):
 def update_user_location(request):
     print(request.POST)
     print("update_user_location")
-    
+    latitude = float(request.POST.get("latitude"))
+    longitude = float(request.POST.get("longitude"))
+    address = request.POST.get("address")
+    point = Point(longitude, latitude)
+    profile = request.user.userprofile
+    profile.point = point
+    profile.address = address
+    profile.save()
+
 
 
 
