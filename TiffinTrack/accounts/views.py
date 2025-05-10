@@ -138,6 +138,7 @@ def verify_otp(request):
             user, created = CustomUser.objects.get_or_create(username=phone)
             login(request, user)
             return redirect("user-home")
+            #TODO error message display
         else:
             return render(request, "./accounts/verify_otp.html", {"error": otp_status})
 
