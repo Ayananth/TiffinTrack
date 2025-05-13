@@ -135,7 +135,7 @@ def verify_otp(request):
             request.session.pop('otp_sent', None)
             request.session.pop('otp_sent_time', None)
             request.session.pop('phone', None)
-            user, created = CustomUser.objects.get_or_create(username=phone)
+            user, created = CustomUser.objects.get_or_create(username=phone, phone=phone)
             login(request, user)
             return redirect("user-home")
             #TODO error message display

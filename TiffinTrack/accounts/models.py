@@ -20,6 +20,9 @@ class CustomUser(AbstractUser):
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='normal')
     is_blocked = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=15, null=True, blank=True, unique=True)
+
 
     def __str__(self):
         return self.username
@@ -62,7 +65,7 @@ class UserProfile(models.Model):
     location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default=None)
     point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
     address = models.TextField(null=True, blank=True)
-    phone = models.CharField(max_length=15, null=True, blank=True)
+    # phone = models.CharField(max_length=15, null=True, blank=True, unique=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default.png')
