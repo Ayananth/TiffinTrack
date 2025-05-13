@@ -1,0 +1,242 @@
+/* Custom css */
+
+/* horizontal list for restaurant details page menu body */
+
+.horizontal-list {
+  display: flex;
+  gap: 3.5rem;
+  margin-top: 15px;
+}
+
+.horizontal-list li {
+  list-style-type: disc;          /* Ensure bullet is shown */
+  list-style-position: inside;    /* Make bullet appear inside the li box */
+  display: list-item;
+  font-size: 1rem;
+}
+
+  :root {
+    --primary: rgb(242, 169, 62);    /* Replacing #6b5b95 */
+    --secondary: rgb(240, 112, 84);  /* Replacing #feb236 */
+    --light: #f8f9fa;
+    --dark: #343a40;
+    --success: #78c2ad;
+    --info: #6cc3d5;
+    --warning: #ffce67;
+    --danger: #f3969a;
+  }
+
+
+
+
+  .restaurant-info {
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+
+  .month-selector {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0 2rem;
+  }
+
+  .month-btn {
+    background-color: var(--light);
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 0.5rem 1.5rem;
+    margin: 0 0.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+
+  .month-btn.active {
+    background-color: var(--primary);
+    color: white;
+  }
+
+  .month-btn:hover {
+    background-color: var(--primary);
+    color: white;
+  }
+
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .day-card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .day-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .day-header {
+    background-color: var(--primary);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+
+  .day-date {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .meal-container {
+    padding: 1rem;
+  }
+
+  .meal {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .meal:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .meal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .meal-title {
+    font-weight: bold;
+    color: var(--primary);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .meal-icon {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+  }
+
+  .meal-time {
+    font-size: 0.85rem;
+    color: #777;
+  }
+
+  .meal-items {
+    padding-left: 1.7rem;
+  }
+
+  .meal-item {
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .meal-item:before {
+    content: "•";
+    color: var(--secondary);
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+  }
+
+  .diet-indicator {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    margin-left: 0.3rem;
+    font-weight: bold;
+  }
+
+  .vegetarian {
+    background-color: var(--success);
+    color: white;
+  }
+
+  .vegan {
+    background-color: var(--info);
+    color: white;
+  }
+
+  .gluten-free {
+    background-color: var(--warning);
+    color: white;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: var(--light);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .notes {
+    background-color: var(--light);
+    border-left: 4px solid var(--secondary);
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .notes h3 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .notes p {
+    font-size: 0.9rem;
+  }
+
+  .legend {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .calendar {
+      grid-template-columns: 1fr;
+    }
+
+    .month-selector {
+      flex-wrap: wrap;
+    }
+
+    .month-btn {
+      margin: 0.25rem;
+    }
+  }
+

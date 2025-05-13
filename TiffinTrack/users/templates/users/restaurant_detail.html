@@ -54,8 +54,8 @@
     <section class="tab-details-section section-b-space">
         <div class="container">
             <div class="category-detail-tab">
-                <div class="row g-4">
-                    <div class="col-12">
+                <div class="row g-4 d-flex justify-content-center">
+                    <div class="col-lg-10">
                         <div class="menu-button d-inline-block d-lg-none">
                             <a href="#!"><i class="ri-book-open-line"></i> Menu</a>
                         </div>
@@ -63,7 +63,7 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="order-tab" data-bs-toggle="tab"
                                     data-bs-target="#online" type="button" role="tab">
-                                    Browse Menu
+                                    Order Online
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
@@ -87,76 +87,449 @@
                         </ul>
                         <div class="tab-content product-details-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="online" role="tabpanel" tabindex="0">
-                                <div class="row g-lg-3 g-2">
-                                    <div class="col-2">
-                                        <div class="product-sidebar sticky-top">
-                                            <nav id="navbar" class="product-items pb-0">
-                                                <ul class="nav nav-pills">
-                                                    {% for menu in menu_data %}
-                                                    <li>
-                                                        <a class="nav-link" href="#item-{{forloop.counter}}">{{menu.menu_category}}-{{menu.total_price}}</a>
-                                                    </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </nav>
-                                        </div>
-                                    </div>
-                                    <div class="col-10">
-                                        <div class="product-box-section section-b-space">
-                                            <div data-bs-spy="scroll" data-bs-target="#navbar"
-                                                data-bs-smooth-scroll="true" class="scrollspy-example-2" tabindex="0">
-                                                <div class="product-details-box-list">  
-                                                    <div class="product-details-box-title pt-0">
 
-                                                        <div class="table-responsive theme-scrollbar table-product">
-                                                            {% for menu in menu_data %}
-                                                            <h3>{{ menu.menu_category }} - ₹{{ menu.total_price }} per day, {%widthratio menu.total_price 1 30%} per month</h3>
-                                                        
-                                                            <table class="table category-table dataTable no-footer" id="item-{{ forloop.counter }}">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Day</th>
-                                                                        <th>
-                                                                            Breakfast 
-                                                                            {% if menu.category_prices.Breakfast %}- ₹{{ menu.category_prices.Breakfast }}{% endif %}
-                                                                        </th>
-                                                                        <th>
-                                                                            Lunch 
-                                                                            {% if menu.category_prices.Lunch %}- ₹{{ menu.category_prices.Lunch }}{% endif %}
-                                                                        </th>
-                                                                        <th>
-                                                                            Dinner 
-                                                                            {% if menu.category_prices.Dinner %}- ₹{{ menu.category_prices.Dinner }}{% endif %}
-                                                                        </th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {% for day, meals in menu.weekly_menu.items %}
-                                                                    <tr>
-                                                                        <td class="f-w-600">{{ day }}</td>
-                                                                        <td>{{ meals.Breakfast|join:", " }}</td>
-                                                                        <td>{{ meals.Lunch|join:", " }}</td>
-                                                                        <td>{{ meals.Dinner|join:", " }}</td>
-                                                                    </tr>
-                                                                    {% endfor %}
-                                                                </tbody>
-                                                                <tfoot>
-                                                                    <tr>
-                                                                        <td> 
-                                                                            <input type="submit" value="Subscribe {{menu.menu_category}} " class="btn theme-outline mt-0">
-                                                                        </td>
-                                                                    </tr>
-                                                                </tfoot>
-                                                            </table>
-                                                        {% endfor %}
-                                                        
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+
+                                <!-- body here -->
+                                    <div class="col-12-">
+                                        <div class="product-box-section section-b-space">
+
+                                            <!-- Menu body -->
+
+
+    <div class="month-selector">
+      <button class="month-btn">April</button>
+      <button class="month-btn active">May</button>
+      <button class="month-btn">June</button>
+    </div>
+    
+    <div class="notes">
+      <h3>Information</h3>
+      <p>Dine in available</p>
+      <p>Minimum Days : 20</p>
+      <p>Cancellation Time: Breakfast: 5AM</p>
+      <p>Cancellation Time: Lunch: 10AM</p>
+      <p>Cancellation Time: Dinner: 4PM</p>
+
+      <p>Price Information: </p>
+      <p>Breakfast: 40</p>
+      <p>Lunch: 40</p>
+      <p>Dinner: 40</p>
+      <p>Total perday: 120</p>
+
+      <p>Our menu features a variety of options to accommodate different dietary needs. Look for the indicators next to each item.</p>
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: var(--success);"></span>
+          <span>Vegetarian</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: var(--info);"></span>
+          <span>Vegan</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: var(--warning);"></span>
+          <span>Gluten-Free</span>
+        </div>
+      </div>
+      <p>Menu items subject to change based on ingredient availability. For special dietary requests, please contact us 24 hours in advance.</p>
+
+    </div>
+    
+    <div class="calendar">
+      <!-- Monday -->
+      <div class="day-card">
+        <div class="day-header">
+          Monday
+          <div class="day-date">May 12, 2025</div>
+        </div>
+        <div class="meal-container">
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">☕</span>Breakfast
+              </div>
+              <div class="meal-time">7:00 - 9:00 AM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Avocado Toast with Poached Eggs <span class="diet-indicator vegetarian">V</span></div>
+              <div class="meal-item">Greek Yogurt with Honey and Granola</div>
+              <div class="meal-item">Fresh Fruit Platter <span class="diet-indicator vegan">VG</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍽️</span>Lunch
+              </div>
+              <div class="meal-time">12:00 - 2:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Grilled Chicken Caesar Salad</div>
+              <div class="meal-item">Lentil Soup <span class="diet-indicator vegan">VG</span></div>
+              <div class="meal-item">Quinoa Bowl with Roasted Vegetables <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍷</span>Dinner
+              </div>
+              <div class="meal-time">6:00 - 8:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Herb-Crusted Salmon <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Mushroom Risotto <span class="diet-indicator vegetarian">V</span></div>
+              <div class="meal-item">Roasted Brussels Sprouts <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tuesday -->
+      <div class="day-card">
+        <div class="day-header">
+          Tuesday
+          <div class="day-date">May 13, 2025</div>
+        </div>
+        <div class="meal-container">
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">☕</span>Breakfast
+              </div>
+              <div class="meal-time">7:00 - 9:00 AM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Breakfast Burrito with Chorizo</div>
+              <div class="meal-item">Overnight Oats with Berries <span class="diet-indicator vegan">VG</span></div>
+              <div class="meal-item">Banana Bread <span class="diet-indicator vegetarian">V</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍽️</span>Lunch
+              </div>
+              <div class="meal-time">12:00 - 2:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Mediterranean Wrap <span class="diet-indicator vegetarian">V</span></div>
+              <div class="meal-item">Tomato Basil Soup <span class="diet-indicator vegan">VG</span></div>
+              <div class="meal-item">Grilled Vegetable Salad <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍷</span>Dinner
+              </div>
+              <div class="meal-time">6:00 - 8:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Beef Stroganoff with Egg Noodles</div>
+              <div class="meal-item">Stuffed Bell Peppers <span class="diet-indicator vegetarian">V</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Garlic Green Beans <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Wednesday -->
+      <div class="day-card">
+        <div class="day-header">
+          Wednesday
+          <div class="day-date">May 14, 2025</div>
+        </div>
+        <div class="meal-container">
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">☕</span>Breakfast
+              </div>
+              <div class="meal-time">7:00 - 9:00 AM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">French Toast with Maple Syrup <span class="diet-indicator vegetarian">V</span></div>
+              <div class="meal-item">Spinach and Feta Omelette <span class="diet-indicator vegetarian">V</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Fresh Berry Smoothie <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍽️</span>Lunch
+              </div>
+              <div class="meal-time">12:00 - 2:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Turkey Club Sandwich</div>
+              <div class="meal-item">Minestrone Soup <span class="diet-indicator vegan">VG</span></div>
+              <div class="meal-item">Sweet Potato Fries <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍷</span>Dinner
+              </div>
+              <div class="meal-time">6:00 - 8:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Lemon Herb Roasted Chicken <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Eggplant Parmesan <span class="diet-indicator vegetarian">V</span></div>
+              <div class="meal-item">Sautéed Asparagus <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Thursday -->
+      <div class="day-card">
+        <div class="day-header">
+          Thursday
+          <div class="day-date">May 15, 2025</div>
+        </div>
+        <div class="meal-container">
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">☕</span>Breakfast
+              </div>
+              <div class="meal-time">7:00 - 9:00 AM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Belgian Waffles with Mixed Berries <span class="diet-indicator vegetarian">V</span></div>
+              <div class="meal-item">Breakfast Potatoes <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Chia Seed Pudding <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍽️</span>Lunch
+              </div>
+              <div class="meal-time">12:00 - 2:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Grilled Salmon Salad <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Butternut Squash Soup <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Hummus Plate with Vegetables <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍷</span>Dinner
+              </div>
+              <div class="meal-time">6:00 - 8:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Beef Tenderloin with Red Wine Sauce <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Portobello Mushroom Steak <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Garlic Mashed Potatoes <span class="diet-indicator vegetarian">V</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Friday -->
+      <div class="day-card">
+        <div class="day-header">
+          Friday
+          <div class="day-date">May 16, 2025</div>
+        </div>
+        <div class="meal-container">
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">☕</span>Breakfast
+              </div>
+              <div class="meal-time">7:00 - 9:00 AM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Eggs Benedict</div>
+              <div class="meal-item">Steel Cut Oatmeal <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Fresh Fruit Bowl <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍽️</span>Lunch
+              </div>
+              <div class="meal-time">12:00 - 2:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Fish Tacos</div>
+              <div class="meal-item">Black Bean Soup <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Caprese Salad <span class="diet-indicator vegetarian">V</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍷</span>Dinner
+              </div>
+              <div class="meal-time">6:00 - 8:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Shrimp Scampi with Linguine</div>
+              <div class="meal-item">Ratatouille <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Caesar Salad <span class="diet-indicator vegetarian">V</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Saturday -->
+      <div class="day-card">
+        <div class="day-header">
+          Saturday
+          <div class="day-date">May 17, 2025</div>
+        </div>
+        <div class="meal-container">
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">☕</span>Breakfast
+              </div>
+              <div class="meal-time">7:00 - 9:00 AM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Pancakes with Mixed Berry Compote <span class="diet-indicator vegetarian">V</span></div>
+              <div class="meal-item">Veggie Breakfast Scramble <span class="diet-indicator vegetarian">V</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Avocado Smoothie <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍽️</span>Lunch
+              </div>
+              <div class="meal-time">12:00 - 2:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Grilled Chicken Panini</div>
+              <div class="meal-item">Garden Vegetable Soup <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Quinoa Tabbouleh <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍷</span>Dinner
+              </div>
+              <div class="meal-time">6:00 - 8:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">BBQ Ribs <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Vegetable Lasagna <span class="diet-indicator vegetarian">V</span></div>
+              <div class="meal-item">Roasted Root Vegetables <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sunday -->
+      <div class="day-card">
+        <div class="day-header">
+          Sunday
+          <div class="day-date">May 18, 2025</div>
+        </div>
+        <div class="meal-container">
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">☕</span>Breakfast
+              </div>
+              <div class="meal-time">7:00 - 9:00 AM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Eggs Florentine <span class="diet-indicator vegetarian">V</span></div>
+              <div class="meal-item">Belgian Waffles with Fresh Fruit <span class="diet-indicator vegetarian">V</span></div>
+              <div class="meal-item">Green Smoothie Bowl <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍽️</span>Lunch
+              </div>
+              <div class="meal-time">12:00 - 2:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Sunday Roast with Yorkshire Pudding</div>
+              <div class="meal-item">Stuffed Acorn Squash <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Roasted Brussels Sprouts <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+          
+          <div class="meal">
+            <div class="meal-header">
+              <div class="meal-title">
+                <span class="meal-icon">🍷</span>Dinner
+              </div>
+              <div class="meal-time">6:00 - 8:00 PM</div>
+            </div>
+            <div class="meal-items">
+              <div class="meal-item">Baked Salmon with Dill Sauce <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Mushroom and Spinach Risotto <span class="diet-indicator vegetarian">V</span> <span class="diet-indicator gluten-free">GF</span></div>
+              <div class="meal-item">Mixed Green Salad <span class="diet-indicator vegan">VG</span> <span class="diet-indicator gluten-free">GF</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                                         </div>
                                     </div>
-                                </div>
+
+
+
+
+
+ 
+
                             </div>
                             <div class="tab-pane fade" id="overview" role="tabpanel" tabindex="0">
                                 <div class="overview-section">

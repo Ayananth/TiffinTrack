@@ -15,11 +15,10 @@ from django.contrib.gis.geos import Point
 
 
 
-
+@login_required(login_url='login')
 def home(request):
     print(request.user)
     all_locations = Locations.objects.all()
-
     default_location = get_object_or_404(Locations, name="thrissur")
     user_profile = None
     current_location = default_location
