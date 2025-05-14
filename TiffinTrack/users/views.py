@@ -147,24 +147,30 @@ def update_user_location(request):
 
 
 def restaurant_details(request, pk):
+
     restaurant = get_object_or_404(RestaurantProfile, pk=pk)
     avg_rating = restaurant.reviews.aggregate(Avg('rating'))['rating__avg']
     reviews = restaurant.reviews.all().count()
-    location = restaurant.location
     menu_categories = MenuCategory.objects.filter(is_active=True)
+    print(f"{menu_categories=}")
     days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     
     menu_data = []
 
+
     for menu_category in menu_categories:
         category_prices = {}
-        weekly_menu = defaultdict(lambda: {"Breakfast": [], "Lunch": [], "Dinner": []})
+        food_categories = FoodCategory.objects.filter(menu_categories=menu_category, is_active=True)
+        print(f"{food_categories=}")
+
+        weekly_menu = defaultdict(lambda: {str(meal): [] for meal in food_categories})
+        print(f"{weekly_menu=}")
+
 
         # Get all food items for this menu category
         food_items = FoodItem.objects.filter(menu_category=menu_category, is_available=True)
 
         # Get prices for only those food categories that belong to this menu
-        food_categories = FoodCategory.objects.filter(menu_categories=menu_category, is_active=True)
         for food_cat in food_categories:
             category_prices[food_cat.name] = food_cat.price
             print(f"Category: {food_cat.name}, Price: {food_cat.price}")
@@ -177,13 +183,31 @@ def restaurant_details(request, pk):
         # Sort the weekly menu based on day order
         sorted_menu = {day: weekly_menu[day] for day in days_order}
 
+        start_end_time = {}
+
+        for food_cat in food_categories:
+            start_end_time[food_cat.name] = {'start_time': food_cat.start_time,
+                                             'end_time': food_cat.end_time,
+                                             'cancellation_time': food_cat.cancellation_time}
+
+        print(f"{start_end_time=}")
+
+
+        
+
         total_price = sum(category_prices.values())
         menu_data.append({
             'menu_category': menu_category.name,
             'weekly_menu': sorted_menu,
             'category_prices': category_prices,
             'total_price': total_price,
+            'food_categories': food_categories,
+            'start_end_time': start_end_time,
+            'menu_description': menu_category.description
+            
         })
+
+
 
 
     context = {
@@ -192,10 +216,11 @@ def restaurant_details(request, pk):
         'reviews': reviews,
         'location': restaurant.location,
          'menu_data': menu_data,
+
         
     }
 
-    print(context)
+    print(f"{context=}")
     return render(request, 'users/restaurant_detail.html', context)
     
     

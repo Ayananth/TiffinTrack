@@ -2,12 +2,17 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from accounts.models import RestaurantProfile
+import datetime
 
 
 class FoodCategory(models.Model):
     name = models.CharField(max_length=50)  # e.g., Breakfast, Lunch, Dinner
     price = models.DecimalField(max_digits=6, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    cancellation_time = models.TimeField()
+
     restaurant = models.ForeignKey(
         RestaurantProfile,
         on_delete=models.CASCADE,
@@ -29,9 +34,13 @@ class MenuCategory(models.Model):
         FoodCategory,
         related_name='menu_categories'
     )
+    description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     restaurant = models.ForeignKey(RestaurantProfile,on_delete=models.CASCADE,related_name='menu_categories')
     is_active = models.BooleanField(default=True)  # To mark if the category is active or not
+    minimum_days = models.IntegerField(default=20)
+
+
     def __str__(self):
         return self.name
 
