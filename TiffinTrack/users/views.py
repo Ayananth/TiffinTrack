@@ -244,3 +244,17 @@ def subscribe(request, plan_id):
         }
     )
     return redirect('subscription_success')
+
+
+
+
+
+@login_required(login_url='login')
+def subscription_request(request, menu_id):
+    ''' 
+    check if user have added his address or location
+    .
+    
+    
+    '''
+    
