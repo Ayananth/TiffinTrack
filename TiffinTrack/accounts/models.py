@@ -63,9 +63,6 @@ class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 on_delete=models.CASCADE)
     location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default=None)
-    point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
-    address = models.TextField(null=True, blank=True)
-    # phone = models.CharField(max_length=15, null=True, blank=True, unique=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default.png')
@@ -82,13 +79,13 @@ class RestaurantProfile(models.Model):
     licence_no = models.CharField(max_length=100)
     contact_number = models.CharField(max_length=15)
     email = models.EmailField()
-    address = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     restaurant_image = models.ImageField(upload_to='uploads/', null=True)
     location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default=None)
     profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default-restaurant.png')
+
 
 
 

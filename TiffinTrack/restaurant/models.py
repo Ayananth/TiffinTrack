@@ -3,6 +3,9 @@ from django.conf import settings
 from django.utils import timezone
 from accounts.models import RestaurantProfile
 import datetime
+from django.contrib.gis.db import models as geomodels
+from django.contrib.gis.geos import Point
+
 
 
 class FoodCategory(models.Model):
@@ -126,6 +129,8 @@ class Subscriptions(models.Model):
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField()
     is_active = models.BooleanField(default=True)
+    selected_address_location = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
+
 
     def __str__(self):
         return f'{self.user}'
