@@ -78,7 +78,8 @@ def get_location_from_point(longitude, latitude):
     if location:
         address = location.raw.get("address", {})
         print(f"{address=}")
-    place = list(address.values())[:1]
+    print(list(address.values()))
+    place = list(address.values())[0:2]
     print(place)
     place = ', '.join(place)
     print(place)
