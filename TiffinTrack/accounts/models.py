@@ -53,7 +53,9 @@ class PhoneOTP(models.Model):
 
 
 class Locations(models.Model):
+    # user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(unique=True, default="thrissur")
+    point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
 
     def __str__(self):
         return self.name
@@ -61,11 +63,15 @@ class Locations(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                on_delete=models.CASCADE)
-    location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default=None)
+                                on_delete=models.CASCADE,
+                                related_name='profile')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default.png')
+
+    location_name = models.CharField(max_length=255, default="thrissur")
+
+    point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
 
 
     def __str__(self):
@@ -83,8 +89,8 @@ class RestaurantProfile(models.Model):
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     restaurant_image = models.ImageField(upload_to='uploads/', null=True)
-    location = models.ForeignKey(Locations, on_delete=models.SET_DEFAULT, default=None)
     profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default-restaurant.png')
+    point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
 
 
 

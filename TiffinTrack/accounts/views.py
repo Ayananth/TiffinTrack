@@ -20,6 +20,7 @@ def accounts_login(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
+        print(username, password)
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
@@ -36,8 +37,13 @@ def accounts_logout(request):
 
 def accounts_sign_up(request):
     print("register")
+    username = request.POST.get("username")
+    password = request.POST.get("password")
+    print(username, password)
+
     if request.method == 'POST':
         print("post req")
+
         form = UserRegisterForm(request.POST) 
         if form.is_valid():
             print("form not valid")
@@ -47,6 +53,7 @@ def accounts_sign_up(request):
             return redirect('login')
         else:
             print("form not valid")
+            print(form.errors)
             messages.error(request, "Form not valid")   
     else:
         print("Else")

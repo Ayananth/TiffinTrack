@@ -10,6 +10,12 @@ from django.db.models import Avg
 from collections import defaultdict
 from decimal import Decimal
 from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D  # D for Distance
+from django.contrib.gis.db.models.functions import Distance
+from accounts.utils import get_location_from_point
+
+
+
 from .models import Address
 from .forms import AddressForm, SubscriptionForm
 
@@ -22,15 +28,39 @@ def home(request):
     print(request.user)
     user = request.user
     restaurant_name = request.GET.get('restaurant_name')
+    print(user.profile.point)
+    reference_point = user.profile.point
+    longitude = reference_point.x
+    latitude = reference_point.y
+    location_name = get_location_from_point(longitude, latitude)
+
+    # Filter restaurants within 20 km
+    nearby_restaurants= RestaurantProfile.objects.annotate(
+        distance=Distance('point', reference_point)
+    ).filter(
+        distance__lte=D(km=20)
+    ).order_by('distance')
+
 
     queryset = RestaurantProfile.objects.filter(is_approved=True)
     if restaurant_name:
         queryset = queryset.filter(restaurant_name__icontains=restaurant_name.strip())
-    restaurants = queryset.annotate(avg_rating=Avg('reviews__rating'))
+
+
+    # Apply distance annotation and filter
+    restaurants = queryset.annotate(
+        distance=Distance('point', reference_point),
+        avg_rating=Avg('reviews__rating')
+    ).filter(
+        distance__lte=D(km=20)
+    ).order_by('distance')
+
+
 
 
     context = {
         'restaurants': restaurants,
+        'location': location_name
     }
 
     return render(request, './users/home.html', context)

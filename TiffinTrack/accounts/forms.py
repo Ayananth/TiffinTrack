@@ -24,7 +24,7 @@ class ProfileUpdateForm(forms.ModelForm):
             empty_label="Select Location",
             widget=forms.Select(attrs={'class': 'form-control'})
         )
-        fields = ['location', 'profile_pic']
+        fields = [ 'profile_pic']
     
     def clean(self):
         cleaned_data = super().clean()

@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 # utils/twilio_sms.py
 from twilio.rest import Client
 from django.conf import settings
+from geopy.geocoders import Nominatim
+
 
 
 def login_redirect_view(request):
@@ -66,3 +68,31 @@ def verify_otp_sms(otp):
 
 # send()
 # verify()
+
+
+def get_location_from_point(longitude, latitude):
+    geolocator = Nominatim(user_agent="ayspm123@gmail.com")
+    location = geolocator.reverse((latitude, longitude), exactly_one=True)
+    print(location)
+    print(f"location from point : {location.address}")
+    if location:
+        address = location.raw.get("address", {})
+        print(f"{address=}")
+    place_name = (
+        address.get("road") or
+        address.get("neighbourhood") or
+        address.get("suburb") or
+        address.get("village") or
+        address.get("town") or
+        address.get("city") or
+        address.get("hamlet") or
+        address.get("county") or
+        "Unknown"
+    )
+    print("place:")
+    print(place_name)
+    place = f"{place_name}, {address.get('city','')}"
+    print(place)
+    return place
+
+

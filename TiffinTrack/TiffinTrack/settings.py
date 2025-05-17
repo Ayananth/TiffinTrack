@@ -129,7 +129,7 @@ WSGI_APPLICATION = 'TiffinTrack.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'TiffinTrack',        # PostgreSQL database name
+        'NAME': 'TiffinTrack-dev',        # PostgreSQL database name
         'USER': 'postgres',        # PostgreSQL username
         'PASSWORD': 'postgres',# PostgreSQL password
         'HOST': 'localhost',           # Or your remote host
