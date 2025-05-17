@@ -16,13 +16,11 @@
             <img class="img-fluid logo" src="{% static 'frontend/assets/images/logo/Tiffin.png'%}" alt="logo" style="width: auto; height: 200px;">
             <h2>Find Your Monthly Food Partner </h2>
             <div class="search-section">
-                <form class="auth-form search-head" method="post">
-                    {% csrf_token %}
+                <form class="auth-form search-head" method="get">
                     <div class="form-group">
                         <div class="form-input mb-0">
-                            <input type="hidden" name="form_id" value="restaurant_form">
                             <input type="search" name="restaurant_name" class="form-control search" id="inputusername"
-                                placeholder="Search for Restaurant" value="{{ restaurant_name }}">
+                                placeholder="Search for Restaurant" value="{{ request.GET.restaurant_name }}">
                             <i class="ri-search-line search-icon"></i>
                         </div>
                     </div>
@@ -113,7 +111,7 @@
 
 
                                             <ul class="distance">
-                                                <li><i class="ri-time-fill icon"></i> Price {{restaurant.max_total_price}}/Day</li>
+                                                <li><i class="ri-time-fill icon"></i> Price:</li>
                                             </ul>
                                         </div>
                                     </div>

@@ -20,73 +20,17 @@ from .forms import AddressForm, SubscriptionForm
 @login_required(login_url='login')
 def home(request):
     print(request.user)
-    all_locations = Locations.objects.all()
-    default_location = get_object_or_404(Locations, name="thrissur")
-    user_profile = None
-    current_location = default_location
+    user = request.user
+    restaurant_name = request.GET.get('restaurant_name')
 
-    if request.user.is_authenticated:
-        user_profile = UserProfile.objects.filter(user=request.user).select_related('location').first()
-        if user_profile and user_profile.location:
-            current_location = user_profile.location
+    queryset = RestaurantProfile.objects.filter(is_approved=True)
+    if restaurant_name:
+        queryset = queryset.filter(restaurant_name__icontains=restaurant_name.strip())
+    restaurants = queryset.annotate(avg_rating=Avg('reviews__rating'))
 
-    restaurants = []
-
-    if request.method == "POST":
-        form_id = request.POST.get('form_id')
-        print(f"Form ID: {form_id}")
-
-        if form_id == 'location_form':
-            print("Location form submitted")
-            location_id = request.POST.get("selected_location")
-            selected_location = Locations.objects.filter(id=location_id).first()
-
-            if selected_location:
-                current_location = selected_location
-                if request.user.is_authenticated and user_profile:
-                    user_profile.location = selected_location
-                    user_profile.save()
-                    messages.success(request, "Location updated.")
-                elif request.user.is_authenticated:
-                    messages.error(request, "User profile not found.")
-            else:
-                current_location = default_location
-                messages.error(request, "Invalid location selected.")
-
-        elif form_id == 'restaurant_form':
-            print("Restaurant search")
-            restaurant_name = request.POST.get('restaurant_name', '').strip()
-            if restaurant_name:
-                restaurants = RestaurantProfile.objects.filter(
-                    is_approved=True,
-                    location=current_location,
-                    restaurant_name__icontains=restaurant_name
-                ).annotate(avg_rating=Avg('reviews__rating'))
-            else:
-                restaurants = RestaurantProfile.objects.filter(
-                    is_approved=True,
-                    location=current_location
-                ).annotate(avg_rating=Avg('reviews__rating'))
-
-    # Default restaurant list if not loaded in POST
-    if not restaurants:
-        restaurants = RestaurantProfile.objects.filter(
-            is_approved=True,
-            location=current_location
-        ).annotate(avg_rating=Avg('reviews__rating'))
-
-    # Add min and max total_price
-    for restaurant in restaurants:
-        menu_categories = restaurant.menu_categories.filter(is_active=True)
-        total_prices = [category.total_price for category in menu_categories]
-        restaurant.min_total_price = int(min(total_prices)) if total_prices else 0
-        restaurant.max_total_price = int(max(total_prices)) if total_prices else 0
 
     context = {
         'restaurants': restaurants,
-        'location': current_location,
-        'all_locations': all_locations,
-        'restaurant_name': restaurant_name if request.method == "POST" and form_id == "restaurant_form" else ''
     }
 
     return render(request, './users/home.html', context)
