@@ -60,6 +60,17 @@
                 <div class="tab-pane fade show active" id="delivery-tab">
                     <div class="row g-lg-4 g-3">
 
+                        {% if not restaurants %}
+
+                            <div class="empty-cart-image">
+                                <div>
+                                    <img class="img-fluid img" src="{% static 'frontend/assets/images/empty-cart.svg' %}" alt="empty-cart">
+                                    <h2>No restaurants</h2>
+                                    <h5>We will add soon</h5>
+                                </div>
+                            </div>
+                        {%endif%}
+
 
                         {% for restaurant in restaurants %}
                             <div class="col-xl-3 col-lg-4 col-sm-6">
