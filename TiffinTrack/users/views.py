@@ -69,18 +69,22 @@ def home(request):
 @login_required(login_url='login')
 def update_profile(request):
     user = request.user
-    profile = user.userprofile
-    location  = profile.location
+    profile = user.profile
+
+    reference_point = user.profile.point
+    longitude = reference_point.x
+    latitude = reference_point.y
+    location = get_location_from_point(longitude, latitude)
     print("test")
 
     user_form = UserUpdateForm(instance=user)
-    print(f"{user.userprofile=}")
-    profile_form = ProfileUpdateForm(instance=user.userprofile)
+    print(f"{user.profile=}")
+    profile_form = ProfileUpdateForm(instance=user.profile)
 
     if request.method == 'POST':
         print("POST request received")
         user_form = UserUpdateForm(request.POST, instance=user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=user.userprofile)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=user.profile)
 
         if user_form.is_valid() and profile_form.is_valid():
             print("Forms are valid")
