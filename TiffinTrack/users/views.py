@@ -100,20 +100,16 @@ def update_profile(request):
         'location' : location,
     })
 
+
 def update_user_location(request):
     print(request.POST)
     print("update_user_location")
     latitude = float(request.POST.get("latitude"))
     longitude = float(request.POST.get("longitude"))
     point = Point(longitude, latitude)
-    profile = request.user.userprofile
+    profile = request.user.profile
     profile.point = point
     profile.save()
-
-
-
-
-
     return redirect('user-home')
 
 

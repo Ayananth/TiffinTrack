@@ -78,20 +78,9 @@ def get_location_from_point(longitude, latitude):
     if location:
         address = location.raw.get("address", {})
         print(f"{address=}")
-    place_name = (
-        address.get("road") or
-        address.get("neighbourhood") or
-        address.get("suburb") or
-        address.get("village") or
-        address.get("town") or
-        address.get("city") or
-        address.get("hamlet") or
-        address.get("county") or
-        "Unknown"
-    )
-    print("place:")
-    print(place_name)
-    place = f"{place_name}, {address.get('city','')}"
+    place = list(address.values())[:1]
+    print(place)
+    place = ', '.join(place)
     print(place)
     return place
 
