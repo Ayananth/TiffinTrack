@@ -36,4 +36,4 @@ class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
     class Meta:
         model = CustomUser
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'phone']

@@ -1,0 +1,40 @@
+                    <div class="profile-sidebar sticky-top">
+                        <div class="profile-cover">
+                            <!-- <img class="img-fluid profile-pic" src="assets/images/icons/p5.png" alt="profile"> -->
+                            <img class="img-fluid profile-pic" src="{{ user.profile.profile_pic.url }}" alt="">
+                        </div>
+                        <div class="profile-name">
+                            <h5 class="user-name">{{user.username}}</h5>
+                            <h6>{{user.email}}</h6>
+                        </div>
+                        
+                        <ul class="profile-list">
+                            <li class="">
+                                <i class="ri-user-3-line"></i>
+                                <a href="profile.html">Change Profile</a>
+                            </li>
+                            <li>
+                                <i class="ri-shopping-bag-3-line"></i>
+                                <a href="my-order.html">My Subscription</a>
+                            </li>
+                            <li>
+                                <i class="ri-map-pin-line"></i>
+                                <a href="saved-address.html">Saved Address</a>
+                            </li>
+                            <!-- <li>
+                                <i class="ri-bank-card-line"></i>
+                                <a href="saved-card.html">Saved Card</a>
+                            </li>
+                            <li>
+                                <i class="ri-question-line"></i><a href="faq.html">Help</a>
+                            </li> -->
+                            <!-- <li>
+                                <i class="ri-settings-3-line"></i>
+                                <a href="setting.html">Setting</a>
+                            </li> -->
+                            <li>
+                                <i class="ri-logout-box-r-line"></i>
+                                <a href="{% url 'logout' %}">Log Out</a>
+                            </li>
+                        </ul>
+                    </div>
