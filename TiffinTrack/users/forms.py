@@ -26,4 +26,4 @@ class SubscriptionForm(forms.ModelForm):
 class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
-        fields = ['address_line', 'city', 'pincode']
+        fields = ['name', 'phone', 'address_line', 'landmark', 'city', 'state', 'pincode','is_default']

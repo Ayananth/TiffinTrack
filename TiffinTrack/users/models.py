@@ -54,13 +54,20 @@ class WalletTransaction(models.Model):
 
 
 class Address(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    address_line = models.TextField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='address')
+    name = models.CharField(max_length=100)  # Name of recipient
+    phone = models.CharField(max_length=15)  # Contact number
+    address_line = models.CharField("House/Flat/Building", max_length=255)
+    landmark = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
     pincode = models.CharField(max_length=10)
+    is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
 
+    class Meta:
+        verbose_name_plural = "Addresses"
+        ordering = ['-is_default', 'created_at']
 
     def __str__(self):
-        return f"{self.user} address"
+        return f"{self.name}, {self.address_line}, {self.city} - {self.pincode}"

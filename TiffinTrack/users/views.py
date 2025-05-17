@@ -105,6 +105,7 @@ def update_profile(request):
     })
 
 
+@login_required(login_url='login')
 def update_user_location(request):
     print(request.POST)
     print("update_user_location")
@@ -116,6 +117,18 @@ def update_user_location(request):
     profile.save()
     return redirect('user-home')
 
+
+@login_required(login_url='login')
+def manage_user_address(request):
+    user=request.user
+    addresses = Address.objects.filter(user=user)
+    context = {"addresses": addresses}
+
+    return render(request, 'users/address.html', context)
+
+
+
+    
 
 
 

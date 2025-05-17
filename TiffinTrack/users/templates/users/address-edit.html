@@ -1,0 +1,40 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+
+    <!-- page head section starts -->
+     {% include "./profile-head.html" %}
+    <!-- page head section end -->
+
+
+    <!-- card section starts -->
+    <section class="profile-section section-b-space">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-lg-3">
+                    {% include "./profile-sidebar.html" %}
+                </div>
+                <div class="col-lg-9">
+                    <div class="address-section bg-color h-100 mt-0">
+                        <div class="title">
+                            <div class="loader-line"></div>
+                            <h3>Manage Address</h3>
+                        </div>
+                        <div class="row g-3">
+
+                            
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- profile section end -->
+
+
+{% endblock content %}

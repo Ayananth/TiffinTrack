@@ -22,23 +22,9 @@
                             <h3>Saved Address</h3>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="address-box white-bg">
-                                    <div class="address-title">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="ri-home-4-fill icon"></i>
-                                            <h6>Home</h6>
-                                        </div>
-                                        <a href="#edit-address" class="edit-btn" data-bs-toggle="modal">Edit</a>
-                                    </div>
-                                    <div class="address-details">
-                                        <h6>
-                                            93, Songbird Cir, Blackville, South Carolina, USA-29817
-                                        </h6>
-                                        <h6 class="phone-number">+33 (907) 555-0101</h6>
-                                    </div>
-                                </div>
-                            </div>
+
+
+                        {% for address in addresses%}
                             <div class="col-md-6">
                                 <div class="address-box white-bg">
                                     <div class="address-title">
@@ -49,26 +35,18 @@
                                         <a href="#edit-address" class="edit-btn" data-bs-toggle="modal">Edit</a>
                                     </div>
                                     <div class="address-details">
-                                        <h6>703 Elizabeth Barcus Way, USA-95540</h6>
-                                        <h6 class="phone-number">+33 (907) 555-3456</h6>
+                                        <h6>{{ address.name }}</h6>
+                                        <h6>{{address.address_line}}</h6>
+                                        <p class="mb-1">{{ address.phone }}</p>
+                                        <p class="mb-1">
+                                            {% if address.landmark %}, {{ address.landmark }}{% endif %}
+                                        </p>
+                                        <p class="mb-1">{{ address.city }}, {{ address.state }} - {{ address.pincode }}</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="address-box white-bg">
-                                    <div class="address-title">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="ri-account-circle-fill icon"></i>
-                                            <h6>Smith Jones</h6>
-                                        </div>
-                                        <a href="#edit-address" class="edit-btn" data-bs-toggle="modal">Edit</a>
-                                    </div>
-                                    <div class="address-details">
-                                        <h6>13th Street 47 W 13th St, New York, USA-10011</h6>
-                                        <h6 class="phone-number">+33 (907) 555-1235</h6>
-                                    </div>
-                                </div>
-                            </div>
+                        {% endfor %}
+
                             <div class="col-md-6">
                                 <div class="address-box white-bg new-address-box white-bg">
                                     <a href="#address-details" class="btn new-address-btn theme-outline rounded-2 mt-0"
