@@ -1,9 +1,29 @@
-# from django import forms
-# from .models import CustomUser
-# from django.contrib.auth.forms import UserCreationForm
+from django import forms
+from restaurant.models import Subscriptions
+from .models import Address
 
-# class UserRegisterForm(UserCreationForm):
-#     email = forms.EmailField()
-#     class Meta:
-#         model = CustomUser
-#         fields = ['username', 'email', 'password1', 'password2']
+
+class SubscriptionForm(forms.ModelForm):
+    use_wallet = forms.BooleanField(required=False)
+
+
+    class Meta:
+        model = Subscriptions
+        fields = ['start_date', 'end_date', 'address']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get('start_date')
+        end = cleaned_data.get('end_date')
+        if start and end and start >= end:
+            self.add_error('end_date', "End date must be after start date.")
+
+
+
+
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ['address_line', 'city', 'pincode']

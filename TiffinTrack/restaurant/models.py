@@ -5,6 +5,7 @@ from accounts.models import RestaurantProfile
 import datetime
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
+from users.models import Address
 
 
 
@@ -41,7 +42,6 @@ class MenuCategory(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     restaurant = models.ForeignKey(RestaurantProfile,on_delete=models.CASCADE,related_name='menu_categories')
     is_active = models.BooleanField(default=True)  # To mark if the category is active or not
-    minimum_days = models.IntegerField(default=20)
 
 
     def __str__(self):
@@ -123,13 +123,19 @@ class Review(models.Model):
 
 
 class Subscriptions(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='subscriptions')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='subscriptions', null=True, blank=True)
     restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='subscriptions')
     menu_category = models.ForeignKey(MenuCategory,on_delete=models.SET_NULL,null=True,blank=True,related_name='subscriptions')
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField()
-    is_active = models.BooleanField(default=True)
-    selected_address_location = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
+    is_active = models.BooleanField(default=False)
+    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True, related_name='subscriptions')
+    total_amount = models.FloatField(null=True, blank=True)
+    paid_total_amount = models.FloatField(null=True, blank=True)
+    per_day_amount = models.FloatField(null=True, blank=True)
+
+
+
 
 
     def __str__(self):

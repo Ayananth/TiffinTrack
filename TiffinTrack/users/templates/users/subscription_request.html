@@ -1,0 +1,186 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+    <!-- page head section starts -->
+    <section class="page-head-section">
+        <div class="container page-heading">
+            <h2 class="h3 mb-3 text-white text-center">Payment</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb flex-lg-nowrap justify-content-center justify-content-lg-star">
+                    <li class="breadcrumb-item">
+                        <a href="index.html"><i class="ri-home-line"></i>Home</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Payment</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+    <!-- page head section end -->
+                {% if messages %}
+                <ul class="messages d-flex align-items-center" id="error-message">
+                  {% for message in messages %}
+                    <li class="d-flex align-items-center">
+                      <h4 class="text-{{ message.tags }} m-0">{{ message }}</h4>
+                      <i class="fa-solid fa-x ps-2 close-icon" style="color: #f42a2a; cursor: pointer;"></i>
+                    </li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+
+    <!--  account section starts -->
+    <section class="account-section section-b-space pt-0">
+        <div class="container">
+            <div class="layout-sec">
+                <div class="row g-lg-4 g-4">
+                    <div class="col-lg-8">
+
+                        <form method="post" id="subscription">
+                            {% csrf_token %}
+
+                        <div class="payment-section">
+                            <div class="title mb-0">
+                                <div class="loader-line"></div>
+                                <h3>Complete the order</h3>
+                                <h6>Fill the details and submit</h6>
+                            </div>
+                            <div class="accordion payment-accordion" id="accordionExample">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseOne" aria-expanded="true"
+                                            aria-controls="collapseOne">
+                                            Order Details
+                                        </button>
+                                    </h2>
+                                    <div id="collapseOne" class="accordion-collapse collapse show"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            <div class="row g-3">
+                                                <div class="col-sm-6">
+                                                    <label for="inputAddress" class="form-label">Start Date</label>
+                                                    <input type="date" name="start_date" class="form-control" id="inputAddress" required>
+            {% if form.start_date.errors %}
+                <div class="text-danger small">
+                    {{ form.start_date.errors.0 }}
+                </div>
+            {% endif %}
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label for="inputAddress" class="form-label">End Date</label>
+                                                    <input type="date" name="end_date" class="form-control" id="inputAddress" required>
+
+            {% if form.end_date.errors %}
+                <div class="text-danger small">
+                    {{ form.end_date.errors.0 }}
+                </div>
+            {% endif %}
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                            aria-expanded="false" aria-controls="collapseTwo">
+                                            Address
+                                        </button>
+                                    </h2>
+                                    <div id="collapseTwo" class="accordion-collapse collapse"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                        <div class="address-section">
+                            <div class="title">
+                                <div class="loader-line"></div>
+                                <h3>Select Saved Address</h3>
+                                <h6>
+                                    Add or select address
+                                </h6>
+                            </div>
+                            <div class="row g-3">
+                                {%if addresses%}
+                                {% for address in addresses %}
+                                <div class="col-md-6">
+                                    <label class="address-box d-block">
+                                        <input type="radio" name="address" value="{{ address.id }}" class="me-2" required>
+                                        <div class="address-title">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="ri-home-4-fill icon"></i>
+                                                <h6>Home</h6>
+                                            </div>
+                                            <a href="#edit-address" class="edit-btn" data-bs-toggle="modal">Edit</a>
+                                        </div>
+                                        <div class="address-details">
+                                            <h6>{{ address.address_line }}</h6>
+                                        </div>
+                                    </label>
+            {% if form.address.errors %}
+                <div class="text-danger small">
+                    {{ form.address.errors.0 }}
+                </div>
+            {% endif %}
+                                </div>
+                                {% endfor %}
+                                {%else%}
+                                No address added, please add
+                                {%endif%}
+
+
+                                <div class="col-md-6">
+                                    <div class="address-box new-address-box">
+                                        <a href="#address-details" class="btn theme-outline rounded-2"
+                                            data-bs-toggle="modal">Manage Address</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <div class="buttons d-flex justify-content-end">
+                                        <a href="payment.html" class="btn gray-btn mt-0">CANCEL</a>
+                                        <a href="payment.html" class="btn theme-btn mt-0" onclick="event.preventDefault(); submitForm();">Payment</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- account section end -->    
+
+
+
+
+
+
+
+
+
+<script>
+    function submitForm() {
+      const form = document.getElementById('subscription');
+      if (form.checkValidity()) {
+        form.submit();  // or use `requestSubmit()` if available
+      } else {
+        form.reportValidity();  // shows validation messages
+      }
+    }
+</script>
+
+
+
+
+
+{% endblock %}

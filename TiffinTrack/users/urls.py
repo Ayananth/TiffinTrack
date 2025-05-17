@@ -8,7 +8,11 @@ urlpatterns = [
     path('',views.home, name='user-home'),
     path('profile/',views.update_profile, name='user-profile'),
     path('restaurant/<int:pk>',views.restaurant_details, name='restaurant-details'),
-    path('update-location', views.update_user_location, name='update-location')
+    path('update-location', views.update_user_location, name='update-location'),
+    path('subscribe/<int:id>', views.subscription_cart, name='subscription-request' ),
+    path('order-confirm/', views.order_confirm, name='order-confirm' ),
+    path('payment/<int:id>' ,views.payment, name='payment')
+
 
 
 ]

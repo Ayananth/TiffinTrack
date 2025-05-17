@@ -10,6 +10,8 @@ from django.db.models import Avg
 from collections import defaultdict
 from decimal import Decimal
 from django.contrib.gis.geos import Point
+from .models import Address
+from .forms import AddressForm, SubscriptionForm
 
 
 
@@ -96,7 +98,6 @@ def update_profile(request):
     profile = user.userprofile
     location  = profile.location
     print("test")
-    print(profile.address)
 
     user_form = UserUpdateForm(instance=user)
     print(f"{user.userprofile=}")
@@ -130,11 +131,9 @@ def update_user_location(request):
     print("update_user_location")
     latitude = float(request.POST.get("latitude"))
     longitude = float(request.POST.get("longitude"))
-    address = request.POST.get("address")
     point = Point(longitude, latitude)
     profile = request.user.userprofile
     profile.point = point
-    profile.address = address
     profile.save()
 
 
@@ -203,7 +202,8 @@ def restaurant_details(request, pk):
             'total_price': total_price,
             'food_categories': food_categories,
             'start_end_time': start_end_time,
-            'menu_description': menu_category.description
+            'menu_description': menu_category.description,
+            'menu_id': menu_category.id
             
         })
 
@@ -228,33 +228,71 @@ def restaurant_details(request, pk):
 
 
 
-@login_required
-def subscribe(request, plan_id):
-    plan = MenuCategory.objects.get(id=plan_id)
+@login_required(login_url='login')
+def subscription_cart(request, id=None):
+    print("subscription page")
+    print(f"{id=}")
+
+
+    user = request.user
+    addresses = Address.objects.filter(user=user)
+    menu = get_object_or_404(MenuCategory, id=id)
+    print(f"{menu=}")
+
+
+    if request.method == 'POST':
+        form = SubscriptionForm(request.POST)
+        if form.is_valid():
+            print("form valid")
+            subscription = form.save(commit=False)
+            print("-----------------------")
+            print(Subscriptions.objects.filter(user=user, is_active=True))
+            if Subscriptions.objects.filter(user=user, is_active=True).exists():
+                print("subscription Already exists")
+                messages.error(request, "You already have a subscription")
+                return redirect('subscription-request', id=id)
+            print("No existing subscription")
+            subscription.restaurant = menu.restaurant
+            subscription.menu_category = menu
+            number_of_days = form.cleaned_data.get('end_date') - form.cleaned_data.get('start_date')
+            print(f"{number_of_days=}")
+            subscription.per_day_amount = menu.total_price
+            subscription.total_amount = number_of_days.days * menu.total_price
+            subscription.num_days = number_of_days.days
+            subscription.save()
+            return redirect('payment', id=subscription.id)
+        else:
+            messages.error(request, "Form not valid")
+            print("Form not valid")
+    else:
+        form = SubscriptionForm()
+
+
+    context = {'addresses': addresses,  'form': form}
+    print(f"{context=}")
+    return render(request, 'users/subscription_request.html', context)
     
-    
-    Subscriptions.objects.update_or_create(
-        user=request.user,
-        defaults={
-            'restaurant': plan.restaurant,
-            'menu_category': plan,
-            'start_date': timezone.now(),
-            'end_date': timezone.now() + timezone.timedelta(days=plan.duration_days),
-            'is_active': True,
-        }
-    )
-    return redirect('subscription_success')
 
 
 
 
 
 @login_required(login_url='login')
-def subscription_request(request, menu_id):
-    ''' 
-    check if user have added his address or location
-    .
+def order_confirm(request):
+    return render(request, 'users/success.html')
+
+
+@login_required(login_url='login')
+def payment(request, id):
+    subscription = get_object_or_404(Subscriptions, id=id)
+    if request.method == 'POST':
+        paid_amount = request.POST.get('paid_amount',0)
+        subscription.paid_total_amount = paid_amount
+        subscription.user = request.user
+        subscription.is_active =  True
+        subscription.save()
+        return redirect('order-confirm')
+    context = {'subscription': subscription}
     
-    
-    '''
+    return render(request, 'users/payment.html', context)
     
