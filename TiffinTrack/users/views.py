@@ -184,7 +184,7 @@ def restaurant_details(request, pk):
         'restaurant': restaurant,
         'rating': avg_rating,
         'reviews': reviews,
-        'location': restaurant.location,
+        'location': restaurant.location_name,
          'menu_data': menu_data,
 
         

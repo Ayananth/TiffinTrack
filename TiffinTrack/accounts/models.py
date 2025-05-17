@@ -5,6 +5,9 @@ import random
 from django.conf import settings
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
+from accounts.utils import get_location_from_point
+
+
 
 
 
@@ -91,6 +94,19 @@ class RestaurantProfile(models.Model):
     restaurant_image = models.ImageField(upload_to='uploads/', null=True)
     profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default-restaurant.png')
     point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
+    address = models.TextField(max_length=255, blank=True, null=True)
+    location_name = models.TextField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old = RestaurantProfile.objects.get(pk=self.pk)
+            if old.point != self.point:
+                self.location_name = get_location_from_point(self.point.x, self.point.y)
+        else:
+            self.location_name = get_location_from_point(self.point.x, self.point.y)
+        super().save(*args, **kwargs)
+
+        
 
 
 
