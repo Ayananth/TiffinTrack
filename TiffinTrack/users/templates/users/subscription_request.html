@@ -105,7 +105,7 @@
                                 {% for address in addresses %}
                                 <div class="col-md-6">
                                     <label class="address-box d-block">
-                                        <input type="radio" name="address" value="{{ address.id }}" class="me-2" required>
+                                        <input type="radio" name="address" value="{{ address.id }}" class="me-2" required {% if address.is_default%} checked {%endif%} >
                                         <div class="address-title">
                                             <div class="d-flex align-items-center gap-2">
                                                 <i class="ri-home-4-fill icon"></i>
@@ -114,7 +114,13 @@
                                             <a href="#edit-address" class="edit-btn" data-bs-toggle="modal">Edit</a>
                                         </div>
                                         <div class="address-details">
-                                            <h6>{{ address.address_line }}</h6>
+                                        <h6>{{ address.name }}</h6>
+                                        <h6>{{address.address_line}}</h6>
+                                        <p class="mb-1">{{ address.phone }}</p>
+                                        <p class="mb-1">
+                                            {% if address.landmark %}, {{ address.landmark }}{% endif %}
+                                        </p>
+                                        <p class="mb-1">{{ address.city }}, {{ address.state }} - {{ address.pincode }}</p>
                                         </div>
                                     </label>
             {% if form.address.errors %}
