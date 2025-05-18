@@ -56,9 +56,11 @@
                                             <i class="ri-mail-fill"></i>
                                             <span>Email :</span>
                                         </div>
-                                        <h6><input type="email" name="email" placeholder="Enter Email" value="{{user_form.email.value}}"></h6>
+                                        <h6><input type="email" name="email" placeholder="Enter Email" value="{{user_form.email.value}}" disabled></h6>
                                         <div class="text-danger">{{ user_form.email.errors }}</div>
                                     </div>
+                                    <a href="#email" class="btn theme-outline" data-bs-toggle="modal">Change</a>
+
                                 </li>
                                 <li>
                                     <!-- TODO add phone number -->
@@ -97,6 +99,32 @@
         </div>
     </section>
     <!-- profile section end -->
+
+    <!-- edit email modal starts -->
+    <div class="modal profile-modal fade" id="email" aria-hidden="true" aria-labelledby="exampleModalToggleEmail"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="exampleModalToggleEmail">Email</h1>
+                </div>
+                <form method="post" action="{%url 'request_email_change' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputEmail" class="form-label">New Email</label>
+                        <input name="new_email" type="email" class="form-control" 
+                            placeholder="Enter your new email">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn theme-btn" data-bs-dismiss="modal">Save</a>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- edit email modal end -->
 
 
 {% endblock content %}

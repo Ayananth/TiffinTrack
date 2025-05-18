@@ -10,6 +10,11 @@ from datetime import timedelta
 from .forms import UserRegisterForm
 from .utils import send_otp_sms, verify_otp_sms
 
+import secrets
+from django.core.mail import send_mail
+from django.conf import settings
+
+
 
 
 #TODO dont give access to admin
@@ -150,3 +155,57 @@ def verify_otp(request):
             return render(request, "./accounts/verify_otp.html", {"error": otp_status})
 
     return render(request, "./accounts/verify_otp.html")
+
+
+
+@login_required
+def request_email_change(request):
+    if request.method == "POST":
+        new_email = request.POST.get("new_email")
+        token = secrets.token_urlsafe(32)
+        user = request.user
+        user.pending_email = new_email
+        user.email_change_token = token
+        user.email_change_expiry = timezone.now() + timezone.timedelta(hours=24)
+        user.save()
+
+        confirm_url = request.build_absolute_uri(
+            f"/accounts/confirm-email-change/?token={token}"
+        )
+        print("sending mail")
+        try:
+            send_mail(
+                "Email Confirmation",
+                f"Click here to confirm the password: {confirm_url}",
+                settings.DEFAULT_FROM_EMAIL,
+                [new_email],
+                fail_silently=False  # Force errors to show
+            )
+        except Exception as e:
+            print(f"Email sending failed: {e}")
+        print("mail send")
+        messages.success(request,"Confirmation email sent to your new email. Please check your inbox.")
+
+    return redirect('user-profile')
+
+
+
+# accounts/views.py
+from django.http import HttpResponse
+
+def confirm_email_change(request):
+    token = request.GET.get("token")
+    user = CustomUser.objects.filter(email_change_token=token).first()
+
+    if not user or not user.email_change_expiry or user.email_change_expiry < timezone.now():
+        return HttpResponse("Invalid or expired token.", status=400)
+
+    user.email = user.pending_email
+    user.pending_email = None
+    user.email_change_token = None
+    user.email_change_expiry = None
+    user.save()
+
+    messages.success(request, "")
+
+    return HttpResponse("Your email has been successfully updated.")

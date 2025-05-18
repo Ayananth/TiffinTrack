@@ -1,0 +1,6 @@
+<form method="post">
+    {% csrf_token %}
+    <label>New Email:</label>
+    <input type="email" name="new_email" required>
+    <button type="submit">Change Email</button>
+</form>

@@ -17,4 +17,8 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
 
+    path("request-email-change/", views.request_email_change, name="request_email_change"),
+    path("confirm-email-change/", views.confirm_email_change, name="confirm_email_change"),
+
+
 ]

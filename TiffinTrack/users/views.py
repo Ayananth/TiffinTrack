@@ -70,6 +70,7 @@ def home(request):
 def update_profile(request):
     user = request.user
     profile = user.profile
+    email = user.email
 
     reference_point = user.profile.point
     longitude = reference_point.x
@@ -88,7 +89,9 @@ def update_profile(request):
 
         if user_form.is_valid() and profile_form.is_valid():
             print("Forms are valid")
-            user_form.save()
+            user_form_instance = user_form.save(commit=False)
+            user_form_instance.email = email 
+            user_form_instance.save()
             profile_form.save()
             messages.success(request, "Profile updated successfully!")
             return redirect('user-profile')  # Redirect to a profile page after saving

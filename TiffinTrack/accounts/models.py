@@ -25,6 +25,9 @@ class CustomUser(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, null=True, blank=True, unique=True)
+    pending_email = models.EmailField(null=True, blank=True)
+    email_change_token = models.CharField(max_length=64, null=True, blank=True)
+    email_change_expiry = models.DateTimeField(null=True, blank=True)
 
 
     def __str__(self):
