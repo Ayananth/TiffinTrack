@@ -95,7 +95,6 @@ class RestaurantProfile(models.Model):
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     restaurant_image = models.ImageField(upload_to='uploads/', null=True)
-    profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default-restaurant.png')
     point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
     address = models.TextField(max_length=255, blank=True, null=True)
     location_name = models.TextField(blank=True, null=True)
