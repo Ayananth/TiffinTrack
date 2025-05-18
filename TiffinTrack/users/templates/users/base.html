@@ -83,7 +83,7 @@
                             </div>
                         </div>
                         <div class="profile-part dropdown-button order-md-2">
-                            <img class="img-fluid profile-pic" src="{{ user.profile.profile_pic.url }}" alt="profile">
+                            <img class="img-fluid profile-pic" src="{{ user.profile.profile_pic.url }}" alt="profile"  style="object-fit: contain;">
                             <div>
                                 <h6 class="fw-normal">{{user.username}}</h6>
                                 <h5 class="fw-medium">My Account</h5>
@@ -110,7 +110,7 @@
                         <div class="offcanvas-body">
                             <ul class="navbar-nav justify-content-end flex-grow-1">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="contact.html">Manage Subscription</a>
+                                    <a class="nav-link" href="{% url 'orders' %}">Manage Subscription</a>
                                 </li>
                             </ul>
                         </div>
