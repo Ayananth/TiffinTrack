@@ -2,6 +2,7 @@ from django import forms
 from accounts.models import CustomUser
 from django.contrib.auth.forms import UserCreationForm
 from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory
+from django.db.models import DateField, DateTimeField
 
 class AdminUserRegisterForm(UserCreationForm):
     email = forms.EmailField()
@@ -43,6 +44,13 @@ class FoodCategoryManageForm(forms.ModelForm):
     class Meta:
         model = FoodCategory
         fields = '__all__'
+        widgets = {
+            'start_time': forms.DateInput(attrs={'type': 'time'}),
+            'end_time': forms.DateInput(attrs={'type': 'time'}),
+            'cancellation_time': forms.DateInput(attrs={'type': 'time'})
+        }
+
+
 
 class MenuManageForm(forms.ModelForm):
     class Meta:
