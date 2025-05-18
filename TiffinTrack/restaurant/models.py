@@ -24,7 +24,7 @@ class FoodCategory(models.Model):
     is_active = models.BooleanField(default=True)  # To mark if the category is active or not
 
     def __str__(self):
-        return self.name
+        return f"{self.name}-{self.restaurant}"
 
     class Meta:
         unique_together = ('restaurant', 'name')  # Prevent duplicate names within the same restaurant
