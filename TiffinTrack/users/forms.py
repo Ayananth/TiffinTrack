@@ -27,3 +27,11 @@ class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
         fields = ['name', 'phone', 'address_line', 'landmark', 'city', 'state', 'pincode','is_default']
+
+    def __init__(self, *args, **kwargs):
+        super(AddressForm, self).__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if field.widget.__class__.__name__ == 'CheckboxInput':
+                field.widget.attrs.update({'class': 'form-check-input'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})

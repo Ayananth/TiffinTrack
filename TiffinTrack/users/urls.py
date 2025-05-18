@@ -12,7 +12,9 @@ urlpatterns = [
     path('subscribe/<int:id>', views.subscription_cart, name='subscription-request' ),
     path('order-confirm/', views.order_confirm, name='order-confirm' ),
     path('payment/<int:id>' ,views.payment, name='payment'),
-    path('address/', views.manage_user_address, name='address')
+    path('address/', views.manage_user_address, name='address'),
+    path('address/edit/<int:id>', views.manage_user_address, name='address-edit')
+
 
 
 

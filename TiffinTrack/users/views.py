@@ -119,11 +119,29 @@ def update_user_location(request):
 
 
 @login_required(login_url='login')
-def manage_user_address(request):
+def manage_user_address(request, id=None):
     user=request.user
     addresses = Address.objects.filter(user=user)
-    context = {"addresses": addresses}
 
+    address_instance = None
+    if id is not None:
+        address_instance = get_object_or_404(Address, id=id, user=user)
+    if request.method == 'POST':
+        form = AddressForm(request.POST, instance=address_instance)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.user = user
+            data.save()
+            messages.success(request, "Success")
+            return redirect('address')
+        else:
+            messages.error(request,"Invalid Inputs")
+    else:
+        form = AddressForm(instance=address_instance)
+
+    context = {"addresses": addresses, 'form': form,
+                "editing": id is not None,
+                "address_id": id,}
     return render(request, 'users/address.html', context)
 
 
