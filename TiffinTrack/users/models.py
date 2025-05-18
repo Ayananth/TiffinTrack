@@ -110,9 +110,11 @@ class Orders(models.Model):
 
     def cancel(self):
         if self.status != 'PENDING':
+            print("Error: order already cancelled")
             return False  # Cannot cancel delivered or already cancelled orders
 
         if self.refund_issued:
+            print("Error: Refund already processed")
             return False  # Refund already processed
 
         # Update status

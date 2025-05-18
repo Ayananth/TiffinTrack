@@ -419,3 +419,60 @@ def delete_food_category(request, id):
     food = get_object_or_404(FoodCategory, pk=id)
     food.delete()
     return redirect('food_category')
+
+
+@login_required(login_url='admin-login')
+def orders(request):
+    user = request.user
+
+    sort_by = request.GET.get('sort', 'delivery_date')  # default: delivery_date
+    direction = request.GET.get('dir', 'asc') 
+    order_prefix = '' if direction == 'asc' else '-'
+    valid_sort_fields = ['delivery_date', 'status']
+    sort_field = sort_by if sort_by in valid_sort_fields else 'delivery_date'
+
+    orders = Orders.objects.all().order_by(f"{order_prefix}{sort_field}")
+
+
+    paginator = Paginator(orders, 10)  # Show 5 orders per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+    print(f"{orders=}")
+    context = {'orders': page_obj,
+                'sort': sort_field,
+                'dir': direction,
+                
+                }
+    return render(request, './admin_panel/orders.html', context)
+
+
+@login_required
+def cancel_order(request, order_id):
+    try:
+        order = get_object_or_404(Orders, id=order_id)
+
+        if order.cancel():
+            messages.success(request, f"Order cancelled successfully")
+        else:
+            messages.error(request, "Order cannot be cancelled.")
+    except Exception as e:
+        print(f"{e=}")
+        messages.error(request,"Server error")
+    finally:
+        return redirect('admin-orders')
+    
+@login_required(login_url='admin-login')
+def deliver_order(request, order_id):
+    print("Delivering order")
+    try:
+        order = get_object_or_404(Orders, id=order_id)
+        order.status = "DELIVERED"
+        order.save()
+        messages.success(request, f"Order Delivered")
+    except Exception as e:
+        print(f"{e=}")
+        messages.error(request,"Server error")
+    finally:
+        return redirect('admin-orders')
