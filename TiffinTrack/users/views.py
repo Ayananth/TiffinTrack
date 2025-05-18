@@ -352,3 +352,21 @@ def cancel_order(request, order_id):
         messages.error(request,"Server errir")
     finally:
         return redirect('orders')
+    
+
+
+@login_required(login_url='login')
+def wallet(request):
+    wallet = request.user.wallet  # OneToOne relation
+    transactions = wallet.transactions.order_by('-created_at')  # Most recent first
+
+    paginator = Paginator(transactions, 10)  # Show 10 transactions per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'transactions': page_obj,
+        'balance': wallet.balance,
+        'title': "Wallet Transactions"
+    }
+    return render(request, './users/wallet.html', context)

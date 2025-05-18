@@ -18,6 +18,10 @@ urlpatterns = [
     path('orders/cancel/<int:order_id>/', views.cancel_order, name='cancel_order'),
 
 
+    path('wallet/', views.wallet, name='wallet'),
+
+
+
 
 
 
