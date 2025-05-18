@@ -122,7 +122,7 @@ class Review(models.Model):
 
 
 class Subscriptions(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='subscriptions', null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='subscriptions', null=True, blank=True)
     restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='subscriptions')
     menu_category = models.ForeignKey(MenuCategory,on_delete=models.SET_NULL,null=True,blank=True,related_name='subscriptions')
     start_date = models.DateTimeField(default=timezone.now)

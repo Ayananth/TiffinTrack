@@ -273,9 +273,17 @@ def subscription_cart(request, id=None):
         if form.is_valid():
             print("form valid")
             subscription = form.save(commit=False)
+            end_date = request.POST.get('end_date')
             print("-----------------------")
-            print(Subscriptions.objects.filter(user=user, is_active=True))
-            if Subscriptions.objects.filter(user=user, is_active=True).exists():
+
+            start_date = subscription.start_date
+
+            # Check if any existing subscription for the user ends before the new subscription starts
+            overlapping_subscriptions = Subscriptions.objects.filter(
+                user=user,
+                end_date__gte=start_date
+            )
+            if overlapping_subscriptions.exists():
                 print("subscription Already exists")
                 messages.error(request, "You already have a subscription")
                 return redirect('subscription-request', id=id)
