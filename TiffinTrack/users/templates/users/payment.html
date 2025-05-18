@@ -34,78 +34,7 @@
 
                             </div>
                             <div class="accordion payment-accordion" id="accordionExample">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#collapseOne" aria-expanded="true"
-                                            aria-controls="collapseOne">
-                                            Credit / Debit Card
-                                        </button>
-                                    </h2>
-                                    <div id="collapseOne" class="accordion-collapse collapse show"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body">
-                                            <form class="row g-3">
-                                                <div class="col-12">
-                                                    <label for="inputCardnumber" class="form-label">Card Number</label>
-                                                    <input type="number" class="form-control" id="inputCardnumber"
-                                                        placeholder="Enter your card number">
-                                                </div>
-                                                <div class="col-12">
-                                                    <label for="inputCardholdername" class="form-label">Card Holder
-                                                        Name</label>
-                                                    <input type="text" class="form-control" id="inputCardholdername"
-                                                        placeholder="Enter Holder name">
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <label for="inputAddress" class="form-label">Exp. Date</label>
-                                                    <input type="date" class="form-control" id="inputAddress">
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <label for="inputCity" class="form-label">CVV</label>
-                                                    <input type="number" class="form-control" id="inputCity"
-                                                        placeholder="Enter your cvv">
-                                                </div>
-                                                <div class="buttons">
-                                                    <a href="payment.html" class="btn gray-btn mt-0">CANCEL</a>
-                                                    <a href="payment.html" class="btn theme-btn mt-0">SUBMIT</a>
-                                                </div>
-                                            </form>
-                                            <ul class="card-list">
-                                                <li>
-                                                    <div class="form-check form-check-reverse">
-                                                        <label class="form-check-label" for="flexRadioDefault01">
-                                                            <img class="img-fluid img"
-                                                                src="../images/icons/svg/mastercard.svg"
-                                                                alt="mastercard">
-                                                            <span class="card-name dark-text">
-                                                                Mastercard <span>**** **** 4586 </span> |
-                                                                Expires on <span> 12/24</span>
-                                                            </span>
-                                                        </label>
-                                                        <input class="form-check-input" type="radio"
-                                                            name="flexRadioDefault" id="flexRadioDefault01" checked>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="form-check form-check-reverse">
-                                                        <label class="form-check-label" for="flexRadioDefault02">
-                                                            <img class="img-fluid img"
-                                                                src="../images/icons/svg/mastercard.svg"
-                                                                alt="mastercard">
-                                                            <span class="card-name dark-text">
-                                                                Mastercard <span>**** **** 4586 </span> |
-                                                                Expires on <span> 12/24</span>
-                                                            </span>
-                                                        </label>
-                                                        <input class="form-check-input" type="radio"
-                                                            name="flexRadioDefault" id="flexRadioDefault02" checked>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
                                         <button class="accordion-button collapsed" type="button"
@@ -120,84 +49,20 @@
                                             <ul class="card-list">
                                                 <li>
                                                     <div class="form-check form-check-reverse">
-                                                        <label class="form-check-label" for="flexRadioDefault1">
-                                                            <img class="img-fluid img"
-                                                                src="../images/icons/svg/paypal.svg" alt="mastercard">
-                                                            <span class="card-name dark-text">Pay Pal</span>
-                                                        </label>
-                                                        <input class="form-check-input" type="radio"
-                                                            name="flexRadioDefault" id="flexRadioDefault1" checked>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="form-check form-check-reverse">
                                                         <label class="form-check-label" for="flexRadioDefault2">
-                                                            <img class="img-fluid img"
-                                                                src="../images/icons/svg/apple-pay.svg"
-                                                                alt="mastercard">
-                                                            <span class="card-name dark-text">Apple Pay</span>
+                                                            <span class="card-name dark-text">Use wallet amount: {{wallet_amount}}</span>
                                                         </label>
-                                                        <input class="form-check-input" type="radio"
-                                                            name="flexRadioDefault" id="flexRadioDefault2">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            name="flexRadioDefault" id="use_wallet">
                                                     </div>
                                                 </li>
-                                                <li>
-                                                    <div class="form-check form-check-reverse">
-                                                        <label class="form-check-label" for="flexRadioDefault3">
-                                                            <img class="img-fluid img"
-                                                                src="../images/icons/svg/google-pay.svg"
-                                                                alt="mastercard">
-                                                            <span class="card-name dark-text">Google Pay</span>
-                                                        </label>
-                                                        <input class="form-check-input" type="radio"
-                                                            name="flexRadioDefault" id="flexRadioDefault3">
-                                                    </div>
-                                                </li>
+
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapseThree"
-                                            aria-expanded="false" aria-controls="collapseThree">
-                                            Delivery Option
-                                        </button>
-                                    </h2>
-                                    <div id="collapseThree" class="accordion-collapse collapse"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body">
-                                            <ul class="card-list">
-                                                <li>
-                                                    <div class="form-check form-check-reverse">
-                                                        <label class="form-check-label" for="cashRadio">
-                                                            <img class="img-fluid img"
-                                                                src="../images/icons/svg/cash.svg" alt="mastercard">
-                                                            <span class="card-name dark-text">
-                                                                Cash on Delivery
-                                                            </span>
-                                                        </label>
-                                                        <input class="form-check-input" type="radio"
-                                                            name="flexRadioDefault" id="cashRadio" checked>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
-
-                                <div class="accordion-item">
-                                    <div class="buttons d-flex justify-content-end">
-                                        <a href="payment.html" class="btn gray-btn mt-0">CANCEL</a>
-                                        <a href="{%url 'order-confirm' %}" class="btn theme-btn mt-0">Pay</a>
-                                    </div>
-                                </div>
-
-
-
-
                         </div>
                     </div>
 
@@ -252,11 +117,12 @@
                                 </div>
                                 <div class="grand-total">
                                     <h6 class="fw-semibold dark-text">Total</h6>
-                                    <h6 class="fw-semibold amount">Rs. {{subscription.total_amount}}</h6>
+                                    <h6 class="fw-semibold amount" id="total_amount_display">Rs. {{subscription.total_amount}}</h6>
                                 </div>
-                                <form method="post">
+                                <form method="post" id="payment">
                                     {%csrf_token%}
                                     <input type="hidden" name="paid_amount" value="{{subscription.total_amount}}">
+                                    <input type="hidden" id="wallet_amount" name="wallet_amount" value="">
                                     <button type="submit" class="btn theme-btn restaurant-btn w-100 rounded-2">Pay Now</button>
 
                                     <!-- <a href="confirm-order.html" class="btn theme-btn restaurant-btn w-100 rounded-2">PAY
@@ -271,5 +137,31 @@
         </div>
     </section>
     <!-- account section end -->
+
+<script>
+    // Replace these with actual values from your backend if needed
+    const originalAmount = {{ subscription.total_amount }};
+    const walletAmount = {{ wallet_amount }};
+
+    console.log(originalAmount);
+    
+
+    const checkbox = document.getElementById("use_wallet");
+    const amountDisplay = document.getElementById("total_amount_display");
+    const hiddenWalletInput = document.getElementById("wallet_amount");
+
+
+    checkbox.addEventListener("change", function () {
+        if (checkbox.checked) {
+            const newAmount = originalAmount - walletAmount;
+            amountDisplay.textContent = `Rs.${newAmount}`;
+            hiddenWalletInput.value = walletAmount;
+
+        } else {
+            amountDisplay.textContent = `Rs.${originalAmount}`;
+        }
+    });
+</script>
+
 
 {%endblock%}

@@ -20,7 +20,7 @@ from datetime import timedelta
 
 
 
-from .models import Address, Orders
+from .models import Address, Orders, Wallet
 from .forms import AddressForm, SubscriptionForm
 
 
@@ -140,6 +140,11 @@ def manage_user_address(request, id=None):
     user=request.user
     addresses = Address.objects.filter(user=user)
 
+    reference_point = user.profile.point
+    longitude = reference_point.x
+    latitude = reference_point.y
+    location = get_location_from_point(longitude, latitude)
+
     address_instance = None
     if id is not None:
         address_instance = get_object_or_404(Address, id=id, user=user)
@@ -158,7 +163,8 @@ def manage_user_address(request, id=None):
 
     context = {"addresses": addresses, 'form': form,
                 "editing": id is not None,
-                "address_id": id,}
+                "address_id": id,
+                "location":location}
     return render(request, 'users/address.html', context)
 
 
@@ -334,6 +340,7 @@ def order_confirm(request):
 
 @login_required(login_url='login')
 def payment(request, id):
+    wallet = request.user.wallet.balance
     subscription = get_object_or_404(Subscriptions, id=id)
     if request.method == 'POST':
         paid_amount = request.POST.get('paid_amount',0)
@@ -341,8 +348,17 @@ def payment(request, id):
         subscription.user = request.user
         subscription.is_active =  True
         subscription.save()
+
+        wallet_amount = request.POST.get('wallet_amount')
+
+        if wallet_amount:
+            wallet, _ = Wallet.objects.get_or_create(user=request.user)
+            wallet.debit(int(wallet_amount), description=f"Used for subscription")
+
+            
         return redirect('order-confirm')
-    context = {'subscription': subscription}
+    context = {'subscription': subscription,
+               'wallet_amount': wallet}
     
     return render(request, 'users/payment.html', context)
     
@@ -350,6 +366,10 @@ def payment(request, id):
 @login_required(login_url='login')
 def orders(request):
     user = request.user
+    reference_point = user.profile.point
+    longitude = reference_point.x
+    latitude = reference_point.y
+    location = get_location_from_point(longitude, latitude)
 
     sort_by = request.GET.get('sort', 'delivery_date')  # default: delivery_date
     direction = request.GET.get('dir', 'asc') 
@@ -375,7 +395,8 @@ def orders(request):
                'title':"Orders",
                 'sort': sort_field,
                 'dir': direction,
-                'wallet_balance': wallet_balance,}
+                'wallet_balance': wallet_balance,
+                'location': location}
     return render(request, './users/orders.html', context)
 
 
