@@ -178,7 +178,7 @@ def restaurant_details(request, pk):
     restaurant = get_object_or_404(RestaurantProfile, pk=pk)
     avg_rating = restaurant.reviews.aggregate(Avg('rating'))['rating__avg']
     reviews = restaurant.reviews.all().count()
-    menu_categories = MenuCategory.objects.filter(is_active=True)
+    menu_categories = MenuCategory.objects.filter(is_active=True, restaurant=restaurant)
     print(f"{menu_categories=}")
     days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     
@@ -187,10 +187,10 @@ def restaurant_details(request, pk):
 
     for menu_category in menu_categories:
         category_prices = {}
-        food_categories = FoodCategory.objects.filter(menu_categories=menu_category, is_active=True)
+        food_categories = FoodCategory.objects.filter(menu_categories=menu_category,restaurant=restaurant, is_active=True)
         print(f"{food_categories=}")
 
-        weekly_menu = defaultdict(lambda: {str(meal): [] for meal in food_categories})
+        weekly_menu = defaultdict(lambda: {str(meal.name): [] for meal in food_categories})
         print(f"{weekly_menu=}")
 
 
