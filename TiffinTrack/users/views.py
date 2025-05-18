@@ -320,7 +320,7 @@ def orders(request):
     orders = Orders.objects.filter(user=user).order_by(f"{order_prefix}{sort_field}")
 
 
-    paginator = Paginator(orders, 1)  # Show 5 orders per page
+    paginator = Paginator(orders, 10)  # Show 5 orders per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
