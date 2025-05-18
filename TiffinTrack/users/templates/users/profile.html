@@ -126,5 +126,47 @@
     </div>
     <!-- edit email modal end -->
 
+    <!-- edit password number modal starts -->
+    <div class="modal profile-modal fade" id="password" aria-hidden="true" aria-labelledby="exampleModalTogglePass"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="exampleModalTogglePass">Password</h1>
+                </div>
+
+                <form method="post" action="{% url 'request_password_change'%}">
+                {% csrf_token %}
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputcurrentPassword" class="form-label">
+                            Current Password</label>
+                        <input type="password" class="form-control" name="current_password"
+                            placeholder="Enter your current password">
+                    </div>
+                    <div class="form-group mt-2">
+                        <label for="inputnewPassword" class="form-label">
+                            New Password</label>
+                        <input type="password" class="form-control" name="new_password"
+                            placeholder="Enter your new password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn theme-btn" data-bs-dismiss="modal">Save</a>
+
+                </div>
+                    {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+                    {% if message %}<p style="color:green;">{{ message }}</p>{% endif %}
+
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+    <!-- edit password number modal end -->
+
+
 
 {% endblock content %}

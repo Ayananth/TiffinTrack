@@ -20,5 +20,9 @@ urlpatterns = [
     path("request-email-change/", views.request_email_change, name="request_email_change"),
     path("confirm-email-change/", views.confirm_email_change, name="confirm_email_change"),
 
+    path('change-password/', views.request_password_change, name='request_password_change'),
+    path("confirm-password-change/<str:token>/", views.confirm_password_change, name="confirm_password_change"),
+
+
 
 ]

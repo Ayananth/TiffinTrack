@@ -15,6 +15,14 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
+from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
+from django.urls import reverse
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import update_session_auth_hash
+
+
+
+
 
 
 #TODO dont give access to admin
@@ -209,3 +217,54 @@ def confirm_email_change(request):
     messages.success(request, "")
 
     return HttpResponse("Your email has been successfully updated.")
+
+
+
+
+User = get_user_model()
+signer = TimestampSigner()
+
+@login_required
+def request_password_change(request):
+    if request.method == "POST":
+        current_password = request.POST.get("current_password")
+        new_password = request.POST.get("new_password")
+
+        if not request.user.check_password(current_password):
+            return render(request, "change_password.html", {"error": "Incorrect current password."})
+
+        # Sign the data (user ID and new password)
+        data = f"{request.user.id}:{new_password}"
+        token = signer.sign(data)
+
+        # Send confirmation email
+        confirm_url = request.build_absolute_uri(
+            reverse("confirm_password_change", args=[token])
+        )
+        send_mail(
+            subject="Confirm Password Change",
+            message=f"Click the link to confirm your password change:\n{confirm_url}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[request.user.email],
+            fail_silently=False,
+        )
+
+
+        messages.success(request,"Confirmation email sent to your new email. Please check your inbox.")
+
+    return redirect('user-profile')
+
+
+
+
+def confirm_password_change(request, token):
+    try:
+        data = signer.unsign(token, max_age=600)  # 10 minutes valid
+        user_id, new_password = data.split(":")
+        user = User.objects.get(id=user_id)
+        user.set_password(new_password)
+        user.save()
+        update_session_auth_hash(request, user)
+        return HttpResponse("Password changed successfully.")
+    except (SignatureExpired, BadSignature, ValueError, User.DoesNotExist):
+        return HttpResponse("Invalid or expired link.", status=400)
