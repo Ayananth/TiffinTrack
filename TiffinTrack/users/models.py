@@ -106,13 +106,25 @@ class Orders(models.Model):
     )
     delivery_date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    refund_issued = models.BooleanField(default=False)
 
     def cancel(self):
-        if self.status in ['PENDING']:
-            self.status = 'Cancelled'
-            self.save()
-            return True
-        return False
+        if self.status != 'PENDING':
+            return False  # Cannot cancel delivered or already cancelled orders
+
+        if self.refund_issued:
+            return False  # Refund already processed
+
+        # Update status
+        self.status = 'CANCELLED'
+        self.refund_issued = True
+        self.save()
+
+        # Refund to wallet
+        wallet, _ = Wallet.objects.get_or_create(user=self.user)
+        wallet.credit(self.food_category.price, description=f"Refund for cancelled order #{self.id}")
+
+        return True
 
     def __str__(self):
         return f"Order #{self.id} by {self.user} from {self.restaurant}"

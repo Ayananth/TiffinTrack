@@ -324,22 +324,31 @@ def orders(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    #wallet balance
+    wallet = getattr(request.user, 'wallet', None)
+    wallet_balance = wallet.balance if wallet else 0
+
 
 
     print(f"{orders=}")
     context = {'orders': page_obj,
                'title':"Orders",
                 'sort': sort_field,
-                'dir': direction,}
+                'dir': direction,
+                'wallet_balance': wallet_balance,}
     return render(request, './users/orders.html', context)
 
 
 @login_required
 def cancel_order(request, order_id):
-    order = get_object_or_404(Orders, id=order_id, user=request.user)
+    try:
+        order = get_object_or_404(Orders, id=order_id, user=request.user)
 
-    if order.cancel():
-        messages.success(request, "Order cancelled successfully.")
-    else:
-        messages.error(request, "Order cannot be cancelled.")
-    return redirect('orders')
+        if order.cancel():
+            messages.success(request, f"Order cancelled successfully.  ₹{order.food_category.price} refunded to your wallet.")
+        else:
+            messages.error(request, "Order cannot be cancelled.")
+    except:
+        messages.error(request,"Server errir")
+    finally:
+        return redirect('orders')

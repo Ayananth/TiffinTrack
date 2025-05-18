@@ -20,7 +20,8 @@
                             <div class="loader-line"></div>
                             <h3>My Order</h3>
                         </div>
-                        <div class="sorting d-flex">
+                        <p>Wallet Balance: {{wallet_balance}}</p>
+                        <div class="sorting d-flex justify-content-end">
                             <p class="p-2">Sort By</p>
                             <p class="p-2"><a href="?sort=delivery_date&dir={% if sort == 'delivery_date' and dir == 'asc' %}desc{% else %}asc{% endif %}">Delivery Date</a></p>
                             <p class="p-2"><a href="?sort=status&dir={% if sort == 'status' and dir == 'asc' %}desc{% else %}asc{% endif %}">Status</a></p>
