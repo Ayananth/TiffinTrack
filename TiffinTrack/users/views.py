@@ -173,85 +173,79 @@ def manage_user_address(request, id=None):
 
 
 
+from collections import defaultdict
+@login_required(login_url='login')
 def restaurant_details(request, pk):
-
     restaurant = get_object_or_404(RestaurantProfile, pk=pk)
+
+    # Restaurant summary
     avg_rating = restaurant.reviews.aggregate(Avg('rating'))['rating__avg']
-    reviews = restaurant.reviews.all().count()
-    menu_categories = MenuCategory.objects.filter(is_active=True, restaurant=restaurant)
-    print(f"{menu_categories=}")
+    reviews_count = restaurant.reviews.count()
     days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    
+
+    # Get active menu categories
+    menu_categories = MenuCategory.objects.filter(is_active=True, restaurant=restaurant)
     menu_data = []
 
-
     for menu_category in menu_categories:
-        category_prices = {}
-        food_categories = FoodCategory.objects.filter(menu_categories=menu_category,restaurant=restaurant, is_active=True)
-        print(f"{food_categories=}")
+        # Get active food categories linked to this menu category and restaurant
+        food_categories = FoodCategory.objects.filter(
+            menu_categories=menu_category,
+            restaurant=restaurant,
+            is_active=True
+        )
 
-        weekly_menu = defaultdict(lambda: {str(meal.name): [] for meal in food_categories})
-        print(f"{weekly_menu=}")
+        # Initialize weekly menu with empty lists for each category per day
+        weekly_menu = defaultdict(lambda: {fc.name: [] for fc in food_categories})
 
-
-        # Get all food items for this menu category
+        # Get available food items in this menu category
         food_items = FoodItem.objects.filter(menu_category=menu_category, is_available=True)
 
-        # Get prices for only those food categories that belong to this menu
-        for food_cat in food_categories:
-            category_prices[food_cat.name] = food_cat.price
-            print(f"Category: {food_cat.name}, Price: {food_cat.price}")
-
-        for item in food_items:
-            # Only include items with both a food_category and a day
-            if item.food_category and item.day:
-                weekly_menu[item.day][item.food_category.name].append(item.name)
-
-        # Sort the weekly menu based on day order
-        sorted_menu = {day: weekly_menu[day] for day in days_order}
-
+        # Category price and timing info
+        category_prices = {}
         start_end_time = {}
 
         for food_cat in food_categories:
-            start_end_time[food_cat.name] = {'start_time': food_cat.start_time,
-                                             'end_time': food_cat.end_time,
-                                             'cancellation_time': food_cat.cancellation_time}
+            category_prices[food_cat.name] = food_cat.price
+            start_end_time[food_cat.name] = {
+                'start_time': food_cat.start_time,
+                'end_time': food_cat.end_time,
+                'cancellation_time': food_cat.cancellation_time,
+            }
 
-        print(f"{start_end_time=}")
+        # Populate weekly_menu with food item names
+        for item in food_items:
+            if item.food_category and item.day:
+                day = item.day
+                category_name = item.food_category.name
+                if category_name in weekly_menu[day]:  # Prevent KeyError
+                    weekly_menu[day][category_name].append(item.name)
 
+        # Sort weekly_menu by day order
+        sorted_menu = {day: weekly_menu.get(day, {}) for day in days_order}
 
-        
-
-        total_price = sum(category_prices.values())
+        # Append structured data for template
         menu_data.append({
             'menu_category': menu_category.name,
+            'menu_description': menu_category.description,
+            'menu_id': menu_category.id,
             'weekly_menu': sorted_menu,
             'category_prices': category_prices,
-            'total_price': total_price,
+            'total_price': sum(category_prices.values()),
             'food_categories': food_categories,
             'start_end_time': start_end_time,
-            'menu_description': menu_category.description,
-            'menu_id': menu_category.id
-            
         })
-
-
-
 
     context = {
         'restaurant': restaurant,
         'rating': avg_rating,
-        'reviews': reviews,
+        'reviews': reviews_count,
         'location': restaurant.location_name,
-         'menu_data': menu_data,
-
-        
+        'menu_data': menu_data,
     }
 
-    print(f"{context=}")
     return render(request, 'users/restaurant_detail.html', context)
-    
-    
+
     
 
 
