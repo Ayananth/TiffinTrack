@@ -8,6 +8,14 @@ from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
 from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory
 from django.core.paginator import Paginator
+from users.models import Orders
+from django.db.models import Count
+from django.utils.timezone import now
+from django.db.models import Count, Q
+from django.utils.timezone import localtime
+from datetime import datetime
+
+
 
 
 
@@ -122,7 +130,6 @@ def restaurant_requests(request):
     return render(request, './admin_panel/register_restaurant.html', context)
 
 
-@login_required()
 def restaurant_add_or_update(request, pk=None):
     if pk:
         restaurant_obj = get_object_or_404(RestaurantProfile, pk=pk)
@@ -147,6 +154,68 @@ def restaurant_add_or_update(request, pk=None):
 
     return render(request, './admin_panel/add-restaurant.html', {'form': form,
                                                                  'food_items': food_items})
+
+def restaurant_dashboard(request, pk=None):
+    today = '2025-05-19'
+    # selected_date = localtime().date()
+    # today = selected_date
+    selected_date = today
+    print(today)
+    restaurant = get_object_or_404(RestaurantProfile, pk=pk)
+
+    date_str = request.GET.get('date')
+    try:
+        selected_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else now().date()
+    except ValueError:
+        selected_date = now().date()
+
+
+    # Total orders per food category for today
+    food_category_orders = (
+        Orders.objects.filter(
+            delivery_date=selected_date,
+            restaurant=restaurant
+        )
+        .values('food_category__name')
+        .annotate(total_orders=Count('id'))
+        .order_by('food_category__name')
+    )
+    print(f"{food_category_orders=}")
+    # Cancelled orders per food category for today
+    cancelled_orders = (
+        Orders.objects.filter(
+            delivery_date=selected_date,
+            restaurant=restaurant,
+            status='CANCELLED'
+        )
+        .values('food_category__name')
+        .annotate(cancelled_orders=Count('id'))
+        .order_by('food_category__name')
+    )
+    print(f"{cancelled_orders=}")
+
+    # Merge both querysets into a single list of dicts
+    data = {}
+    for item in food_category_orders:
+        name = item['food_category__name'] or 'Unknown'
+        data[name] = {'category': name, 'total_orders': item['total_orders'], 'cancelled_orders': 0}
+    for item in cancelled_orders:
+        name = item['food_category__name'] or 'Unknown'
+        if name in data:
+            data[name]['cancelled_orders'] = item['cancelled_orders']
+        else:
+            data[name] = {'category': name, 'total_orders': 0, 'cancelled_orders': item['cancelled_orders']}
+
+    context = {
+        'dashboard_data': data.values(),
+        'restaurant': restaurant,
+        'selected_date': selected_date
+    }
+
+
+
+ 
+    return render(request, './admin_panel/restaurant-dashboard.html', context)
 
     
 
