@@ -132,6 +132,7 @@ class Subscriptions(models.Model):
     total_amount = models.FloatField(null=True, blank=True)
     paid_total_amount = models.FloatField(null=True, blank=True)
     per_day_amount = models.FloatField(null=True, blank=True)
+    num_days = models.IntegerField(blank=True, null=True)
 
 
 

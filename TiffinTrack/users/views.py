@@ -14,6 +14,8 @@ from django.contrib.gis.measure import D  # D for Distance
 from django.contrib.gis.db.models.functions import Distance
 from accounts.utils import get_location_from_point
 from django.core.paginator import Paginator
+from datetime import timedelta
+
 
 
 
@@ -63,7 +65,9 @@ def home(request):
 
 
 
-
+    # menu = get_object_or_404(MenuCategory, id=1)
+    # food_categories = menu.food_categories.all()
+    # print(f"{food_categories=}")
 
 
 
@@ -278,6 +282,34 @@ def subscription_cart(request, id=None):
             subscription.total_amount = number_of_days.days * menu.total_price
             subscription.num_days = number_of_days.days
             subscription.save()
+
+
+            start_date = subscription.start_date.date()
+            end_date = subscription.end_date.date()
+
+            food_categories = menu.food_categories.all()
+            print(f"{food_categories=}")
+
+
+            orders_to_create = []
+            current_date = start_date
+            while current_date <= end_date:
+                for food_category in food_categories:
+                    orders_to_create.append(Orders(
+                        user=user,
+                        restaurant=subscription.restaurant,
+                        food_category=food_category,
+                        food_item=None,  # You can assign a default item here if needed
+                        delivery_date=current_date,
+                        status='PENDING'
+                    ))
+                current_date += timedelta(days=1)
+            print(f"{orders_to_create=}")
+            # Create all orders at once
+            Orders.objects.bulk_create(orders_to_create)
+
+
+
             return redirect('payment', id=subscription.id)
         else:
             messages.error(request, "Form not valid")
