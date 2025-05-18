@@ -5,7 +5,6 @@ from accounts.models import RestaurantProfile
 import datetime
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
-from users.models import Address
 
 
 
@@ -129,7 +128,7 @@ class Subscriptions(models.Model):
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField()
     is_active = models.BooleanField(default=False)
-    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True, related_name='subscriptions')
+    address = models.ForeignKey('users.Address', on_delete=models.SET_NULL, null=True, blank=True, related_name='subscriptions')
     total_amount = models.FloatField(null=True, blank=True)
     paid_total_amount = models.FloatField(null=True, blank=True)
     per_day_amount = models.FloatField(null=True, blank=True)

@@ -3,7 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
-
+from restaurant.models import FoodCategory, FoodItem, RestaurantProfile
 
 class Wallet(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wallet')
@@ -71,3 +71,48 @@ class Address(models.Model):
 
     def __str__(self):
         return f"{self.name}, {self.address_line}, {self.city} - {self.pincode}"
+
+
+
+
+class Orders(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('DELIVERED', 'Delivered'),
+        ('CANCELLED', 'Cancelled'),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='orders'
+    )
+    restaurant = models.ForeignKey(
+        RestaurantProfile,
+        on_delete=models.CASCADE,
+        related_name='received_orders',
+    )
+    food_category = models.ForeignKey(
+        FoodCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='orders'
+    )
+    food_item = models.ForeignKey(
+        FoodItem,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='orders'
+    )
+    delivery_date = models.DateField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+
+    def cancel(self):
+        if self.status in ['PENDING']:
+            self.status = 'Cancelled'
+            self.save()
+            return True
+        return False
+
+    def __str__(self):
+        return f"Order #{self.id} by {self.user} from {self.restaurant}"

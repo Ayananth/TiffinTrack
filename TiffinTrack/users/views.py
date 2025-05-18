@@ -13,10 +13,12 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D  # D for Distance
 from django.contrib.gis.db.models.functions import Distance
 from accounts.utils import get_location_from_point
+from django.core.paginator import Paginator
 
 
 
-from .models import Address
+
+from .models import Address, Orders
 from .forms import AddressForm, SubscriptionForm
 
 
@@ -304,3 +306,30 @@ def payment(request, id):
     
     return render(request, 'users/payment.html', context)
     
+
+@login_required(login_url='login')
+def orders(request):
+    user = request.user
+    orders = Orders.objects.filter(user=user)
+
+    paginator = Paginator(orders, 1)  # Show 5 orders per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+
+    print(f"{orders=}")
+    context = {'orders': page_obj,
+               'title':"Orders"}
+    return render(request, './users/orders.html', context)
+
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(Orders, id=order_id, user=request.user)
+
+    if order.cancel():
+        messages.success(request, "Order cancelled successfully.")
+    else:
+        messages.error(request, "Order cannot be cancelled.")
+    return redirect('orders')
