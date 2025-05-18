@@ -310,7 +310,15 @@ def payment(request, id):
 @login_required(login_url='login')
 def orders(request):
     user = request.user
-    orders = Orders.objects.filter(user=user)
+
+    sort_by = request.GET.get('sort', 'delivery_date')  # default: delivery_date
+    direction = request.GET.get('dir', 'asc') 
+    order_prefix = '' if direction == 'asc' else '-'
+    valid_sort_fields = ['delivery_date', 'status']
+    sort_field = sort_by if sort_by in valid_sort_fields else 'delivery_date'
+
+    orders = Orders.objects.filter(user=user).order_by(f"{order_prefix}{sort_field}")
+
 
     paginator = Paginator(orders, 1)  # Show 5 orders per page
     page_number = request.GET.get('page')
@@ -320,7 +328,9 @@ def orders(request):
 
     print(f"{orders=}")
     context = {'orders': page_obj,
-               'title':"Orders"}
+               'title':"Orders",
+                'sort': sort_field,
+                'dir': direction,}
     return render(request, './users/orders.html', context)
 
 
