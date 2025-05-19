@@ -143,6 +143,26 @@ def restaurant_register(request):
 
     return render(request, './restaurant/restaurant-register.html', context)  
 
+def profile(request):
+    restaurant = get_object_or_404(RestaurantProfile, user=request.user)
+    
+    if request.method == "POST":
+        form = RestaurantProfileForm(request.POST, request.FILES, instance=restaurant)
+        if form.is_valid():
+            restaurant = form.save(commit=False)
+            restaurant.user_type = 'restaurant'
+            restaurant.user = request.user
+            restaurant.is_approved = False
+            restaurant.save()
+            messages.success(request, "Restaurant profile updated.")
+            return redirect('restaurant-profile')
+        else:
+            messages.error(request, "Invalid inputs.")
+    else:
+        form = RestaurantProfileForm(instance=restaurant)
+    
+    context = {'form': form, 'restaurant_obj': restaurant}
+    return render(request, './restaurant/restaurant-profile.html', context)
 
 
 
