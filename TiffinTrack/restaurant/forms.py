@@ -34,3 +34,15 @@ class FoodItemManageForm(forms.ModelForm):
     class Meta:
         model = FoodItem
         exclude = ['restaurant']
+
+
+
+class MenuManageForm(forms.ModelForm):
+    class Meta:
+        model = MenuCategory
+        exclude = ['restaurant']
+
+
+
+
+
