@@ -40,7 +40,7 @@ from .forms import FoodItemManageForm, MenuManageForm, FoodCategoryManageForm
 #     return render(request, './restaurant/login.html')
 
 
-# @login_required(login_url='login')
+@login_required(login_url='login')
 def home(request):
     print("Home page")
     print(request.user)
@@ -103,14 +103,14 @@ def home(request):
     }
     return render(request, './restaurant/dashboard.html', context)
 
-
+@login_required(login_url='login')
 def restaurant_logout(request):
     logout(request)
     request.session.flush() 
     return redirect('login')
 
 
-# @login_required(login_url='login')
+@login_required(login_url='login')
 def restaurant_register(request):
 
     if RestaurantProfile.objects.filter(user=request.user, is_approved=True).exists():
@@ -144,6 +144,7 @@ def restaurant_register(request):
 
     return render(request, './restaurant/restaurant-register.html', context)  
 
+@login_required(login_url='login')
 def profile(request):
     restaurant = get_object_or_404(RestaurantProfile, user=request.user)
     
