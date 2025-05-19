@@ -31,6 +31,7 @@
                                                         <th>User</th>
                                                         <th>Date</th>
                                                         <th>Category</th>
+                                                        <td>Address</td>
                                                         <th>Delivery Status</th>
                                                         <th>Amount</th>
                                                         <th class="text-center">Option</th>
@@ -49,6 +50,8 @@
                                                         <td>{{order.delivery_date}}</td>
 
                                                         <td>{{order.food_category.name}}</td>
+
+                                                        <td>{{order.address}}</td>
 
                                                         <td class="order-success">
                                                                 <span class="{% if order.status == 'PENDING' %}font-warning
