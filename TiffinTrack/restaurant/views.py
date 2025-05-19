@@ -18,7 +18,7 @@ from django.utils.timezone import localtime
 from datetime import datetime
 from accounts.models import CustomUser, UserProfile
 from .models import Subscriptions
-from admin_panel.forms import FoodItemManageForm
+from .forms import FoodItemManageForm
 
 
 
@@ -356,28 +356,40 @@ def foods(request):
 
 @login_required()
 def food_add_or_update(request, pk=None):
+    if request.user.user_type != 'restaurant':
+        messages.error(request, "Not restaurant user")
+        return redirect('login')
     if pk:
         food_obj = get_object_or_404(FoodItem, pk=pk)
     else:
         food_obj = None
 
+    restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
+
+
     if request.method == "POST":
         form = FoodItemManageForm(request.POST, request.FILES, instance=food_obj)
         if form.is_valid():
-            restaurant = form.save()
+            restaurant_form = form.save(commit=False)
+            restaurant_form.restaurant = restaurant_obj
+            restaurant_form.save()
             messages.success(request, f"Food  {'Updated' if pk else 'Created'} ")
-            return redirect('food_items')
+            return redirect('restaurant-food_items')
         else:
             messages.error(request, "Invalid inputs.")
+            print(form.errors)
     else:
         form = FoodItemManageForm(instance=food_obj)
 
 
-    return render(request, './admin_panel/add-food.html', {'form': form})
+    return render(request, './restaurant/add-food.html', {'form': form})
 
 
-@login_required(login_url='admin-login')
+@login_required(login_url='login')
 def delete_food_item(request, id):
+    if request.user.user_type != 'restaurant':
+        messages.error(request, "Not restaurant user")
+        return redirect('login')
     food = get_object_or_404(FoodItem, pk=id)
     food.delete()
-    return redirect('food_items')
+    return redirect('restaurant-food_items')

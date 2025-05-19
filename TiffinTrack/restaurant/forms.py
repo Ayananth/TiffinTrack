@@ -1,5 +1,5 @@
 from django import forms
-from .models import RestaurantProfile, MenuCategory
+from .models import RestaurantProfile, MenuCategory, FoodItem, FoodCategory
 from django.contrib.gis.geos import Point
 
 
@@ -28,3 +28,9 @@ class MenuCategoryForm(forms.ModelForm):
     class Meta:
         model = MenuCategory
         fields = ['name']
+
+
+class FoodItemManageForm(forms.ModelForm):
+    class Meta:
+        model = FoodItem
+        exclude = ['restaurant']
