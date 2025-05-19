@@ -43,6 +43,16 @@ class MenuManageForm(forms.ModelForm):
         exclude = ['restaurant']
 
 
+class FoodCategoryManageForm(forms.ModelForm):
+    class Meta:
+        model = FoodCategory
+        exclude = ['restaurant']
+
+        widgets = {
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+            'cancellation_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
 
 
 

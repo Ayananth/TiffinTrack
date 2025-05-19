@@ -8,18 +8,7 @@ urlpatterns = [
     path('home/',views.home, name='restaurant-home'),
 
 
-    # # Menu Category URLs
-    # path('menu-categories/', views.menu_category_list, name='menu_category_list'),
-    # path('menu-categories/add/', views.menu_category_add, name='menu_category_add'),
-    # path('menu-categories/<int:pk>/edit/', views.menu_category_edit, name='menu_category_edit'),
-    # path('menu-categories/<int:pk>/delete/', views.menu_category_delete, name='menu_category_delete'),
-    
-    # # Food Category URLs
-    path('food-categories/', views.food_category_list, name='food_category_list'),
-    # path('food-categories/add/', views.food_category_add, name='food_category_add'),
-    # path('food-categories/<int:pk>/edit/', views.food_category_edit, name='food_category_edit'),
-    # path('food-categories/<int:pk>/delete/', views.food_category_delete, name='food_category_delete'),
-    
+
 
     path('food_items/', views.foods, name='restaurant-food_items'),
     path('food_items/add', views.food_add_or_update, name='restaurant-food_items-add'),
@@ -36,6 +25,12 @@ urlpatterns = [
     path('menu_items/add', views.menu_add_or_update, name='restaurant-menu_items-add'),
     path('menu_items/edit/<int:pk>/', views.menu_add_or_update, name='restaurant-menu_items-edit'),
     path('menu_items/delete/<int:id>/', views.menu_food_item, name='restaurant-menu_items-delete'),
+
+
+    path('food_category/', views.food_category, name='restaurant-food_category'),
+    path('food_category/add', views.category_add_or_update, name='restaurant-food_category-add'),
+    path('food_category/edit/<int:pk>/', views.category_add_or_update, name='restaurant-food_category-edit'),
+    path('food_category/delete/<int:id>/', views.delete_food_category, name='restaurant-food_category-delete'),
 
 
 

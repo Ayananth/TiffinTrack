@@ -60,10 +60,11 @@ class FoodCategoryManageForm(forms.ModelForm):
         model = FoodCategory
         fields = '__all__'
         widgets = {
-            'start_time': forms.DateInput(attrs={'type': 'time'}),
-            'end_time': forms.DateInput(attrs={'type': 'time'}),
-            'cancellation_time': forms.DateInput(attrs={'type': 'time'})
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+            'cancellation_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
 
 
 

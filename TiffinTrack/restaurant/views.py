@@ -18,7 +18,7 @@ from django.utils.timezone import localtime
 from datetime import datetime
 from accounts.models import CustomUser, UserProfile
 from .models import Subscriptions
-from .forms import FoodItemManageForm, MenuManageForm
+from .forms import FoodItemManageForm, MenuManageForm, FoodCategoryManageForm
 
 
 
@@ -435,3 +435,48 @@ def menu_food_item(request, id):
     menu = get_object_or_404(MenuCategory, pk=id)
     menu.delete()
     return redirect('restaurant-menu_items')
+
+
+
+
+
+@login_required(login_url='admin-login')
+def food_category(request):
+
+
+    foods = FoodCategory.objects.all().order_by('-created_at')
+    context = {
+        'foods': foods
+    }
+    return render(request, './restaurant/food_categories.html', context)
+
+
+def category_add_or_update(request, pk=None):
+    if pk:
+        food_obj = get_object_or_404(FoodCategory, pk=pk)
+    else:
+        food_obj = None
+    restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
+
+
+    if request.method == "POST":
+        form = FoodCategoryManageForm(request.POST, request.FILES, instance=food_obj)
+        if form.is_valid():
+            restaurant_form = form.save(commit=False)
+            restaurant_form.restaurant = restaurant_obj
+            restaurant_form.save()
+            messages.success(request, f"Category  {'Updated' if pk else 'Created'} ")
+            return redirect('restaurant-food_category')
+        else:
+            messages.error(request, "Invalid inputs.")
+    else:
+        form = FoodCategoryManageForm(instance=food_obj)
+
+
+    return render(request, './restaurant/add-category.html', {'form': form})
+
+
+def delete_food_category(request, id):
+    food = get_object_or_404(FoodCategory, pk=id)
+    food.delete()
+    return redirect('restaurant-food_category')
