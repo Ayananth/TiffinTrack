@@ -17,6 +17,37 @@
                                     </div>
                                     <div>
                                         <div class="table-responsive theme-scrollbar">
+
+                                           <div class="filters">
+                                            <form method="get" class="row g-3 align-items-center mb-3">
+                                                <div class="col-auto">
+                                                    <label for="restaurant" class="form-label">Restaurant</label>
+                                                    <input type="text" class="form-control" name="restaurant" value="{{ request.GET.restaurant }}">
+                                                </div>
+                                                <div class="col-auto">
+                                                    <label for="user" class="form-label">User</label>
+                                                    <input type="text" class="form-control" name="user" value="{{ request.GET.user }}">
+                                                </div>
+                                                <div class="col-auto">
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select name="status" class="form-select">
+                                                        <option value="">All</option>
+                                                        <option value="PENDING" {% if request.GET.status == "PENDING" %}selected{% endif %}>PENDING</option>
+                                                        <option value="DELIVERED" {% if request.GET.status == "DELIVERED" %}selected{% endif %}>DELIVERED</option>
+                                                        <option value="CANCELLED" {% if request.GET.status == "CANCELLED" %}selected{% endif %}>CANCELLED</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <label for="delivery_date" class="form-label">Delivery Date</label>
+                                                    <input type="date" class="form-control" name="delivery_date" value="{{ request.GET.delivery_date }}">
+                                                </div>
+                                                <div class="col-auto mt-4">
+                                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                                    <a href="?" class="btn btn-secondary">Reset</a>
+                                                </div>
+                                            </form>
+
+                                            </div>
  
                                             <div class="sorting d-flex justify-content-end">
                                                 <p class="p-2">Sort By</p>
@@ -85,7 +116,8 @@
                                                 </tbody>
                                             </table>
                         <!-- Pagination Controls -->
-                        <div class=" pagination p-4">
+                         {% include "./paginator.html" %}
+                        <!-- <div class=" pagination p-4">
                         <span class="step-links">
                             {% if orders.has_previous %}
                             <a href="?page=1" class="p-2">&laquo; first</a>
@@ -101,7 +133,10 @@
                             <a href="?page={{ orders.paginator.num_pages }}" class="p-2">last &raquo;</a>
                             {% endif %}
                         </span>
-                        </div>
+                        </div> -->
+
+
+
                                         </div>
                                     </div>
                                 </div>

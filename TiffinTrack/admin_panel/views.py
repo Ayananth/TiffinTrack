@@ -439,6 +439,27 @@ def orders(request):
 
     orders = Orders.objects.all().order_by(f"{order_prefix}{sort_field}")
 
+    restaurant = request.GET.get('restaurant')
+    user = request.GET.get('user')
+    status = request.GET.get('status')
+    delivery_date = request.GET.get('delivery_date')
+
+    if restaurant:
+        orders = orders.filter(restaurant__restaurant_name__icontains=restaurant)
+
+    if user:
+        orders = orders.filter(user__username__icontains=user)
+
+    if status:
+        orders = orders.filter(status=status)
+
+    if delivery_date:
+        orders = orders.filter(delivery_date=delivery_date)
+
+
+
+
+
 
     paginator = Paginator(orders, 10)  # Show 5 orders per page
     page_number = request.GET.get('page')
