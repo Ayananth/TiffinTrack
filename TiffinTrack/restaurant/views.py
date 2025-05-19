@@ -18,6 +18,7 @@ from django.utils.timezone import localtime
 from datetime import datetime
 from accounts.models import CustomUser, UserProfile
 from .models import Subscriptions
+from admin_panel.forms import FoodItemManageForm
 
 
 
@@ -328,3 +329,55 @@ def deliver_order(request, order_id):
     finally:
         return redirect('restaurant-orders')
 
+
+
+
+
+@login_required(login_url='login')
+def foods(request):
+
+    if request.user.user_type != 'restaurant':
+        messages.error(request, "Not restaurant user")
+        return redirect('login')
+
+    user = request.user
+    restaurant = get_object_or_404(RestaurantProfile, user=request.user)
+    foods = FoodItem.objects.filter(restaurant=restaurant).order_by('-created_at')
+    paginator = Paginator(foods, 10)  # Show 5 orders per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'foods': page_obj,
+        'orders':page_obj
+    }
+    return render(request, './restaurant/food_items.html', context)
+
+
+@login_required()
+def food_add_or_update(request, pk=None):
+    if pk:
+        food_obj = get_object_or_404(FoodItem, pk=pk)
+    else:
+        food_obj = None
+
+    if request.method == "POST":
+        form = FoodItemManageForm(request.POST, request.FILES, instance=food_obj)
+        if form.is_valid():
+            restaurant = form.save()
+            messages.success(request, f"Food  {'Updated' if pk else 'Created'} ")
+            return redirect('food_items')
+        else:
+            messages.error(request, "Invalid inputs.")
+    else:
+        form = FoodItemManageForm(instance=food_obj)
+
+
+    return render(request, './admin_panel/add-food.html', {'form': form})
+
+
+@login_required(login_url='admin-login')
+def delete_food_item(request, id):
+    food = get_object_or_404(FoodItem, pk=id)
+    food.delete()
+    return redirect('food_items')

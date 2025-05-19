@@ -20,11 +20,11 @@ urlpatterns = [
     # path('food-categories/<int:pk>/edit/', views.food_category_edit, name='food_category_edit'),
     # path('food-categories/<int:pk>/delete/', views.food_category_delete, name='food_category_delete'),
     
-    # # Food Item URLs
-    # path('food-items/', views.food_item_list, name='food_item_list'),
-    # path('food-items/add/', views.food_item_add, name='food_item_add'),
-    # path('food-items/<int:pk>/edit/', views.food_item_edit, name='food_item_edit'),
-    # path('food-items/<int:pk>/delete/', views.food_item_delete, name='food_item_delete'),
+
+    path('food_items/', views.foods, name='restaurant-food_items'),
+    path('food_items/add', views.food_add_or_update, name='restaurant-food_items-add'),
+    path('food_items/edit/<int:pk>/', views.food_add_or_update, name='restaurant-food_items-edit'),
+    path('food_items/delete/<int:id>/', views.delete_food_item, name='restaurant-food_items-delete'),
 
     path('users/', views.users, name='restaurant-users'),
 

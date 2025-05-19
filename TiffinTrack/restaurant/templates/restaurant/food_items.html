@@ -13,7 +13,7 @@
                                     <div class="title-header option-title">
                                         <h5>Food Items</h5>
                                         <form class="d-inline-flex">
-                                            <a href="{% url 'food_items-add'%}" class="align-items-center btn btn-theme d-flex">
+                                            <a href="{% url 'restaurant-food_items-add'%}" class="align-items-center btn btn-theme d-flex">
                                                 <i data-feather="plus-square"></i>Add New
                                             </a>
                                         </form>
@@ -23,8 +23,7 @@
                                         <table class="table category-table dataTable no-footer" id="table_id">
                                             <thead>
                                                 <tr>
-                                                    <th>No.</th>
-                                                    <th>Resaurant Name</th>
+                                                    <th>Id.</th>
                                                     <th>Food</th>
                                                     <th>Price</th>
                                                     <th>Category</th>
@@ -36,11 +35,6 @@
                                                 {% for food in foods %}
                                                     <tr>
                                                         <td class="f-w-600">{{food.id}}</td>
-                                                        <td>
-                                                            <div class="user-name">
-                                                                <span>{{food.restaurant.restaurant_name}}</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <div class="user-name">
                                                                 <span>{{food.name}}</span>
@@ -55,13 +49,13 @@
                                                         <td>
                                                             <ul>
                                                                 <li>
-                                                                    <a href="{% url 'food_items-edit' food.id %}">
+                                                                    <a href="{% url 'restaurant-food_items-edit' food.id %}">
                                                                         <i class="ri-pencil-line"></i>
                                                                     </a>
                                                                 </li>
 
                                                                 <li>
-                                                                    <a href="{% url 'food_items-delete' food.id %}">
+                                                                    <a href="{% url 'restaurant-food_items-delete' food.id %}">
                                                                         <i class="ri-delete-bin-line"></i>
                                                                     </a>
                                                                 </li>
@@ -72,7 +66,7 @@
 
                                             </tbody>
                                         </table>
-                                        {% include "./paginator.html"%}
+                                        {% include "./paginator.html" %}
                                     </div>
                                 </div>
                             </div>
