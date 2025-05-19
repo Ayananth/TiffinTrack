@@ -295,31 +295,31 @@ def subscription_cart(request, id=None):
             subscription.save()
 
 
-            start_date = subscription.start_date.date()
-            end_date = subscription.end_date.date()
+            # start_date = subscription.start_date.date()
+            # end_date = subscription.end_date.date()
 
-            food_categories = menu.food_categories.all()
-            print(f"{food_categories=}")
+            # food_categories = menu.food_categories.all()
+            # print(f"{food_categories=}")
 
 
-            orders_to_create = []
-            current_date = start_date
-            while current_date <= end_date:
-                for food_category in food_categories:
-                    orders_to_create.append(Orders(
-                        user=user,
-                        restaurant=subscription.restaurant,
-                        food_category=food_category,
-                        food_item=None,  # You can assign a default item here if needed
-                        delivery_date=current_date,
-                        status='PENDING',
-                        address = subscription.address
+            # orders_to_create = []
+            # current_date = start_date
+            # while current_date <= end_date:
+            #     for food_category in food_categories:
+            #         orders_to_create.append(Orders(
+            #             user=user,
+            #             restaurant=subscription.restaurant,
+            #             food_category=food_category,
+            #             food_item=None,  # You can assign a default item here if needed
+            #             delivery_date=current_date,
+            #             status='PENDING',
+            #             address = subscription.address
 
-                    ))
-                current_date += timedelta(days=1)
-            print(f"{orders_to_create=}")
-            # Create all orders at once
-            Orders.objects.bulk_create(orders_to_create)
+            #         ))
+            #     current_date += timedelta(days=1)
+            # print(f"{orders_to_create=}")
+            # # Create all orders at once
+            # Orders.objects.bulk_create(orders_to_create)
 
 
 
@@ -355,6 +355,40 @@ def payment(request, id):
         subscription.user = request.user
         subscription.is_active =  True
         subscription.save()
+
+
+        #Place orders
+        start_date = subscription.start_date.date()
+        end_date = subscription.end_date.date()
+        menu = subscription.menu_category
+        food_categories = menu.food_categories.all()
+        print(f"{food_categories=}")
+
+
+        orders_to_create = []
+        current_date = start_date
+        while current_date <= end_date:
+            for food_category in food_categories:
+                orders_to_create.append(Orders(
+                    user=request.user,
+                    restaurant=subscription.restaurant,
+                    food_category=food_category,
+                    food_item=None,  # You can assign a default item here if needed
+                    delivery_date=current_date,
+                    status='PENDING',
+                    address = subscription.address
+
+                ))
+            current_date += timedelta(days=1)
+        print(f"{orders_to_create=}")
+        # Create all orders at once
+        Orders.objects.bulk_create(orders_to_create)
+
+
+
+
+
+
 
         wallet_amount = request.POST.get('wallet_amount')
 
