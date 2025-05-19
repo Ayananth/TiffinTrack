@@ -25,4 +25,9 @@ urlpatterns = [
     # path('food-items/<int:pk>/edit/', views.food_item_edit, name='food_item_edit'),
     # path('food-items/<int:pk>/delete/', views.food_item_delete, name='food_item_delete'),
 
+    path('users/', views.users, name='restaurant-users'),
+
+
+
+
 ]

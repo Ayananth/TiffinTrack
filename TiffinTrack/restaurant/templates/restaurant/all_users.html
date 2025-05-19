@@ -1,0 +1,92 @@
+
+
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+<!-- All User Table Start -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <div class="title-header option-title">
+                        <h5>Subscribers</h5>
+                    </div>
+
+                    <div class="table-responsive theme-scrollbar table-product">
+
+                        
+                        <div id="table_id_filter" class="dataTables_filter d-flex justify-content-end">
+                          <form id="search-form" method="post">
+                            {% csrf_token %}
+                            <label for="user-search">Search User:
+                              <input id="user-search" type="search" name="username" class="" placeholder="" aria-controls="table_id"
+                              {% if request.POST.username %} value="{{ request.POST.username }}"{% endif %}>
+                            </label>
+                            <button class="" type="submit"><i class="ri-search-line"></i></button>
+                            <!-- Close button that resets and submits the form -->
+                            <button type="button" class="btn-close" id="close-btn" aria-label="Close"></button>
+
+                          </form>
+                        </div>
+
+                        <table class="table category-table dataTable no-footer" id="table_id">
+                        <thead>
+                          <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                            <th>start_date</th>
+                            <th>end_date</th>
+                          </tr>
+                        </thead>
+        
+                        <tbody>
+                          {% for user in page_obj %}
+                          <tr>
+                            <td class="f-w-600">{{ user.id }}</td>
+                            <td>
+                              <div class="user-name">
+                                <span>{{ user }}</span>
+                              </div>
+                            </td>
+        
+                            <td class="">{{ user.user.email }}</td>
+                            
+                            <td>{{user.address}}</td>
+                            <td>{{user.user.phone}} </td>
+                            <td class="">{{ user.start_date }}</td>
+                            <td>{{user.end_date}}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+      
+      <!-- Pagination Controls -->
+       {% include "./paginator.html" %}
+
+    </div>
+</div>
+
+<script>
+  // cancel icon
+    document.getElementById('close-btn').addEventListener('click', function () {
+    const form = document.getElementById('search-form');
+    
+    // Clear input manually (optional but reliable)
+    form.querySelector('input[name="username"]').value = '';
+
+    // Submit the form
+    form.submit();
+  });
+</script>
+<!-- All User Table Ends-->
+{%endblock%}

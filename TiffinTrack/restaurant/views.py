@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from accounts.forms import UserRegisterForm
@@ -14,6 +16,9 @@ from django.utils.timezone import now
 from django.db.models import Count, Q
 from django.utils.timezone import localtime
 from datetime import datetime
+from accounts.models import CustomUser, UserProfile
+from .models import Subscriptions
+
 
 
 # def restaurant_login(request):
@@ -192,3 +197,27 @@ def food_category_list(request):
     restaurant = request.user.restaurantprofile
     food_categories = FoodCategory.objects.filter(restaurant=restaurant)
     return render(request, 'restaurant/food_category_list.html', {'food_categories': food_categories})
+
+
+
+def users(request):
+
+
+    restaurant = get_object_or_404(RestaurantProfile, user=request.user)
+    subscriptions = Subscriptions.objects.filter(restaurant=restaurant, user__isnull=False)
+
+    for sub in subscriptions:
+        if sub.user is not None:
+            print(sub.user.email)
+
+
+
+    # Pagination logic
+    paginator = Paginator(subscriptions, 10)  # Show 10 users per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj
+    }
+    return render(request, './restaurant/all_users.html', context)
