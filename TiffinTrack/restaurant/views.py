@@ -111,9 +111,37 @@ def restaurant_logout(request):
 
 # @login_required(login_url='login')
 def restaurant_register(request):
-    # if request.user.is_authenticated:
-    #     return redirect('restaurant-home')
-    return render(request, './restaurant/home.html')  
+
+    if RestaurantProfile.objects.filter(user=request.user, is_approved=True).exists():
+        messages.success(request, "Manage your restaurant")
+        return redirect('restaurant-home')
+
+    try:
+        restaurant = RestaurantProfile.objects.get(user=request.user, is_approved=False)
+    except RestaurantProfile.DoesNotExist:
+        restaurant = None
+
+
+    if request.method == "POST":
+        form = RestaurantProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            restaurant = form.save(commit=False)
+            restaurant.user_type = 'restaurant'
+            restaurant.user = request.user
+            restaurant.is_approved = False
+            restaurant.save()
+            name = form.cleaned_data.get('restaurant_name')
+            messages.success(request, f"Restaurant request sent")
+            return redirect('restaurant-register')
+        else:
+            messages.error(request, "Invalid inputs.")
+    else:
+        form = RestaurantProfileForm(instance=restaurant)
+
+    context = {'form': form, 'restaurant': restaurant,
+               'restaurant_registration':True}
+
+    return render(request, './restaurant/restaurant-register.html', context)  
 
 
 

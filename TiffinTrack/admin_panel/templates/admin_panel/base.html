@@ -370,6 +370,21 @@
     
     <!-- Theme js -->
     <script src="{% static 'backend/assets/js/script.js' %}"></script>
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("id_point");
+  const value = input.value.trim();
+
+  const match = value.match(/^SRID=\d+;POINT\s*\(\s*([0-9\.\-]+)\s+([0-9\.\-]+)\s*\)$/);
+  if (match) {
+    const lon = match[1];
+    const lat = match[2];
+    input.value = `${lon},${lat}`; // Overwrite value for user clarity
+    // Optional: store in hidden lat/lon inputs or display on a map
+    console.log("Extracted from backend WKT:", lat, lon);
+  }
+});
+</script>
     
     <script>
         $("#checkall").change(function () {

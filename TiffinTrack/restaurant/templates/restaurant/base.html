@@ -104,6 +104,8 @@
                         Delight your taste with our most famous food !!
                     </span>
                 </div>
+                        {%if not restaurant_registration%}
+                
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
                     <ul class="nav-menus">
 
@@ -125,6 +127,8 @@
                         </li>
                     </ul>
                 </div>
+
+                {%endif%}
                 <div class="input-box">
                     <i class="ri-search-line"></i>
                     <input class="search-box" type="search" placeholder="What are you looking for?">
@@ -160,8 +164,12 @@
                             <i data-feather="arrow-left"></i>
                         </div>
 
+
                         <div id="sidebar-menu">
                             <ul class="sidebar-links" id="simple-bar">
+
+                        {%if not restaurant_registration%}
+
                                 <li class="back-btn"></li>
 
                                 <li class="sidebar-list">
@@ -236,10 +244,12 @@
                                     </a>
                                 </li>
 
+                                {%endif%}
 
 
                             </ul>
                         </div>
+
 
                         <div class="right-arrow" id="right-arrow">
                             <i data-feather="arrow-right"></i>
