@@ -44,7 +44,7 @@ def admin_logout(request):
 @never_cache
 @login_required(login_url='admin-login')
 def home(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_superuser:
         return redirect('admin-login')
     username = request.POST.get("username")
     if request.method == 'POST' and username:
@@ -59,7 +59,7 @@ def home(request):
 
 @login_required(login_url='admin-login')
 def all_users(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_superuser:
         return redirect('admin-login')
     username = request.POST.get("username")
     if request.method == 'POST' and username:
@@ -80,6 +80,8 @@ def all_users(request):
 
 @login_required(login_url='admin-login')
 def add_users(request):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
     if request.method == "POST":
         print(request.POST.dict())  # cleaner view
         print("Adding new user by admin")
@@ -120,7 +122,7 @@ def restaurants(request):
 @never_cache
 @login_required(login_url='admin-login')
 def restaurant_requests(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_superuser:
         return redirect('admin-login')
 
     restaurants = RestaurantProfile.objects.filter(is_approved=False)
@@ -131,6 +133,8 @@ def restaurant_requests(request):
 
 
 def restaurant_add_or_update(request, pk=None):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
     if pk:
         restaurant_obj = get_object_or_404(RestaurantProfile, pk=pk)
     else:
@@ -162,6 +166,8 @@ def restaurant_add_or_update(request, pk=None):
 
 
 def restaurant_dashboard(request, pk=None):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
     today = '2025-05-19'
     # selected_date = localtime().date()
     # today = selected_date
@@ -227,7 +233,7 @@ def restaurant_dashboard(request, pk=None):
 
 @login_required(login_url='admin-login')
 def restaurant_approve(request, pk):
-    if not request.user.is_authenticated:
+    if not request.user.is_superuser:
         return redirect('admin-login')
     restaurants = RestaurantProfile.objects.get(pk=pk)
     if request.method == "POST":
@@ -243,6 +249,8 @@ def restaurant_approve(request, pk):
 @never_cache
 @login_required(login_url='admin-login')
 def delete_restaurant(request, id):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
     restaurant = get_object_or_404(RestaurantProfile, pk=id)
     restaurant.delete()
     return redirect('restaurants')
@@ -250,6 +258,8 @@ def delete_restaurant(request, id):
 @never_cache
 @login_required(login_url='admin-login')
 def delete_user(request, id):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
     user = get_object_or_404(CustomUser, pk=id)
     user.delete()
     messages.success(request,"User deleted")
@@ -261,6 +271,8 @@ def delete_user(request, id):
 @never_cache
 @login_required(login_url='admin-login')
 def update_user(request, id):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
     print("_-------------------------------")
     user = get_object_or_404(CustomUser, id=id)
     print(user.is_blocked)
@@ -295,6 +307,7 @@ def update_user(request, id):
 
 @login_required(login_url='admin-login')
 def foods(request):
+
     if not request.user.is_superuser:
         return redirect('admin-login')
 
@@ -305,8 +318,10 @@ def foods(request):
     return render(request, './admin_panel/food_items.html', context)
 
 
-@login_required()
+@login_required(login_url='admin-login')
 def food_add_or_update(request, pk=None):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
     if pk:
         food_obj = get_object_or_404(FoodItem, pk=pk)
     else:
@@ -329,6 +344,8 @@ def food_add_or_update(request, pk=None):
 
 @login_required(login_url='admin-login')
 def delete_food_item(request, id):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
     food = get_object_or_404(FoodItem, pk=id)
     food.delete()
     return redirect('food_items')
