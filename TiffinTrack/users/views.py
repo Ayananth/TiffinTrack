@@ -15,6 +15,8 @@ from django.contrib.gis.db.models.functions import Distance
 from accounts.utils import get_location_from_point
 from django.core.paginator import Paginator
 from datetime import timedelta
+from datetime import datetime
+
 
 
 
@@ -407,15 +409,25 @@ def orders(request):
 
 @login_required
 def cancel_order(request, order_id):
+    print("Order cancellation")
     try:
         order = get_object_or_404(Orders, id=order_id, user=request.user)
+        now = timezone.now()
+        cancellation_datetime = datetime.combine(now.date(), order.food_category.cancellation_time)
+        cancellation_datetime = timezone.make_aware(cancellation_datetime, timezone.get_current_timezone())
+        print(f"{now=}")
+        print(f"{cancellation_datetime=}")
 
+        if now > cancellation_datetime:
+            messages.error(request, "Late for order cancellation")
+            return redirect('orders')
         if order.cancel():
             messages.success(request, f"Order cancelled successfully.  ₹{order.food_category.price} refunded to your wallet.")
         else:
             messages.error(request, "Order cannot be cancelled.")
-    except:
-        messages.error(request,"Server errir")
+    except Exception as e:
+        print(f"{e=}")
+        messages.error(request,"Server error")
     finally:
         return redirect('orders')
     
