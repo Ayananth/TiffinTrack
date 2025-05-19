@@ -289,6 +289,7 @@ def subscription_cart(request, id=None):
             subscription.per_day_amount = menu.total_price
             subscription.total_amount = number_of_days.days * menu.total_price
             subscription.num_days = number_of_days.days
+            subscription.address = form.cleaned_data.get('address')
             subscription.save()
 
 
@@ -309,7 +310,9 @@ def subscription_cart(request, id=None):
                         food_category=food_category,
                         food_item=None,  # You can assign a default item here if needed
                         delivery_date=current_date,
-                        status='PENDING'
+                        status='PENDING',
+                        address = subscription.address
+
                     ))
                 current_date += timedelta(days=1)
             print(f"{orders_to_create=}")

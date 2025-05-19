@@ -107,6 +107,8 @@ class Orders(models.Model):
     delivery_date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     refund_issued = models.BooleanField(default=False)
+    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
+
 
     def cancel(self):
         if self.status != 'PENDING':
