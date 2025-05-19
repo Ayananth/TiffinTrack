@@ -136,6 +136,8 @@ def restaurant_add_or_update(request, pk=None):
     else:
         restaurant_obj = None
 
+    food_items = [] 
+
     if request.method == "POST":
         form = RestaurantRegisterForm(request.POST, request.FILES, instance=restaurant_obj)
         if form.is_valid():
@@ -149,11 +151,15 @@ def restaurant_add_or_update(request, pk=None):
             messages.error(request, "Invalid inputs.")
     else:
         form = RestaurantRegisterForm(instance=restaurant_obj)
-        food_items = FoodItem.objects.select_related('menu_category').filter(restaurant=restaurant_obj)
-        print(food_items)
 
-    return render(request, './admin_panel/add-restaurant.html', {'form': form,
-                                                                 'food_items': food_items})
+    if restaurant_obj:
+        food_items = FoodItem.objects.select_related('menu_category').filter(restaurant=restaurant_obj)
+
+    return render(request, './admin_panel/add-restaurant.html', {
+        'form': form,
+        'food_items': food_items
+    })
+
 
 def restaurant_dashboard(request, pk=None):
     today = '2025-05-19'

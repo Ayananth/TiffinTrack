@@ -48,6 +48,10 @@
                                                                     <div class="input-box">
                                                                         <h6>{{ field.label }}</h6>
                                                                         <span>{{ field }}</span>
+                                                                        {% if field.name == 'point' %}
+                                                                            <div id="suggestions">
+                                                                            </div>
+                                                                        {% endif %}
                                                                         {% if field.errors %}
                                                                         <div class="text-danger">
                                                                             {% for error in field.errors %}
@@ -328,182 +332,6 @@
                                             <!-- Each menu end -->
                                         </div>
 
-                                        <div class="tab-pane fade" id="pills-profile" role="tabpanel">
-                                            <div class="card-header-1">
-                                                <h5 class="mb-2">Product Related Permition</h5>
-                                            </div>
-                                            <div class="input-items">
-                                                <div class="row gy-3 mb-4">
-                                                    <div class="col-md-6">
-                                                        <div class="input-box">
-                                                            <h6>Add Product</h6>
-                                                            <div>
-                                                                <form class="radio-section">
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" checked>
-                                                                        <i></i>
-                                                                        <span>Allow</span>
-                                                                    </label>
-    
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" />
-                                                                        <i></i>
-                                                                        <span>Deny</span>
-                                                                    </label>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="input-box">
-                                                            <h6>Update Product</h6>
-                                                            <div>
-                                                                <form class="radio-section">
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" >
-                                                                        <i></i>
-                                                                        <span>Allow</span>
-                                                                    </label>
-    
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" checked/>
-                                                                        <i></i>
-                                                                        <span>Deny</span>
-                                                                    </label>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="input-box">
-                                                            <h6>Delete Product</h6>
-                                                            <div>
-                                                                <form class="radio-section">
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" >
-                                                                        <i></i>
-                                                                        <span>Allow</span>
-                                                                    </label>
-    
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" checked>
-                                                                        <i></i>
-                                                                        <span>Deny</span>
-                                                                    </label>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="input-box">
-                                                            <h6>Apply Discount</h6>
-                                                            <div>
-                                                                <form class="radio-section">
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" checked>
-                                                                        <i></i>
-                                                                        <span>Allow</span>
-                                                                    </label>
-    
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" />
-                                                                        <i></i>
-                                                                        <span>Deny</span>
-                                                                    </label>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-header-1">
-                                                <h5 class="my-2">Category Related Permition</h5>
-                                            </div>
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-md-6">
-                                                        <div class="input-box">
-                                                            <h6>Add Product</h6>
-                                                            <div>
-                                                                <form class="radio-section">
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" checked>
-                                                                        <i></i>
-                                                                        <span>Allow</span>
-                                                                    </label>
-    
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" />
-                                                                        <i></i>
-                                                                        <span>Deny</span>
-                                                                    </label>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="input-box">
-                                                            <h6>Update Product</h6>
-                                                            <div>
-                                                                <form class="radio-section">
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" >
-                                                                        <i></i>
-                                                                        <span>Allow</span>
-                                                                    </label>
-    
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" checked/>
-                                                                        <i></i>
-                                                                        <span>Deny</span>
-                                                                    </label>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="input-box">
-                                                            <h6>Delete Product</h6>
-                                                            <div>
-                                                                <form class="radio-section">
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" >
-                                                                        <i></i>
-                                                                        <span>Allow</span>
-                                                                    </label>
-    
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" checked>
-                                                                        <i></i>
-                                                                        <span>Deny</span>
-                                                                    </label>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="input-box">
-                                                            <h6>Apply Discount</h6>
-                                                            <div>
-                                                                <form class="radio-section">
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" checked>
-                                                                        <i></i>
-                                                                        <span>Allow</span>
-                                                                    </label>
-    
-                                                                    <label>
-                                                                        <input type="radio" name="opinion" />
-                                                                        <i></i>
-                                                                        <span>Deny</span>
-                                                                    </label>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -515,4 +343,63 @@
         </div>
     </div>
 </div>
+<script>
+    const searchInput = document.getElementById("id_point");
+    const suggestionsBox = document.getElementById("suggestions");
+    let debounceTimeout;
+
+    searchInput.addEventListener("input", () => {
+      clearTimeout(debounceTimeout);
+      const query = searchInput.value.trim();
+      if (query.length < 3) {
+        suggestionsBox.innerHTML = "";
+        return;
+      }
+
+      debounceTimeout = setTimeout(() => {
+        fetchSuggestions(query);
+      }, 300);
+    });
+
+    async function fetchSuggestions(query) {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        suggestionsBox.innerHTML = "";
+        data.forEach(place => {
+          const div = document.createElement("div");
+          div.className = "suggestion-item";
+          div.textContent = place.display_name;
+          div.onclick = () => {
+            searchInput.value = place.display_name;
+            suggestionsBox.innerHTML = "";
+            showLocationDetails(place);
+          };
+          suggestionsBox.appendChild(div);
+        });
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      }
+    }
+
+    function showLocationDetails(place) {
+      lat = place.lat
+      lon = place.lon
+      searchInput.value = `${lon},${lat}`;
+      console.log("Check");
+      
+      console.log(searchInput.value);
+      
+      document.getElementById("address").textContent = place.display_name;
+    }
+
+    // Optional: hide suggestions if clicking outside
+    document.addEventListener("click", (e) => {
+      if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        suggestionsBox.innerHTML = "";
+      }
+    });
+  </script>
 {%endblock%}

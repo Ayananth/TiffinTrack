@@ -3,6 +3,8 @@ from accounts.models import CustomUser
 from django.contrib.auth.forms import UserCreationForm
 from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory
 from django.db.models import DateField, DateTimeField
+from django.contrib.gis.geos import Point
+
 
 class AdminUserRegisterForm(UserCreationForm):
     email = forms.EmailField()
@@ -34,6 +36,19 @@ class RestaurantRegisterForm(forms.ModelForm):
     class Meta:
         model = RestaurantProfile
         fields = '__all__'
+    point = forms.CharField(widget=forms.TextInput(attrs={
+        'placeholder': 'Search location...',
+        'id': 'id_point',
+        'autocomplete': 'off'
+    }))
+    def clean_point(self):
+        value = self.cleaned_data['point']
+        print("Raw point field value received:", value)
+        try:
+            lon, lat = map(float, value.split(','))
+            return Point(lon, lat)
+        except Exception:
+            raise forms.ValidationError("Invalid format for coordinates. Expected 'longitude,latitude'.")
 
 class FoodItemManageForm(forms.ModelForm):
     class Meta:
