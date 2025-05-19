@@ -43,14 +43,11 @@ from .models import Subscriptions
 def home(request):
     print("Home page")
     print(request.user)
-    # if not request.user.is_restaurant_user:
-    #     print("not restaurant user")
-    #     messages.error(request, "not restaurant user")
-
-        # return render(request, './restaurant/login.html')
+    if request.user.user_type != 'restaurant':
+        messages.error(request, "Not restaurant user")
+        return redirect('login')
+    
     today = '2025-05-19'
-    # selected_date = localtime().date()
-    # today = selected_date
     selected_date = today
     print(today)
     restaurant = get_object_or_404(RestaurantProfile, user=request.user)
@@ -201,18 +198,11 @@ def food_category_list(request):
 
 
 def users(request):
-
-
+    if request.user.user_type != 'restaurant':
+        messages.error(request, "Not restaurant user")
+        return redirect('login')
     restaurant = get_object_or_404(RestaurantProfile, user=request.user)
     subscriptions = Subscriptions.objects.filter(restaurant=restaurant, user__isnull=False)
-
-    for sub in subscriptions:
-        if sub.user is not None:
-            print(sub.user.email)
-
-
-
-    # Pagination logic
     paginator = Paginator(subscriptions, 10)  # Show 10 users per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
