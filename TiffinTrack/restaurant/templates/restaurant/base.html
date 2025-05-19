@@ -7,14 +7,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="TiffinTrack admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+        content="Zomo admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
     <meta name="keywords"
-        content="admin template,TiffinTrack admin template, dashboard template, flat admin template, responsive admin template, web app">
+        content="admin template,Zomo admin template, dashboard template, flat admin template, responsive admin template, web app">
 
         <meta name="author" content="pixelstrap">
         <link rel="icon" href="{% static 'backend/assets/images/favicon.png' %}" type="image/x-icon">
         <link rel="shortcut icon" href="{% static 'backend/assets/images/favicon.png' %}" type="image/x-icon">
-        <title>TiffinTrack - Dashboard</title>
+        <title>TiffinTrack</title>
         
         <!-- Google font-->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -106,148 +106,17 @@
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
                     <ul class="nav-menus">
-                        <li class="search-icon">
-                            <span class="header-search">
-                                <i class="ri-search-line"></i>
-                            </span>
-                        </li>
-                        <li class="onhover-dropdown">
-                            <div class="notification-box">
-                                <i class="ri-notification-line"></i>
-                                <span class="badge rounded-pill badge-theme">4</span>
-                            </div>
-                            <ul class="notification-dropdown onhover-show-div">
-                                <li>
-                                    <i class="ri-notification-line"></i>
-                                    <h4 class="mb-0">Notitications</h4>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-primary"></i>Delivery processing <span
-                                            class="pull-right">10 min.</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-success"></i>Order Complete<span
-                                            class="pull-right">1 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-info"></i>Tickets Generated<span
-                                            class="pull-right">3 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-danger"></i>Delivery Complete<span
-                                            class="pull-right">6 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <a class="btn btn-primary" href="javascript:void(0)">Check all notification</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="onhover-dropdown">
-                            <div class="messages-box">
-                                <i class="ri-message-3-line"></i>
-                            </div>
-                            <ul class="messages-dropdown onhover-show-div">
-                                <li>
-                                    <i class="ri-message-3-line"></i>
-                                    <h4 class="mb-0">Messages</h4>
-                                </li>
-                                <li>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="./backend/assetsimages/user/1.jpg" alt="">
-                                        <div>
-                                            <h5>
-                                                Nullam tempor
-                                            </h5>
-                                            <p>Curabitur facilisis erat viverra.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="./backend/assetsimages/user/2.jpg" alt="">
-                                        <div>
-                                            <h5>
-                                                Nullam tempor
-                                            </h5>
-                                            <p>Curabitur facilisis erat viverra.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="./backend/assetsimages/user/3.jpg" alt="">
-                                        <div>
-                                            <h5>
-                                                Nullam tempor
-                                            </h5>
-                                            <p>Curabitur facilisis erat viverra.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="./backend/assetsimages/user/4.jpg" alt="">
-                                        <div>
-                                            <h5>
-                                                Nullam tempor 
-                                            </h5>
-                                            <p>Curabitur facilisis erat viverra.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <a class="btn btn-primary" href="javascript:void(0)">Go to Inbox</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <div class="mode">
-                                <i class="ri-moon-line"></i>
-                            </div>
-                        </li>
+
                         <li class="profile-nav onhover-dropdown pe-0 me-0">
                             <div class="media profile-media">
-                                <img class="user-profile rounded-circle" src="backend/assetsimages/users/4.jpg" alt="">
                                 <div class="user-name-hide media-body">
-                                    <span>Emay Walter</span>
-                                    <p class="mb-0 font-roboto">Admin<i class="middle ri-arrow-down-s-line"></i></p>
+                                    <p class="mb-0 font-roboto">{{user}}<i class="middle ri-arrow-down-s-line"></i></p>
                                 </div>
                             </div>
                             <ul class="profile-dropdown onhover-show-div">
                                 <li>
-                                    <a href="all-users.html">
-                                        <i data-feather="users"></i>
-                                        <span>Users</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="order-list.html">
-                                        <i data-feather="archive"></i>
-                                        <span>Orders</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="support-ticket.html">
-                                        <i data-feather="phone"></i>
-                                        <span>Spports Tickets</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="profile-setting.html">
-                                        <i data-feather="settings"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'logout' %}">
+                                    <a data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                        href="javascript:void(0)">
                                         <i data-feather="log-out"></i>
                                         <span>Log out</span>
                                     </a>
@@ -296,7 +165,7 @@
                                 <li class="back-btn"></li>
 
                                 <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="index.html">
+                                    <a class="sidebar-link sidebar-title link-nav" href="{% url 'restaurant-home'%}">
                                         <i class="ri-home-line"></i>
                                         <span>Dashboard</span>
                                     </a>
@@ -305,15 +174,15 @@
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-store-3-line"></i>
-                                        <span>Menu Category</span>
+                                        <span>Menu Items</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="{% url 'menu_category_list' %}">Menus</a>
+                                            <a href="{% url 'menu_items' %}">Menu Items</a>
                                         </li>
 
                                         <li>
-                                            <a href="{% url 'menu_category_add' %}">Add New Menu</a>
+                                            <a href="{% url 'menu_items-add' %}">Add New Menu</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -324,22 +193,17 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="category.html">Category List</a>
+                                            <a href="{%url 'food_category' %}">Category List</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-categorys.html">Create Category</a>
+                                            <a href="{% url 'food_category-add' %}">Create Category</a>
                                         </li>
                                     </ul>
                                 </li>
 
 
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="restaurants.html">
-                                        <i class="ri-shopping-bag-2-line"></i>
-                                        <span>Restaurants</span>
-                                    </a>
-                                </li>
+
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-bowl-line"></i>
@@ -347,11 +211,11 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="foods.html">Food List</a>
+                                            <a href="{%url 'food_items'%}">Food List</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-food.html">Create Food</a>
+                                            <a href="{%url 'food_items-add'%}">Create Food</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -370,31 +234,18 @@
                                     </ul>
                                 </li>
 
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-settings-line"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="profile-setting.html">Profile Setting</a>
-                                        </li>
-                                    </ul>
-                                </li>
+
+
 
                                 <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="reports.html">
-                                        <i class="ri-file-chart-line"></i>
-                                        <span>Reports</span>
+                                    <a class="sidebar-link sidebar-title" href="{% url 'admin-orders' %}">
+                                        <i class="ri-archive-line"></i>
+                                        <span>Orders</span>
                                     </a>
                                 </li>
 
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="list-page.html">
-                                        <i class="ri-list-check"></i>
-                                        <span>List Page</span>
-                                    </a>
-                                </li>
+
+
                             </ul>
                         </div>
 
@@ -427,7 +278,7 @@
                     <footer class="footer">
                         <div class="row">
                             <div class="col-md-12 footer-copyright text-center">
-                                <!-- <p class="mb-0">Copyright 2024 ©TiffinTrack template by pixelstrap</p> -->
+                                <!-- <p class="mb-0">Copyright 2024 ©Zomo template by pixelstrap</p> -->
                             </div>
                         </div>
                     </footer>
@@ -457,7 +308,7 @@
                 <div class="modal-footer">
                     <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
                     aria-label="Close">No</button>
-                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a href="login.html">Yes</a></button>
+                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a href="{% url 'admin-logout' %}">Yes</a></button>
                 </div>
             </div>
         </div>

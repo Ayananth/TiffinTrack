@@ -5,9 +5,15 @@ from accounts.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from .models import RestaurantProfile, MenuCategory, FoodCategory, FoodItem
 from .forms import RestaurantProfileForm, MenuCategoryForm
+from users.models import Orders
 
 
 
+from django.db.models import Count
+from django.utils.timezone import now
+from django.db.models import Count, Q
+from django.utils.timezone import localtime
+from datetime import datetime
 
 
 # def restaurant_login(request):
@@ -28,44 +34,71 @@ from .forms import RestaurantProfileForm, MenuCategoryForm
 #     return render(request, './restaurant/login.html')
 
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def home(request):
     print("Home page")
     print(request.user)
-    if not request.user.is_restaurant_user:
-        print("not restaurant user")
-        messages.error(request, "not restaurant user")
+    # if not request.user.is_restaurant_user:
+    #     print("not restaurant user")
+    #     messages.error(request, "not restaurant user")
 
-        return render(request, './restaurant/login.html')
-    
+        # return render(request, './restaurant/login.html')
+    today = '2025-05-19'
+    # selected_date = localtime().date()
+    # today = selected_date
+    selected_date = today
+    print(today)
+    restaurant = get_object_or_404(RestaurantProfile, user=request.user)
 
-    restaurant = RestaurantProfile.objects.filter(user=request.user).first()
-    menu_items = {}
-    print(f"{restaurant=}")
-    if restaurant:
-        if restaurant.is_approved:
-            menu_items = FoodItem.objects.filter(restaurant=restaurant)
-            print(f"{menu_items=}")
+    date_str = request.GET.get('date')
+    try:
+        selected_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else now().date()
+    except ValueError:
+        selected_date = now().date()
 
-        
-    if request.method == 'POST':
-        form = RestaurantProfileForm(request.POST, request.FILES)
-        if form.is_valid():
-            restaurant_profile = form.save(commit=False)  # Don't save yet
-            restaurant_profile.user = request.user        # Assign the user
-            restaurant_profile.save()                     # Now save it
-            return redirect('restaurant-home')
+
+    # Total orders per food category for today
+    food_category_orders = (
+        Orders.objects.filter(
+            delivery_date=selected_date,
+            restaurant=restaurant
+        )
+        .values('food_category__name')
+        .annotate(total_orders=Count('id'))
+        .order_by('food_category__name')
+    )
+    print(f"{food_category_orders=}")
+    # Cancelled orders per food category for today
+    cancelled_orders = (
+        Orders.objects.filter(
+            delivery_date=selected_date,
+            restaurant=restaurant,
+            status='CANCELLED'
+        )
+        .values('food_category__name')
+        .annotate(cancelled_orders=Count('id'))
+        .order_by('food_category__name')
+    )
+    print(f"{cancelled_orders=}")
+
+    # Merge both querysets into a single list of dicts
+    data = {}
+    for item in food_category_orders:
+        name = item['food_category__name'] or 'Unknown'
+        data[name] = {'category': name, 'total_orders': item['total_orders'], 'cancelled_orders': 0}
+    for item in cancelled_orders:
+        name = item['food_category__name'] or 'Unknown'
+        if name in data:
+            data[name]['cancelled_orders'] = item['cancelled_orders']
         else:
-            print("Form not valid")
-            print(form.errors)
-            messages.error(request, "Form not valid")
+            data[name] = {'category': name, 'total_orders': 0, 'cancelled_orders': item['cancelled_orders']}
 
-    else:
-        form = RestaurantProfileForm()
-
-
-    return render(request, './restaurant/dashboard.html', context={'form':form, 'restaurants': restaurant, 'menu_items':menu_items})
-    # return render(request, './restaurant/home.html', context={'form':form, 'restaurants': restaurant, 'menu_items':menu_items})
+    context = {
+        'dashboard_data': data.values(),
+        'restaurant': restaurant,
+        'selected_date': selected_date
+    }
+    return render(request, './restaurant/dashboard.html', context)
 
 
 def restaurant_logout(request):
@@ -74,25 +107,11 @@ def restaurant_logout(request):
     return redirect('login')
 
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def restaurant_register(request):
     # if request.user.is_authenticated:
     #     return redirect('restaurant-home')
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)  
-        if form.is_valid():
-            user = form.save(commit=False)  # Don't save to database yet
-            user.user_type = 'restaurant'   # Set user_type explicitly
-            user.save()  # Now save to database
-            username = form.cleaned_data.get('username')
-            messages.success(request, f"Account created for {username}! Try login")
-            return redirect('login')   
-    else:
-        form = UserRegisterForm()
-    context = {  
-        'form':form  
-    }  
-    return render(request, './restaurant/register.html', context)  
+    return render(request, './restaurant/home.html')  
 
 
 
