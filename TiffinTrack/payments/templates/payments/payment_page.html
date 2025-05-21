@@ -1,0 +1,13 @@
+<form action="{{ callback_url }}" method="POST">
+  {% csrf_token %}
+  <script src="https://checkout.razorpay.com/v1/checkout.js"
+          data-key="{{ razorpay_key_id }}"
+          data-amount="{{ amount }}"
+          data-currency="INR"
+          data-order_id="{{ order_id }}"
+          data-buttontext="Pay Now"
+          data-name="TiffinTrack"
+          data-description="Monthly Meal Subscription"
+          data-theme.color="#F37254">
+  </script>
+</form>

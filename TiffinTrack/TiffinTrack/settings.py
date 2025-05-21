@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'restaurant.apps.RestaurantConfig',
     'admin_panel.apps.AdminPanelConfig',
+    'payments.apps.PaymentsConfig',
     'accounts.apps.AccountsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -205,3 +206,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']  # Use App Password for Gmail
+
+
+
+RAZORPAY_KEY_ID = "rzp_test_A49cdiWJAL14RZ"
+RAZORPAY_KEY_SECRET = "JJd8GFkFjXPr8Ywxoj7q32q4"
