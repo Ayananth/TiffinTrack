@@ -342,6 +342,48 @@ def subscription_cart(request, id=None):
 
 @login_required(login_url='login')
 def order_confirm(request):
+
+
+
+    #Place orders
+    subscription = request.session.get('subscription')
+    if not subscription:
+        messages.error("Session expired, Please try again")
+        return redirect('home')
+    subscription = get_object_or_404(Subscriptions, id=subscription)    
+    start_date = subscription.start_date.date()
+    end_date = subscription.end_date.date()
+    menu = subscription.menu_category
+    food_categories = menu.food_categories.all()
+    print(f"{food_categories=}")
+    orders_to_create = []
+    current_date = start_date
+    while current_date <= end_date:
+        for food_category in food_categories:
+            orders_to_create.append(Orders(
+                user=request.user,
+                restaurant=subscription.restaurant,
+                food_category=food_category,
+                food_item=None,  # You can assign a default item here if needed
+                delivery_date=current_date,
+                status='PENDING',
+                address = subscription.address
+
+            ))
+        current_date += timedelta(days=1)
+    print(f"{orders_to_create=}")
+    # Create all orders at once
+    Orders.objects.bulk_create(orders_to_create)
+
+    wallet_amount = request.POST.get('wallet_amount')
+
+    if wallet_amount:
+        wallet, _ = Wallet.objects.get_or_create(user=request.user)
+        wallet.debit(int(wallet_amount), description=f"Used for subscription")
+
+    del request.session['subscription']
+
+
     return render(request, 'users/success.html')
 
 
@@ -350,11 +392,23 @@ def payment(request, id):
     wallet = request.user.wallet.balance
     subscription = get_object_or_404(Subscriptions, id=id)
     if request.method == 'POST':
+
+        #TODO check if already have a subscription
         paid_amount = request.POST.get('paid_amount',0)
+        print(f"{paid_amount=}")
         subscription.paid_total_amount = paid_amount
         subscription.user = request.user
         subscription.is_active =  True
         subscription.save()
+        request.session['subscription'] = subscription.id
+
+        if paid_amount!=0:
+            return redirect('initiate_payment')
+        else:
+            return redirect('order-confirm')
+        
+
+
 
 
         #Place orders
@@ -384,12 +438,6 @@ def payment(request, id):
         # Create all orders at once
         Orders.objects.bulk_create(orders_to_create)
 
-
-
-
-
-
-
         wallet_amount = request.POST.get('wallet_amount')
 
         if wallet_amount:
@@ -398,6 +446,14 @@ def payment(request, id):
 
             
         return redirect('order-confirm')
+    
+    
+    
+    
+    
+    
+    
+    
     context = {'subscription': subscription,
                'wallet_amount': wallet}
     

@@ -260,3 +260,19 @@ transition: all 0.3s ease;
 .menu-content.active {
   display: block;
 }
+
+
+
+.razorpay-payment-button {
+    background-color: #f2a93e !important; /* Your custom color */
+    color: #ffffff !important;           /* Text color */
+    border: none !important;
+    padding: 12px 24px !important;
+    font-size: 16px !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+}
+
+.hello{
+  background-color: red;
+}

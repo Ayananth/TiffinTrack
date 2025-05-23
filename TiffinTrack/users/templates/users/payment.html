@@ -19,90 +19,52 @@
     </section>
     <!-- page head section end -->
 
-    <!--  account section starts -->
-    <section class="account-section section-b-space pt-0">
-        <div class="container">
-            <div class="layout-sec">
-                <div class="row g-lg-4 g-4">
-                    <div class="col-lg-8">
-
-                        <div class="payment-section">
-                            <div class="title mb-0">
-                                <div class="loader-line"></div>
-                                <h3>Choose Payment Method</h3>
-                                <h6>There are many Types of Payment Method</h6>
-
+<!-- account section starts -->
+<section class="account-section section-b-space pt-0">
+    <div class="container">
+        <div class="layout-sec">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-xl-6">
+                    <div class="order-summery-section">
+                        <div class="checkout-detail">
+                            <!-- Delivery Address -->
+                            <div class="cart-address-box">
+                                <div class="add-img">
+                                    <img class="img-fluid img" src="{% static 'frontend/assets/images/home.png' %}" alt="home">
+                                </div>
+                                <div class="add-content">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <h5 class="dark-text deliver-place">
+                                            Deliver to: {{subscription.address.address_line}}
+                                        </h5>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="accordion payment-accordion" id="accordionExample">
 
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapseTwo"
-                                            aria-expanded="false" aria-controls="collapseTwo">
-                                            My Wallet
-                                        </button>
-                                    </h2>
-                                    <div id="collapseTwo" class="accordion-collapse collapse"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body">
-                                            <ul class="card-list">
-                                                <li>
-                                                    <div class="form-check form-check-reverse">
-                                                        <label class="form-check-label" for="flexRadioDefault2">
-                                                            <span class="card-name dark-text">Use wallet amount: {{wallet_amount}}</span>
-                                                        </label>
-                                                        <input class="form-check-input" type="checkbox"
-                                                            name="flexRadioDefault" id="use_wallet">
-                                                    </div>
-                                                </li>
+                            <!-- Order Summary Title -->
+                            <h3 class="fw-semibold dark-text checkout-title">Order Summary</h3>
 
-                                            </ul>
-                                        </div>
-                                    </div>
+
+
+                            <!-- Bill Details -->
+
+                            <div class="bill-details mb-4">
+                                <div class="sub-total">
+                                    <h6 class="content-color fw-normal">Selected Menu</h6>
+                                    <h6 class="fw-semibold">{{subscription.menu_category.name}}</h6>
                                 </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4">
-                        <div class="order-summery-section sticky-top">
-                            <div class="checkout-detail">
-                                <div class="cart-address-box">
-                                    <div class="add-img">
-                                        <img class="img-fluid img" src="{% static 'frontend/assets/images/home.png' %}" alt="rp1">
-                                    </div>
-                                    <div class="add-content">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <h5 class="dark-text deliver-place">
-                                                Deliver to : {{subscription.address.address_line}}
-                                            </h5>
-                                        </div>
-                                    </div>
+                                <div class="sub-total">
+                                    <h6 class="content-color fw-normal">Restaurant</h6>
+                                    <h6 class="fw-semibold">{{subscription.num_days}}</h6>
                                 </div>
-                                <h3 class="fw-semibold dark-text checkout-title">
-                                    Order Summery
-                                </h3>
-                                <ul>
-                                    <li>
-                                        <div class="horizontal-product-box">
-                                            <div class="product-content">
-                                                <div class="d-flex align-items-center justify-content-between">
-                                                    <h5>Selected Menu</h5>
-                                                    <h6 class="product-price">{{subscription.menu_category.name}}</h6>
-                                                </div>
-                                                <!-- <h6 class="ingredients-text">Hot Nacho Chips</h6> -->
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                                <div class="promo-code position-relative">
-                                    <input type="email" class="form-control code-form-control"
-                                        placeholder="Enter promo code">
-                                    <a href="#" class="btn theme-btn apply-btn mt-0">APPLY</a>
+                                <div class="sub-total">
+                                    <h6 class="content-color fw-normal">Start Date</h6>
+                                    <h6 class="fw-semibold">{{subscription.num_days}}</h6>
                                 </div>
-                                <h5 class="fw-semibold dark-text pt-3 pb-3">Bill Details</h5>
+                                <div class="sub-total">
+                                    <h6 class="content-color fw-normal">End Date</h6>
+                                    <h6 class="fw-semibold">{{subscription.num_days}}</h6>
+                                </div>
                                 <div class="sub-total">
                                     <h6 class="content-color fw-normal">Number of Days</h6>
                                     <h6 class="fw-semibold">{{subscription.num_days}}</h6>
@@ -115,53 +77,76 @@
                                     <h6 class="content-color fw-normal">Sub Total</h6>
                                     <h6 class="fw-semibold">Rs.{{subscription.total_amount}}</h6>
                                 </div>
-                                <div class="grand-total">
-                                    <h6 class="fw-semibold dark-text">Total</h6>
-                                    <h6 class="fw-semibold amount" id="total_amount_display">Rs. {{subscription.total_amount}}</h6>
-                                </div>
-                                <form method="post" id="payment">
-                                    {%csrf_token%}
-                                    <input type="hidden" name="paid_amount" value="{{subscription.total_amount}}">
-                                    <input type="hidden" id="wallet_amount" name="wallet_amount" value="">
-                                    <button type="submit" class="btn theme-btn restaurant-btn w-100 rounded-2">Pay Now</button>
 
-                                    <!-- <a href="confirm-order.html" class="btn theme-btn restaurant-btn w-100 rounded-2">PAY
-                                        NOW</a> -->
-                                    </form>
+                            <!-- Wallet Payment Option -->
+                            <div class="payment-section mt-0 p-0">
+                                <div class="wallet-option p-3 border rounded">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_wallet" id="use_wallet">
+<label class="form-check-label fw-medium" for="use_wallet" id="wallet_label">
+    Use wallet amount: Rs.{{ wallet_amount }}
+</label>
+
+                                    </div>
+                                </div>
                             </div>
+
+                            <!-- Promo Code -->
+                            <div class="promo-code position-relative mb-4">
+                                <input type="text" class="form-control code-form-control" placeholder="Enter promo code">
+                                <a href="#" class="btn theme-btn apply-btn mt-0">APPLY</a>
+                            </div>
+
+                                <hr>
+                                <div class="grand-total">
+                                    <h6 class="fw-bold dark-text">Total Amount</h6>
+                                    <h6 class="fw-bold amount" id="total_amount_display">Rs. {{subscription.total_amount}}</h6>
+                                </div>
+                            </div>
+
+                            <!-- Payment Form -->
+                            <form method="post" id="payment">
+                                {% csrf_token %}
+                                <input type="hidden" name="paid_amount" value="{{subscription.total_amount}}">
+                                <input type="hidden" id="wallet_amount" name="wallet_amount" value="">
+                                <button type="submit" id="payment_confirm" class="btn theme-btn restaurant-btn w-100 rounded-2">
+                                    Proceed to Payment
+                                </button>
+                            </form>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
-    </section>
-    <!-- account section end -->
+    </div>
+</section>
+<!-- account section end -->
 
 <script>
-    // Replace these with actual values from your backend if needed
     const originalAmount = {{ subscription.total_amount }};
     const walletAmount = {{ wallet_amount }};
-
-    console.log(originalAmount);
-    
 
     const checkbox = document.getElementById("use_wallet");
     const amountDisplay = document.getElementById("total_amount_display");
     const hiddenWalletInput = document.getElementById("wallet_amount");
-
+    const walletLabel = document.getElementById("wallet_label");
 
     checkbox.addEventListener("change", function () {
         if (checkbox.checked) {
-            const newAmount = originalAmount - walletAmount;
-            amountDisplay.textContent = `Rs.${newAmount}`;
-            hiddenWalletInput.value = walletAmount;
+            const walletUsed = Math.min(walletAmount, originalAmount);
+            const newAmount = originalAmount - walletUsed;
 
+            amountDisplay.textContent = `Rs.${newAmount}`;
+            hiddenWalletInput.value = walletUsed;
+            walletLabel.textContent = `Wallet used: Rs.${walletUsed}, Remaining: Rs.${walletAmount - walletUsed}`;
         } else {
             amountDisplay.textContent = `Rs.${originalAmount}`;
+            hiddenWalletInput.value = 0;
+            walletLabel.textContent = `Use wallet amount: Rs.${walletAmount}`;
         }
     });
 </script>
+
 
 
 {%endblock%}

@@ -1,19 +1,29 @@
 # payments/views.py
 
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 import razorpay
 from .models import Payment
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseBadRequest
 from django.urls import reverse
+from django.contrib import messages
+from restaurant.models import Subscriptions
 
 
 client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 def initiate_payment(request):
-    amount = 50000  # ₹500.00 (in paise)
+
+    subscription = request.session.get('subscription')
+    if not subscription:
+        messages.error("Session expired, Please try again")
+        return redirect('home')
+    subscription = get_object_or_404(Subscriptions, id=int(subscription))  
     currency = 'INR'
+    amount = subscription.paid_total_amount
+    print(f"{amount=}")
+    amount = amount*100
 
     razorpay_order = client.order.create({
         "amount": amount,
@@ -56,8 +66,11 @@ def payment_handler(request):
             payment.razorpay_signature = signature
             payment.status = 'paid'
             payment.save()
+            
 
-            return render(request, 'payments/payment_success.html')
+
+            # return render(request, 'payments/payment_success.html')
+            return redirect('order-confirm')
         except Exception as e:
             return render(request, 'payments/payment_failed.html')
 

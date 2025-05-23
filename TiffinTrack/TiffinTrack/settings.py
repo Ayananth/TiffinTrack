@@ -71,7 +71,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'accounts.middleware.BlockedUserLogoutMiddleware',
-    'accounts.middleware.LoginRedirectMessageMiddleware',
+    # 'accounts.middleware.LoginRedirectMessageMiddleware',
 ]
 
 
