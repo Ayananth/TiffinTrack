@@ -8,35 +8,11 @@ from django.contrib.gis.geos import Point
 
 
 
-class FoodCategory(models.Model):
-    name = models.CharField(max_length=50)  # e.g., Breakfast, Lunch, Dinner
-    price = models.DecimalField(max_digits=6, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
-    start_time = models.TimeField(null=True, blank=True)
-    end_time = models.TimeField(null=True, blank=True)
-    cancellation_time = models.TimeField()
 
-    restaurant = models.ForeignKey(
-        RestaurantProfile,
-        on_delete=models.CASCADE,
-        related_name='food_categories'
-    )
-    is_active = models.BooleanField(default=True)  # To mark if the category is active or not
-
-    def __str__(self):
-        return f"{self.name}-{self.restaurant}"
-
-    class Meta:
-        unique_together = ('restaurant', 'name')  # Prevent duplicate names within the same restaurant
-        ordering = ['name']
 
 
 class MenuCategory(models.Model):
     name = models.CharField(max_length=50)  # e.g., Basic, Premium
-    food_categories = models.ManyToManyField(
-        FoodCategory,
-        related_name='menu_categories'
-    )
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     restaurant = models.ForeignKey(RestaurantProfile,on_delete=models.CASCADE,related_name='menu_categories')
@@ -54,6 +30,30 @@ class MenuCategory(models.Model):
 
     class Meta:
         unique_together = ('restaurant', 'name')
+        ordering = ['name']
+
+
+class FoodCategory(models.Model):
+    name = models.CharField(max_length=50)  # e.g., Breakfast, Lunch, Dinner
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    cancellation_time = models.TimeField()
+    menu_category = models.ForeignKey(MenuCategory, on_delete=models.CASCADE, related_name='menu_categories', null=True, blank=True)
+
+    restaurant = models.ForeignKey(
+        RestaurantProfile,
+        on_delete=models.CASCADE,
+        related_name='food_categories'
+    )
+    is_active = models.BooleanField(default=True)  # To mark if the category is active or not
+
+    def __str__(self):
+        return f"{self.name}-{self.restaurant}"
+
+    class Meta:
+        unique_together = ('restaurant', 'name')  # Prevent duplicate names within the same restaurant
         ordering = ['name']
 
 

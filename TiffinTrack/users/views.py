@@ -192,7 +192,7 @@ def restaurant_details(request, pk):
     for menu_category in menu_categories:
         # Get active food categories linked to this menu category and restaurant
         food_categories = FoodCategory.objects.filter(
-            menu_categories=menu_category,
+            menu_category=menu_category,
             restaurant=restaurant,
             is_active=True
         )
