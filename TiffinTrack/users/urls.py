@@ -14,16 +14,10 @@ urlpatterns = [
     path('payment/<int:id>' ,views.payment, name='payment'),
     path('address/', views.manage_user_address, name='address'),
     path('address/edit/<int:id>', views.manage_user_address, name='address-edit'),
+    path('manage_subscription/', views.manage_subscription, name='manage_subscription'),
     path('orders/', views.orders, name='orders'),
     path('orders/cancel/<int:order_id>/', views.cancel_order, name='cancel_order'),
-
-
     path('wallet/', views.wallet, name='wallet'),
-
-
-
-
-
 
 
 ]

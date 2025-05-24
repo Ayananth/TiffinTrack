@@ -1,0 +1,20 @@
+    <!-- page head section starts -->
+    <section class="page-head-section">
+        <div class="container page-heading">
+            <h2 class="h3 mb-3 text-white text-center">Profile</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb flex-lg-nowrap justify-content-center justify-content-lg-star">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'user-home' %}"><i class="ri-home-line"></i>Home</a>
+                    </li>
+                    {% for head in headers %}
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <a href="{% url head.url %}">{{head.name}}</a>
+                        </li>
+
+                    {%endfor%}
+                </ol>
+            </nav>
+        </div>
+    </section>
+    <!-- page head section end -->

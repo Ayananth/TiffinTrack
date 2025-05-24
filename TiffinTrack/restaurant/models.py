@@ -5,6 +5,9 @@ from accounts.models import RestaurantProfile
 import datetime
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
 
 
 
@@ -40,7 +43,7 @@ class FoodCategory(models.Model):
     start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
     cancellation_time = models.TimeField()
-    menu_category = models.ForeignKey(MenuCategory, on_delete=models.CASCADE, related_name='menu_categories', null=True, blank=True)
+    menu_category = models.ForeignKey(MenuCategory, on_delete=models.CASCADE, related_name='food_categories', null=True, blank=True)
 
     restaurant = models.ForeignKey(
         RestaurantProfile,
@@ -134,9 +137,20 @@ class Subscriptions(models.Model):
     per_day_amount = models.FloatField(null=True, blank=True)
     num_days = models.IntegerField(blank=True, null=True)
 
-
-
-
+    def clean(self):
+        super().clean()
+        if self.user and self.is_active:
+            existing_active = Subscriptions.objects.filter(user=self.user, is_active=True)
+            if self.pk:
+                existing_active = existing_active.exclude(pk=self.pk)
+            if existing_active.exists():
+                raise ValidationError({
+                    'is_active': _("User already has an active subscription.")
+                })
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.user}'

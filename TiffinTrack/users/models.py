@@ -3,7 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
-from restaurant.models import FoodCategory, FoodItem, RestaurantProfile
+from restaurant.models import FoodCategory, FoodItem, RestaurantProfile, Subscriptions
 
 class Wallet(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wallet')
@@ -102,12 +102,14 @@ class Orders(models.Model):
         FoodItem,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name='orders'
     )
     delivery_date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     refund_issued = models.BooleanField(default=False)
     address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
+    subscription_id = models.ForeignKey(Subscriptions, on_delete=models.CASCADE, related_name='orders', null=True, blank=True)
 
 
     def cancel(self):

@@ -402,6 +402,84 @@ def payment(request, id):
                'wallet_amount': wallet}
     
     return render(request, 'users/payment.html', context)
+
+
+
+
+@login_required(login_url='login')
+def manage_subscription(request):
+    user = request.user
+    headers = [
+        {'url': 'user-profile', 'name': 'Profile' },
+        {'url': 'manage_subscription', 'name': 'Manage Subscription' },
+    ]
+
+    if request.method == 'POST':
+        print("post requesttasdf")
+        print(request.POST)
+        id = request.POST.get('subscription_id')
+        print(id)
+        if id:
+            print(id)
+            subscription = get_object_or_404(Subscriptions, id=id)
+            print(f"{subscription=}")
+            subscription.is_active = False
+            subscription.save()
+            orders = subscription.orders.filter(status='PENDING')
+            print(f"{orders=}")
+            for order in orders:
+                order.cancel()
+            messages.success(request,"Your subscription and orders are cancelled")
+            context = {
+                'headers': headers
+            }
+            return render(request, './users/manage_subscription.html', context)
+
+    subscription = user.subscriptions.filter(is_active=True).first()
+    if not subscription:
+        context = {
+            'headers': headers,
+            'message': "No active subscription found.",
+        }
+        return render(request, 'users/manage_subscription.html', context)
+    food_categories = FoodCategory.objects.filter(menu_category=subscription.menu_category)
+    orders = subscription.orders.all()
+    # format:
+    # delivery_data = {
+    #     'breakfast': {
+    #         'delivered': 5,
+    #         'ordered': 5,
+    #         'remaining': 5
+    #     },
+    #     'lunch': {
+    #         'delivered': 5,
+    #         'ordered': 5,
+    #         'remaining': 5
+    #     },
+
+    # }
+
+    refund = 0
+
+    delivery_data = {}
+    for food_category in food_categories:
+        data = {}
+        data['delivered'] = orders.filter(food_category=food_category, status='DELIVERED').count()
+        data['cancelled'] = orders.filter(food_category=food_category, status='CANCELLED').count()
+        pending = orders.filter(food_category=food_category, status='PENDING').count()
+        data['pending'] = pending
+        refund += pending * food_category.price
+        delivery_data[food_category] = data
+    
+    print(f"{delivery_data=}")
+
+    context = {
+        'headers': headers,
+        'subscription':subscription,
+        'delivery_data': delivery_data,
+        'refund' : refund
+    }
+    return render(request, './users/manage_subscription.html', context)
     
 
 @login_required(login_url='login')
