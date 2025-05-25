@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'restaurant.apps.RestaurantConfig',
     'admin_panel.apps.AdminPanelConfig',
     'accounts.apps.AccountsConfig',
+    'coupons.apps.CouponsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
