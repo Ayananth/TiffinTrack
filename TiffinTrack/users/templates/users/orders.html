@@ -67,10 +67,8 @@
                                             Rs. {{order.food_category.price}}
                                         </h6>
                                         {% if order.status == 'PENDING'%}
-                                        <form method="post" action="{% url 'cancel_order' order.id %}">
-                                            {%csrf_token%}
-                                        <button type="submit" class="btn theme-outline details-btn">Cancel</button>
-                                        </form>
+                                        <a href="#cancel_order" class="btn theme-outline details-btn"
+                                            data-bs-toggle="modal" data-orderid="{{order.id}}">Cancel</a>
                                         {%else%}
                                         <button  class="btn theme-outline details-btn">{{order.status}}</button>
                                         {%endif%}
@@ -89,7 +87,7 @@
                                         <div class="order-details">
                                             <div class="d-flex align-items-center justify-content-between w-100">
                                             <h6 class="fw-medium dark-text">
-                                                <span class="fw-normal content-color">CNo orders found
+                                                <span class="fw-normal content-color">No orders found
                                                 </span>
                                             </h6>
                                         </div>
@@ -115,5 +113,65 @@
         </div>
     </section>
     <!-- profile section end -->
+
+
+    <!-- logout modal starts -->
+    <div class="modal address-details-modal fade" id="cancel_order" tabindex="-1" aria-labelledby="login-out"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="login-out">Cancel Order</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Choose one option</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="refund" class="btn gray-btn me-2 mt-0" data-bs-dismiss="modal">Refund to Wallet</a>
+                    <a href="#" id="extend" class="btn gray-btn me-2 mt-0" data-bs-dismiss="modal">Extend subscription</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- logout modal end -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const myModal = document.getElementById('cancel_order');
+
+    if (myModal) {
+      myModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Button that triggered the modal
+        const orderId = button.getAttribute('data-orderid');
+
+        const refund = document.getElementById("refund");
+        const extend = document.getElementById("extend");
+
+        if (refund) {
+          // Remove previous listeners if any
+          refund.replaceWith(refund.cloneNode(true));
+          const newRefund = document.getElementById("refund");
+
+          newRefund.addEventListener('click', function () {
+            console.log("User asked for refund");
+            window.location.href = `cancel/${orderId}`;  // Use correct URL format
+          });
+        }
+
+        if (extend) {
+          extend.replaceWith(extend.cloneNode(true));
+          const newExtend = document.getElementById("extend");
+
+          newExtend.addEventListener('click', function () {
+            console.log("User asked for extension");
+            window.location.href = `extend/${orderId}`;  // Use correct URL format
+
+          });
+        }
+      });
+    }
+  });
+</script>
 
 {%endblock%}

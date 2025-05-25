@@ -6,7 +6,7 @@ from accounts.forms import UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
 from restaurant.models import RestaurantProfile, FoodItem, FoodCategory, MenuCategory, Subscriptions
 from accounts.models import UserProfile, Locations
-from django.db.models import Avg
+from django.db.models import Avg, Max
 from collections import defaultdict
 from decimal import Decimal
 from django.contrib.gis.geos import Point
@@ -16,6 +16,7 @@ from accounts.utils import get_location_from_point
 from django.core.paginator import Paginator
 from datetime import timedelta
 from datetime import datetime
+
 
 
 
@@ -537,6 +538,42 @@ def cancel_order(request, order_id):
             messages.success(request, f"Order cancelled successfully.  ₹{order.food_category.price} refunded to your wallet.")
         else:
             messages.error(request, "Order cannot be cancelled.")
+    except Exception as e:
+        print(f"{e=}")
+        messages.error(request,"Server error")
+    finally:
+        return redirect('orders')
+    
+
+@login_required
+def extend_subscription(request, order_id):
+    print("Order cancellation")
+    try:
+        order = get_object_or_404(Orders, id=order_id, user=request.user)
+        now = timezone.now()
+        cancellation_datetime = datetime.combine(now.date(), order.food_category.cancellation_time)
+        cancellation_datetime = timezone.make_aware(cancellation_datetime, timezone.get_current_timezone())
+        print(f"{now=}")
+        print(f"{cancellation_datetime=}")
+
+        if now > cancellation_datetime:
+            messages.error(request, "Late for order cancellation")
+            return redirect('orders')
+        
+        latest_date = Orders.objects.filter(subscription_id=order.subscription_id, 
+                                            food_category=order.food_category).aggregate(Max('delivery_date'))['delivery_date__max']
+        
+        if latest_date:
+            next_date = latest_date + timedelta(days=1)
+            order.delivery_date = next_date
+            order.save()
+            subscription = get_object_or_404(Subscriptions, order.subscription_id)
+            subscription.end_date = next_date
+            subscription.save()
+            messages.success(request, f"Order rescheduled successfully to {next_date}.")
+        else:
+            messages.error(request, "Order cannot be rescheduled.")
+
     except Exception as e:
         print(f"{e=}")
         messages.error(request,"Server error")

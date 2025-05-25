@@ -17,6 +17,7 @@ urlpatterns = [
     path('manage_subscription/', views.manage_subscription, name='manage_subscription'),
     path('orders/', views.orders, name='orders'),
     path('orders/cancel/<int:order_id>/', views.cancel_order, name='cancel_order'),
+    path('orders/extend/<int:order_id>/', views.extend_subscription, name='extend_order'),
     path('wallet/', views.wallet, name='wallet'),
 
 

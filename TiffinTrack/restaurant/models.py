@@ -130,6 +130,7 @@ class Subscriptions(models.Model):
     menu_category = models.ForeignKey(MenuCategory,on_delete=models.SET_NULL,null=True,blank=True,related_name='subscriptions')
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField()
+    extended_end_date = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(default=False)
     address = models.ForeignKey('users.Address', on_delete=models.SET_NULL, null=True, blank=True, related_name='subscriptions')
     total_amount = models.FloatField(null=True, blank=True)
@@ -139,7 +140,7 @@ class Subscriptions(models.Model):
 
     def clean(self):
         super().clean()
-        if self.user and self.is_active:
+        if self.user_id and self.is_active:
             existing_active = Subscriptions.objects.filter(user=self.user, is_active=True)
             if self.pk:
                 existing_active = existing_active.exclude(pk=self.pk)
@@ -149,6 +150,8 @@ class Subscriptions(models.Model):
                 })
     
     def save(self, *args, **kwargs):
+        if not self.pk:
+            self.extended_end_date = self.end_date
         self.full_clean()
         super().save(*args, **kwargs)
 
