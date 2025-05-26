@@ -91,6 +91,13 @@
                                     </div>
                                 {%endif%}
 
+                            {% if subscription.offer_discount > 0 %}
+                                    <div class="sub-total">
+                                        <h6 class="content-color fw-normal">Offer Discount</h6>
+                                        <h6 class="fw-semibold text-success">Rs.{{ subscription.offer_discount }}</h6>
+                                    </div>
+                            {% endif %}
+
 
                             <!-- Wallet Payment Option
                             <div class="payment-section mt-0 p-0">

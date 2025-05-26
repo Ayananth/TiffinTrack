@@ -72,7 +72,9 @@
                         {%endif%}
 
 
-                        {% for restaurant in restaurants %}
+
+
+                        {% for restaurant in restaurants %}                     
                             <div class="col-xl-3 col-lg-4 col-sm-6">
                                 <div class="vertical-product-box">
                                     <div class="vertical-product-box-img">
@@ -87,13 +89,25 @@
                                             <img class="product-img-top w-100 bg-img" src="{{restaurant.restaurant_image.url}}"
                                                 alt="vp1">
                                         </a>
-                                        {%if offer%}
+
+
+
+
+                                {% with restaurant_offers|get_item:restaurant.id as offers %}
+                                {% if offers %}
                                         <div class="offers">
+                                            {% for offer in offers %}
+                                            <h6>{{offer.name}}</h6>
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <h4>50% OFF</h4>
+                                                <h4>{{ offer.discount_percent|floatformat:0  }}% OFF</h4>
                                             </div>
+                                            {% endfor %}
                                         </div>
-                                        {%endif%}
+                                    {%endif%}
+                                {% endwith %}
+
+
+
                                     </div>
                                     <div class="vertical-product-body">
                                         <div class="d-flex align-items-center justify-content-between mt-sm-3 mt-2">

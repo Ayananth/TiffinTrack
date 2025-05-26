@@ -8,6 +8,7 @@ from django.contrib.gis.geos import Point
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from coupons.models import Coupon
+from decimal import Decimal
 
 
 
@@ -139,6 +140,27 @@ class Subscriptions(models.Model):
     wallet_amount_used = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def offer_discount(self):
+        if not self.menu_category:
+            return Decimal('0.00')
+
+        now = timezone.now()
+        active_offers = Offer.objects.filter(
+            is_active=True,
+            valid_from__lte=now,
+            valid_until__gte=now,
+            restaurant=self.restaurant,
+            menu_categories=self.menu_category
+        ).order_by('-discount_percent')  # Take highest if multiple
+
+        if active_offers.exists():
+            offer = active_offers.first()
+            offer_amount = (self.menu_category.total_price * self.num_days) * (offer.discount_percent / 100)
+            return offer_amount
+
+        return Decimal('0.00')
+
 
     @property
     def item_total(self):
@@ -150,7 +172,11 @@ class Subscriptions(models.Model):
 
     @property
     def total_after_discount(self):
-        return self.item_total - self.discount
+        base_total = self.item_total
+        offer_amount = self.offer_discount
+        coupon_discount = self.discount
+
+        return base_total - offer_amount - coupon_discount
 
     @property
     def final_total(self):
@@ -186,3 +212,24 @@ class Subscriptions(models.Model):
     
 
 
+
+class Offer(models.Model):
+    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='offers')
+    name = models.CharField(max_length=100)  # e.g., "10% off on Premium Lunch"
+    description = models.TextField(blank=True)
+    discount_percent = models.DecimalField(max_digits=5, decimal_places=2)  # e.g., 10.00 for 10%
+    valid_from = models.DateTimeField()
+    valid_until = models.DateTimeField()
+
+    # Linking offers to categories
+    menu_categories = models.ManyToManyField(MenuCategory, blank=True, related_name='offers')
+    food_categories = models.ManyToManyField(FoodCategory, blank=True, related_name='offers')
+
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.restaurant.restaurant_name}"
+
+    def is_valid(self):
+        now = timezone.now()
+        return self.is_active and self.valid_from <= now <= self.valid_until

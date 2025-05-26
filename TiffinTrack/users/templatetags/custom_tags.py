@@ -7,7 +7,6 @@ def get_item(dictionary, key):
     return dictionary.get(key)
 
 
-
 @register.filter
 def km(distance, precision=2):
     """

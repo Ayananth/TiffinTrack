@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from accounts.forms import UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
-from restaurant.models import RestaurantProfile, FoodItem, FoodCategory, MenuCategory, Subscriptions
+from restaurant.models import RestaurantProfile, FoodItem, FoodCategory, MenuCategory, Subscriptions, Offer
 from accounts.models import UserProfile, Locations
 from django.db.models import Avg, Max
 from collections import defaultdict
@@ -32,7 +32,8 @@ from django.utils import timezone
 
 from .models import Address, Orders, Wallet
 from .forms import AddressForm, SubscriptionForm
-
+from django.utils import timezone
+from collections import defaultdict
 
 
 
@@ -79,12 +80,33 @@ def home(request):
     # food_categories = menu.food_categories.all()
     # print(f"{food_categories=}")
 
+    # Collect restaurant IDs shown on this page
+    restaurant_ids = [restaurant.id for restaurant in page_obj]
+
+    # Get active offers for those restaurants
+    now = timezone.now()
+    active_offers = Offer.objects.filter(
+        restaurant_id__in=restaurant_ids,
+        is_active=True,
+        valid_from__lte=now,
+        valid_until__gte=now
+    ).select_related('restaurant').prefetch_related('menu_categories')
+
+    # Group offers by restaurant
+    restaurant_offers = defaultdict(list)
+    for offer in active_offers:
+        restaurant_offers[offer.restaurant_id].append(offer)
+
+    print(dict(restaurant_offers))
+
 
 
 
     context = {
         'restaurants': page_obj,
-        'location': location_name
+        'location': location_name,
+        'restaurant_offers': dict(restaurant_offers),
+        'offer':True
     }
 
     return render(request, './users/home.html', context)
@@ -124,6 +146,10 @@ def update_profile(request):
             print(user_form.errors)
             print(profile_form.errors)
             messages.error(request, "Error updating profile. Please check the form.")
+
+
+
+
 
     return render(request, 'users/profile.html', {
         'user_form': user_form,
