@@ -14,6 +14,8 @@ from restaurant.models import Subscriptions
 client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 def initiate_payment(request):
+    print("Initiate payment")
+    return redirect('user-home')
 
     subscription = request.session.get('subscription')
     if not subscription:

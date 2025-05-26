@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_POST
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
@@ -16,6 +18,8 @@ from accounts.utils import get_location_from_point
 from django.core.paginator import Paginator
 from datetime import timedelta
 from datetime import datetime
+from django.http import Http404
+
 
 
 
@@ -278,7 +282,8 @@ def subscription_cart(request, id=None):
             # Check if any existing subscription for the user ends before the new subscription starts
             overlapping_subscriptions = Subscriptions.objects.filter(
                 user=user,
-                end_date__gte=start_date
+                end_date__gte=start_date,
+                is_active = True
             )
             if overlapping_subscriptions.exists():
                 print("subscription Already exists")
@@ -391,7 +396,11 @@ def order_confirm(request):
 @login_required(login_url='login')
 def payment(request, id):
     wallet = request.user.wallet.balance
-    subscription = get_object_or_404(Subscriptions, id=id)
+    try:
+        subscription = get_object_or_404(Subscriptions, id=id)
+    except Http404:
+        messages.error(request, "Bad request")
+        return redirect('user-home')
     if request.method == 'POST':
 
         #TODO check if already have a subscription
@@ -399,7 +408,7 @@ def payment(request, id):
         print(f"{paid_amount=}")
         subscription.paid_total_amount = paid_amount
         subscription.user = request.user
-        subscription.is_active =  True
+        # subscription.is_active =  True
         subscription.save()
         request.session['subscription'] = subscription.id
 
@@ -448,17 +457,50 @@ def payment(request, id):
             
         return redirect('order-confirm')
     
-    
-    
-    
-    
-    
-    
-    
     context = {'subscription': subscription,
                'wallet_amount': wallet}
     
     return render(request, 'users/payment.html', context)
+
+
+@login_required(login_url='login')
+@require_POST
+def use_wallet(request):
+    id = request.POST.get('subscription_id')
+    subscription_id = request.POST.get('subscription_id')
+    try:
+        subscription = Subscriptions.objects.get(id=subscription_id, user=request.user)
+    except Subscriptions.DoesNotExist:
+        messages.error(request, "Please try again! ")
+        return redirect('user-home')
+    wallet_balance = request.user.wallet.balance
+    original_total = subscription.final_total
+    final_total = original_total
+    if wallet_balance >= final_total:
+        wallet_used = final_total
+        final_total = 0
+    else:
+        wallet_used = wallet_balance
+        final_total = final_total - wallet_used
+    
+    subscription.wallet_amount_used = wallet_used
+    subscription.save()
+    return redirect('user-home')
+
+@login_required(login_url='login')
+@require_POST
+def remove_wallet(request):
+    subscription_id = request.POST.get('subscription_id')
+    try:
+        subscription = Subscriptions.objects.get(id=subscription_id, user=request.user)
+    except Subscriptions.DoesNotExist:
+        messages.error(request, "Please try again! ")
+        return redirect('payment', id=subscription_id)
+
+    subscription.wallet_amount_used = 0.00
+    subscription.save()
+    return redirect('payment', id=subscription_id)
+
 
 
 

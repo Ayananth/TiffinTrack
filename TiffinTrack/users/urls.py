@@ -19,6 +19,8 @@ urlpatterns = [
     path('orders/cancel/<int:order_id>/', views.cancel_order, name='cancel_order'),
     path('orders/extend/<int:order_id>/', views.extend_subscription, name='extend_order'),
     path('wallet/', views.wallet, name='wallet'),
+    path('use_wallet/', views.use_wallet, name='use_wallet'),
+    path('remove_wallet/', views.remove_wallet, name='remove_wallet'),
 
 
 ]

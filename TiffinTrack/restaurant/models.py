@@ -7,6 +7,7 @@ from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from coupons.models import Coupon
 
 
 
@@ -133,10 +134,28 @@ class Subscriptions(models.Model):
     extended_end_date = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(default=False)
     address = models.ForeignKey('users.Address', on_delete=models.SET_NULL, null=True, blank=True, related_name='subscriptions')
-    total_amount = models.FloatField(null=True, blank=True)
-    paid_total_amount = models.FloatField(null=True, blank=True)
-    per_day_amount = models.FloatField(null=True, blank=True)
     num_days = models.IntegerField(blank=True, null=True)
+    coupon = models.ForeignKey(Coupon, null=True, blank=True, on_delete=models.SET_NULL)
+    wallet_amount_used = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+
+
+    @property
+    def item_total(self):
+        return self.menu_category.total_price * self.num_days
+
+    @property
+    def discount(self):
+        return self.coupon.cashback_amount if self.coupon else 0
+
+    @property
+    def total_after_discount(self):
+        return self.item_total - self.discount
+
+    @property
+    def final_total(self):
+        return max(self.total_after_discount - self.wallet_amount_used, 0)
+
+
 
     def clean(self):
         super().clean()

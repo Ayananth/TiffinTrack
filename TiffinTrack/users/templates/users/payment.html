@@ -18,6 +18,7 @@
         </div>
     </section>
     <!-- page head section end -->
+{% include './messages.html' %}
 
 <!-- account section starts -->
 <section class="account-section section-b-space pt-0">
@@ -55,15 +56,15 @@
                                 </div>
                                 <div class="sub-total">
                                     <h6 class="content-color fw-normal">Restaurant</h6>
-                                    <h6 class="fw-semibold">{{subscription.num_days}}</h6>
+                                    <h6 class="fw-semibold">{{subscription.restaurant.restaurant_name}}</h6>
                                 </div>
                                 <div class="sub-total">
                                     <h6 class="content-color fw-normal">Start Date</h6>
-                                    <h6 class="fw-semibold">{{subscription.num_days}}</h6>
+                                    <h6 class="fw-semibold">{{subscription.start_date.date}}</h6>
                                 </div>
                                 <div class="sub-total">
                                     <h6 class="content-color fw-normal">End Date</h6>
-                                    <h6 class="fw-semibold">{{subscription.num_days}}</h6>
+                                    <h6 class="fw-semibold">{{subscription.end_date.date}}</h6>
                                 </div>
                                 <div class="sub-total">
                                     <h6 class="content-color fw-normal">Number of Days</h6>
@@ -71,26 +72,60 @@
                                 </div>
                                 <div class="sub-total">
                                     <h6 class="content-color fw-normal">Per Day Price</h6>
-                                    <h6 class="fw-semibold">Rs.{{subscription.per_day_amount}}</h6>
+                                    <h6 class="fw-semibold">Rs.{{subscription.menu_category.total_price}}</h6>
                                 </div>
                                 <div class="sub-total">
                                     <h6 class="content-color fw-normal">Sub Total</h6>
-                                    <h6 class="fw-semibold">Rs.{{subscription.total_amount}}</h6>
+                                    <h6 class="fw-semibold">Rs.{{subscription.item_total}}</h6>
                                 </div>
+                                {% if subscription.wallet_amount_used %}
+                                    <div class="sub-total">
+                                        <h6 class="content-color fw-normal">Wallet Amount Applied</h6>
+                                        <h6 class="fw-semibold text-success">Rs.{{subscription.wallet_amount_used}}</h6>
+                                    </div>
+                                {%endif%}
 
-                            <!-- Wallet Payment Option -->
+
+                            <!-- Wallet Payment Option
                             <div class="payment-section mt-0 p-0">
                                 <div class="wallet-option p-3 border rounded">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="use_wallet" id="use_wallet">
-<label class="form-check-label fw-medium" for="use_wallet" id="wallet_label">
-    Use wallet amount: Rs.{{ wallet_amount }}
-</label>
-
+                                        <label class="form-check-label fw-medium" for="use_wallet" id="wallet_label">
+                                            Use wallet amount: Rs.{{ wallet_amount }}
+                                        </label>
                                     </div>
                                 </div>
+                            </div> -->
+                            {% if subscription.wallet_amount_used %}
+
+                            <div class="promo-code position-relative mb-4">
+                                <input type="text" class="form-control code-form-control" placeholder="Wallet amount Used: Rs.{{ subscription.wallet_amount_used }}">
+                                <form action="{% url 'remove_wallet' %}" method="post">
+                                    {%csrf_token%}
+                                    <input type="hidden" name="subscription_id" value="{{subscription.id}}">
+                                    <button type="submit" class="btn theme-btn apply-btn mt-0">Remove</button>
+                                </form>
                             </div>
 
+                            {%else%}
+
+
+
+                            <div class="promo-code position-relative mb-4">
+                                <input type="text" class="form-control code-form-control" placeholder="Wallet Balance: Rs.{{ wallet_amount }}">
+                                <form action="{% url 'use_wallet' %}" method="post">
+                                    {%csrf_token%}
+                                    <input type="hidden" name="subscription_id" value="{{subscription.id}}">
+                                    {% if wallet_amount > 0%}
+                                        <button type="submit" class="btn theme-btn apply-btn mt-0">USE</button>
+                                    {%endif%}
+                                </form>
+                            </div>
+
+                            {%endif%}
+
+                            
                             <!-- Promo Code -->
                             <div class="promo-code position-relative mb-4">
                                 <input type="text" class="form-control code-form-control" placeholder="Enter promo code">
@@ -100,7 +135,7 @@
                                 <hr>
                                 <div class="grand-total">
                                     <h6 class="fw-bold dark-text">Total Amount</h6>
-                                    <h6 class="fw-bold amount" id="total_amount_display">Rs. {{subscription.total_amount}}</h6>
+                                    <h6 class="fw-bold amount" id="total_amount_display">Rs. {{subscription.final_total}}</h6>
                                 </div>
                             </div>
 
@@ -113,6 +148,8 @@
                                     Proceed to Payment
                                 </button>
                             </form>
+
+                            
                         </div>
                     </div>
                 </div>
@@ -123,7 +160,16 @@
 <!-- account section end -->
 
 <script>
-    const originalAmount = {{ subscription.total_amount }};
+    function UseWallet() {
+
+    }
+</script>
+
+
+
+
+<script>
+    const originalAmount = {{ subscription.item_total }};
     const walletAmount = {{ wallet_amount }};
 
     const checkbox = document.getElementById("use_wallet");
