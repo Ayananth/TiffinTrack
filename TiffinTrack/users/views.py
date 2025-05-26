@@ -23,6 +23,8 @@ from coupons.models import Coupon, CouponUsage
 from django.http import JsonResponse
 
 from django.utils import timezone
+from django.template.loader import render_to_string
+
 
 
 
@@ -335,9 +337,10 @@ def subscription_cart(request, id=None):
             print("Form not valid")
     else:
         form = SubscriptionForm()
+        address_form = AddressForm()
 
 
-    context = {'addresses': addresses,  'form': form}
+    context = {'addresses': addresses,  'form': form, 'address_form': address_form}
     print(f"{context=}")
     return render(request, 'users/subscription_request.html', context)
     
@@ -684,3 +687,21 @@ def wallet(request):
         'title': "Wallet Transactions"
     }
     return render(request, './users/wallet.html', context)
+
+
+@login_required(login_url='login')
+def add_user_address(request):
+    user = request.user
+    
+    if request.method == 'POST':
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = user
+            address.save()
+            return JsonResponse({'success': True, 'message': 'Address added successfully'})
+        else:
+            form_html = render_to_string('users/address_form.html', {'form': form}, request=request)
+            return JsonResponse({'success': False, 'form_html': form_html})
+    else:
+        return JsonResponse({'error': 'Only POST allowed'}, status=400)

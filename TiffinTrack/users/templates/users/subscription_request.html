@@ -137,8 +137,10 @@
 
                                 <div class="col-md-6">
                                     <div class="address-box new-address-box">
-                                        <a href="{% url 'address' %}" target="_blank" class="btn theme-outline rounded-2"
-                                            >Manage Address</a>
+                                        <!-- <a href="{% url 'address' %}" target="_blank" class="btn theme-outline rounded-2"
+                                            >Manage Address</a> -->
+                                    <a href="#address-details" class="btn new-address-btn theme-outline rounded-2 mt-0"
+                                        data-bs-toggle="modal">Add New Address</a>
                                     </div>
                                 </div>
                             </div>
@@ -168,6 +170,38 @@
 
 
 
+    <!-- add-card modal starts -->
+    <div class="modal address-details-modal fade" id="address-details" tabindex="-1" aria-labelledby="addModalAdress"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addModalAdress">
+                        Address Details
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                        <form id="address-form" method="POST" action="{% url 'add_user_address' %}">
+                            {% csrf_token %}
+                            {{ address_form.as_p }}
+                            <div id="form-errors" class="text-danger mt-2"></div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- add-card modal end -->
+
+
 
 
 
@@ -183,6 +217,47 @@
         form.reportValidity();  // shows validation messages
       }
     }
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('address-form');
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const url = form.action;
+        const formData = new FormData(form);
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            const errorDiv = document.getElementById('form-errors');
+
+            if (data.success) {
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('address-details'));
+                modal.hide();
+                window.location.reload();
+
+
+            } else {
+                document.querySelector('#address-form').innerHTML = data.form_html;
+                document.querySelector('#address-form').addEventListener('submit', arguments.callee);
+            }
+        })
+        .catch(err => {
+            console.error("Form submission failed:", err);
+        });
+    });
+});
 </script>
 
 
