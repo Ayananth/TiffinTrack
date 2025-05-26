@@ -295,10 +295,9 @@ def subscription_cart(request, id=None):
             subscription.restaurant = menu.restaurant
             subscription.menu_category = menu
             number_of_days = form.cleaned_data.get('end_date') - form.cleaned_data.get('start_date')
-            print(f"{number_of_days=}")
             subscription.per_day_amount = menu.total_price
             subscription.total_amount = number_of_days.days * menu.total_price
-            subscription.num_days = number_of_days.days
+            subscription.num_days = number_of_days.days+1
             subscription.address = form.cleaned_data.get('address')
             subscription.save()
 
@@ -329,6 +328,7 @@ def order_confirm(request):
         return redirect('home')
     subscription = get_object_or_404(Subscriptions, id=subscription)    
     subscription.is_active = True
+    subscription.user = request.user
     start_date = subscription.start_date.date()
     end_date = subscription.end_date.date()
     menu = subscription.menu_category
@@ -353,6 +353,7 @@ def order_confirm(request):
     print(f"{orders_to_create=}")
     # Create all orders at once
     Orders.objects.bulk_create(orders_to_create)
+    subscription.save()
 
     wallet_amount = subscription.wallet_amount_used
 
@@ -467,7 +468,9 @@ def manage_subscription(request):
             }
             return render(request, './users/manage_subscription.html', context)
 
-    subscription = user.subscriptions.filter(is_active=True).first()
+    subscription = Subscriptions.objects.filter(is_active=True, user=user).order_by('-created_at').first()
+    print(f"{subscription=}")
+
     if not subscription:
         context = {
             'headers': headers,
@@ -492,18 +495,30 @@ def manage_subscription(request):
     # }
 
     refund = 0
-
     delivery_data = {}
+
     for food_category in food_categories:
         data = {}
-        data['delivered'] = orders.filter(food_category=food_category, status='DELIVERED').count()
-        data['cancelled'] = orders.filter(food_category=food_category, status='CANCELLED').count()
+        delivered = orders.filter(food_category=food_category, status='DELIVERED').count()
+        cancelled = orders.filter(food_category=food_category, status='CANCELLED').count()
         pending = orders.filter(food_category=food_category, status='PENDING').count()
+
+        data['delivered'] = delivered
+        data['cancelled'] = cancelled
         data['pending'] = pending
-        refund += pending * food_category.price
-        delivery_data[food_category] = data
-    
-    print(f"{delivery_data=}")
+
+        print(f"{refund=}")
+        refund += delivered * food_category.price
+        print(f"{refund} = {pending} * {food_category.price}")
+
+        print(f"{refund=}")
+
+        refund = subscription.final_total - refund
+        
+
+        delivery_data[food_category] = data  # or food_category.name if it has one
+        
+        print(f"{delivery_data=}")
 
     context = {
         'headers': headers,

@@ -137,6 +137,7 @@ class Subscriptions(models.Model):
     num_days = models.IntegerField(blank=True, null=True)
     coupon = models.ForeignKey(Coupon, null=True, blank=True, on_delete=models.SET_NULL)
     wallet_amount_used = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
     @property
