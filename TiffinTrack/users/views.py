@@ -466,11 +466,13 @@ def payment(request, id):
 @login_required(login_url='login')
 @require_POST
 def use_wallet(request):
-    id = request.POST.get('subscription_id')
     subscription_id = request.POST.get('subscription_id')
+    print(f"{subscription_id=}")
     try:
-        subscription = Subscriptions.objects.get(id=subscription_id, user=request.user)
+        subscription = Subscriptions.objects.get(id=subscription_id)
+        print(subscription)
     except Subscriptions.DoesNotExist:
+        print("Item not found")
         messages.error(request, "Please try again! ")
         return redirect('user-home')
     wallet_balance = request.user.wallet.balance
@@ -493,7 +495,7 @@ def use_wallet(request):
 def remove_wallet(request):
     subscription_id = request.POST.get('subscription_id')
     try:
-        subscription = Subscriptions.objects.get(id=subscription_id, user=request.user)
+        subscription = Subscriptions.objects.get(id=subscription_id)
     except Subscriptions.DoesNotExist:
         messages.error(request, "Please try again! ")
         return redirect('payment', id=subscription_id)
