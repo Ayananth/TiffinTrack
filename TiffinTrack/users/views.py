@@ -3,7 +3,6 @@ from django.views.decorators.http import require_POST
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.utils import timezone
 from accounts.forms import UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
 from restaurant.models import RestaurantProfile, FoodItem, FoodCategory, MenuCategory, Subscriptions
@@ -22,6 +21,8 @@ from django.http import Http404
 from coupons.models import Coupon, CouponUsage
 
 from django.http import JsonResponse
+
+from django.utils import timezone
 
 
 
@@ -536,6 +537,8 @@ def orders(request):
     longitude = reference_point.x
     latitude = reference_point.y
     location = get_location_from_point(longitude, latitude)
+    subscription = user.subscriptions.filter(is_active=True).order_by('-created_at').first()
+    print(f"{subscription=}")
 
     sort_by = request.GET.get('sort', 'delivery_date')  # default: delivery_date
     direction = request.GET.get('dir', 'asc') 
@@ -543,7 +546,19 @@ def orders(request):
     valid_sort_fields = ['delivery_date', 'status']
     sort_field = sort_by if sort_by in valid_sort_fields else 'delivery_date'
 
-    orders = Orders.objects.filter(user=user).order_by(f"{order_prefix}{sort_field}")
+    status = request.GET.get('status')
+    delivery_date = request.GET.get('delivery_date')
+
+    orders = Orders.objects.filter(user=user, status="PENDING").order_by(f"{order_prefix}{sort_field}")
+
+    if subscription:
+        orders = orders.filter(subscription_id=subscription)
+
+    if status:
+        orders = orders.filter(status=status)
+
+    if delivery_date:
+        orders = orders.filter(delivery_date=delivery_date)
 
 
     paginator = Paginator(orders, 10)  # Show 5 orders per page
@@ -597,7 +612,7 @@ def extend_subscription(request, order_id):
     try:
         order = get_object_or_404(Orders, id=order_id, user=request.user)
         now = timezone.now()
-        cancellation_datetime = datetime.combine(now.date(), order.food_category.cancellation_time)
+        cancellation_datetime = datetime.combine(order.delivery_date, order.food_category.cancellation_time)
         cancellation_datetime = timezone.make_aware(cancellation_datetime, timezone.get_current_timezone())
         print(f"{now=}")
         print(f"{cancellation_datetime=}")
@@ -613,7 +628,7 @@ def extend_subscription(request, order_id):
             next_date = latest_date + timedelta(days=1)
             order.delivery_date = next_date
             order.save()
-            subscription = get_object_or_404(Subscriptions, order.subscription_id)
+            subscription = order.subscription_id
             subscription.end_date = next_date
             subscription.save()
             messages.success(request, f"Order rescheduled successfully to {next_date}.")

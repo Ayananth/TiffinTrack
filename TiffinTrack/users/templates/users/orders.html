@@ -21,82 +21,81 @@
                             <h3>My Order</h3>
                         </div>
                         <p>Wallet Balance: {{wallet_balance}}</p>
+
+                                           <div class="filters">
+                                            <form method="get" class="row g-3 align-items-center mb-3">
+                                                <div class="col-auto">
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select name="status" class="form-select">
+                                                        <option value="">All</option>
+                                                        <option value="PENDING" {% if request.GET.status == "PENDING" %}selected{% endif %} selected>PENDING</option>
+                                                        <option value="DELIVERED" {% if request.GET.status == "DELIVERED" %}selected{% endif %}>DELIVERED</option>
+                                                        <option value="CANCELLED" {% if request.GET.status == "CANCELLED" %}selected{% endif %}>CANCELLED</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <label for="delivery_date" class="form-label">Delivery Date</label>
+                                                    <input type="date" class="form-control" name="delivery_date" value="{{ request.GET.delivery_date }}">
+                                                </div>
+
+                                               <div class="col-auto mt-4">
+                                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                                    <a href="?" class="btn btn-secondary">Reset</a>
+                                                </div>
+                                            </form>
+
+                                            </div>
+
+
+
+
                         <div class="sorting d-flex justify-content-end">
                             <p class="p-2">Sort By</p>
                             <p class="p-2"><a href="?sort=delivery_date&dir={% if sort == 'delivery_date' and dir == 'asc' %}desc{% else %}asc{% endif %}">Delivery Date</a></p>
                             <p class="p-2"><a href="?sort=status&dir={% if sort == 'status' and dir == 'asc' %}desc{% else %}asc{% endif %}">Status</a></p>
                         </div>
-                        <ul class="order-box-list">
-                            {% for order in orders%}
-                            <li>
-                                <div class="order-box">
-                                    <div class="order-box-content">
-                                        <div class="brand-icon">
-                                            <img class="img-fluid icon" src="{{order.restaurant.restaurant_image.url}}" alt="Restaurant Logo">
-                                        </div>
-                                        <div class="order-details">
-                                            <div class="d-flex align-items-center justify-content-between w-100">
-                                                <h5 class="brand-name dark-text fw-medium">
-                                                    {{order.restaurant.restaurant_name}}
-                                                </h5>
-                                                <h6 class="fw-medium content-color text-end">
-                                                    {{order.delivery_date}}
-                                                </h6>
-                                            </div>
-                                            <h6 class="fw-medium dark-text">
-                                                <span class="fw-normal content-color">Order Id: {{order.id}}
-                                                </span>
-                                            </h6>
-                                            <h6 class="fw-medium dark-text">
-                                                <span class="fw-normal content-color">{{order.food_category.name}}
-                                                </span>
-                                            </h6>
-                                            <h6 class="fw-medium dark-text">
-                                                <span class="fw-normal content-color">Status: {{order.status}}
-                                                </span>
-                                            </h6>
-                                            <h6 class="fw-medium dark-text">
-                                                <span class="fw-normal content-color">Cancellation time: {{order.food_category.cancellation_time}}
-                                                </span>
-                                            </h6>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-between mt-sm-3 mt-2">
-                                        <h6 class="fw-medium dark-text">
-                                            <span class="fw-normal content-color">Total Amount :</span>
-                                            Rs. {{order.food_category.price}}
-                                        </h6>
-                                        {% if order.status == 'PENDING'%}
-                                        <a href="#cancel_order" class="btn theme-outline details-btn"
-                                            data-bs-toggle="modal" data-orderid="{{order.id}}">Cancel</a>
-                                        {%else%}
-                                        <button  class="btn theme-outline details-btn">{{order.status}}</button>
-                                        {%endif%}
-                                    </div>
-                                </div>
-                            </li>
+<table>
+    <thead>
+        <tr>
+            <th>Restaurant</th>
+            <th>Delivery Date</th>
+            <th>Order ID</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Cancellation Time</th>
+            <th>Total Amount</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>
+                <img src="{{ order.restaurant.restaurant_image.url }}" alt="Restaurant Logo" width="30">
+                {{ order.restaurant.restaurant_name }}
+            </td>
+            <td>{{ order.delivery_date }}</td>
+            <td>{{ order.id }}</td>
+            <td>{{ order.food_category.name }}</td>
+            <td>{{ order.status }}</td>
+            <td>{{ order.food_category.cancellation_time }}</td>
+            <td>Rs. {{ order.food_category.price }}</td>
+            <td>
+                {% if order.status == 'PENDING' %}
+                <a href="#cancel_order" data-bs-toggle="modal" data-orderid="{{ order.id }}">Cancel</a>
+                {% else %}
+                <span>{{ order.status }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8">No orders found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-                            <!-- No order found -->
-                            {% empty %}
-
-                            <li>
-                                <div class="order-box">
-                                    <div class="order-box-content">
-                                        <div class="brand-icon">
-                                        </div>
-                                        <div class="order-details">
-                                            <div class="d-flex align-items-center justify-content-between w-100">
-                                            <h6 class="fw-medium dark-text">
-                                                <span class="fw-normal content-color">No orders found
-                                                </span>
-                                            </h6>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            {%endfor%}
-
-                        </ul>
 
                         <!-- Pagination Controls -->
                         {% include "./paginator.html" %}
