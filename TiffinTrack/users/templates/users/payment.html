@@ -159,39 +159,8 @@
 </section>
 <!-- account section end -->
 
-<script>
-    function UseWallet() {
-
-    }
-</script>
 
 
-
-
-<script>
-    const originalAmount = {{ subscription.item_total }};
-    const walletAmount = {{ wallet_amount }};
-
-    const checkbox = document.getElementById("use_wallet");
-    const amountDisplay = document.getElementById("total_amount_display");
-    const hiddenWalletInput = document.getElementById("wallet_amount");
-    const walletLabel = document.getElementById("wallet_label");
-
-    checkbox.addEventListener("change", function () {
-        if (checkbox.checked) {
-            const walletUsed = Math.min(walletAmount, originalAmount);
-            const newAmount = originalAmount - walletUsed;
-
-            amountDisplay.textContent = `Rs.${newAmount}`;
-            hiddenWalletInput.value = walletUsed;
-            walletLabel.textContent = `Wallet used: Rs.${walletUsed}, Remaining: Rs.${walletAmount - walletUsed}`;
-        } else {
-            amountDisplay.textContent = `Rs.${originalAmount}`;
-            hiddenWalletInput.value = 0;
-            walletLabel.textContent = `Use wallet amount: Rs.${walletAmount}`;
-        }
-    });
-</script>
 
 
 
