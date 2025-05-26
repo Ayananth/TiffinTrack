@@ -303,34 +303,6 @@ def subscription_cart(request, id=None):
             subscription.save()
 
 
-            # start_date = subscription.start_date.date()
-            # end_date = subscription.end_date.date()
-
-            # food_categories = menu.food_categories.all()
-            # print(f"{food_categories=}")
-
-
-            # orders_to_create = []
-            # current_date = start_date
-            # while current_date <= end_date:
-            #     for food_category in food_categories:
-            #         orders_to_create.append(Orders(
-            #             user=user,
-            #             restaurant=subscription.restaurant,
-            #             food_category=food_category,
-            #             food_item=None,  # You can assign a default item here if needed
-            #             delivery_date=current_date,
-            #             status='PENDING',
-            #             address = subscription.address
-
-            #         ))
-            #     current_date += timedelta(days=1)
-            # print(f"{orders_to_create=}")
-            # # Create all orders at once
-            # Orders.objects.bulk_create(orders_to_create)
-
-
-
             return redirect('payment', id=subscription.id)
         else:
             messages.error(request, "Form not valid")
@@ -382,7 +354,7 @@ def order_confirm(request):
     # Create all orders at once
     Orders.objects.bulk_create(orders_to_create)
 
-    wallet_amount = request.POST.get('wallet_amount')
+    wallet_amount = subscription.wallet_amount_used
 
     if wallet_amount:
         wallet, _ = Wallet.objects.get_or_create(user=request.user)
@@ -411,45 +383,6 @@ def payment(request, id):
         else:
             return redirect('order-confirm')
         
-
-
-
-
-        #Place orders
-        start_date = subscription.start_date.date()
-        end_date = subscription.end_date.date()
-        menu = subscription.menu_category
-        food_categories = menu.food_categories.all()
-        print(f"{food_categories=}")
-
-
-        orders_to_create = []
-        current_date = start_date
-        while current_date <= end_date:
-            for food_category in food_categories:
-                orders_to_create.append(Orders(
-                    user=request.user,
-                    restaurant=subscription.restaurant,
-                    food_category=food_category,
-                    food_item=None,  # You can assign a default item here if needed
-                    delivery_date=current_date,
-                    status='PENDING',
-                    address = subscription.address
-
-                ))
-            current_date += timedelta(days=1)
-        print(f"{orders_to_create=}")
-        # Create all orders at once
-        Orders.objects.bulk_create(orders_to_create)
-
-        wallet_amount = request.POST.get('wallet_amount')
-
-        if wallet_amount:
-            wallet, _ = Wallet.objects.get_or_create(user=request.user)
-            wallet.debit(int(wallet_amount), description=f"Used for subscription")
-
-            
-        return redirect('order-confirm')
     
     context = {'subscription': subscription,
                'wallet_amount': wallet}
