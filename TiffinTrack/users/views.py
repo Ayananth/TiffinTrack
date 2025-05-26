@@ -485,7 +485,8 @@ def use_wallet(request):
     
     subscription.wallet_amount_used = wallet_used
     subscription.save()
-    return redirect('user-home')
+    return redirect('payment', id=subscription_id)
+
 
 @login_required(login_url='login')
 @require_POST
