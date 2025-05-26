@@ -1,0 +1,131 @@
+{% extends "users/base.html" %}
+{% load static %}
+{% block content %}
+
+
+
+    <!-- page head section starts -->
+    <section class="page-head-section">
+        <div class="container page-heading">
+            <h2 class="h3 mb-3 text-white text-center">Confirm Order</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb flex-lg-nowrap justify-content-center justify-content-lg-star">
+                    <li class="breadcrumb-item">
+                        <a href="index.html"><i class="ri-home-line"></i>Home</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Confirm Order
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+    <!-- page head section end -->
+
+    <!--  account section starts -->
+    <section class="account-section section-b-space pt-0">
+        <div class="container">
+            <div class="layout-sec">
+                <div class="row g-lg-4 g-4">
+                    <div class="col-lg-8">
+                        <div class="payment-section">
+                            <div class="title mb-0">
+                                <div class="loader-line"></div>
+                                <h3>Choose Payment Method</h3>
+                                <h6>There are many Types of Payment Method</h6>
+                            </div>
+                            <div class="accordion payment-accordion" id="accordionExample">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                            aria-expanded="true" aria-controls="collapseTwo">
+                                            Options
+                                        </button>
+                                    </h2>
+                                    <div id="collapseTwo" class="accordion-collapse collapse show"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            <ul class="card-list">
+                                                <li>
+                                                    <div class="form-check form-check-reverse">
+                                                        <label class="form-check-label" for="razorpay">
+                                                            <img class="img-fluid img"
+                                                                src="{% static 'frontend/assets//images/icons/svg/razorpay.svg' %}" style="width: 15px; height: auto;" alt="razorpay">
+                                                            <span class="card-name dark-text">Razorpay</span>
+                                                        </label>
+                                                        <input id="razorpay" class="form-check-input" type="radio"
+                                                            name="payment_method" checked>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check form-check-reverse">
+                                                        <label class="form-check-label" for="applepay">
+                                                            <img class="img-fluid img"
+                                                                src="{% static 'frontend/assets/images/icons/svg/apple-pay.svg' %}"
+                                                                alt="mastercard">
+                                                            <span class="card-name dark-text">Apple Pay</span>
+                                                        </label>
+                                                        <input id="payment_method" class="form-check-input" type="radio"
+                                                            name="payment_method" id="applepay">
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check form-check-reverse">
+                                                        <label class="form-check-label" for="cod">
+                                                            <img class="img-fluid img"
+                                                                src="{% static 'frontend/assets/images/icons/svg/cash.svg' %}"
+                                                                alt="mastercard">
+                                                            <span class="card-name dark-text">Cash On Delivery</span>
+                                                        </label>
+                                                        <input id="payment_method" class="form-check-input" type="radio"
+                                                            name="payment_method" id="cod">
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-3">
+                            <form action="{{ callback_url }}" method="POST">
+                            {% csrf_token %}
+                            <script src="https://checkout.razorpay.com/v1/checkout.js"
+                                    data-key="{{ razorpay_key_id }}"
+                                    data-amount="{{ amount }}"
+                                    data-currency="INR"
+                                    data-order_id="{{ order_id }}"
+                                    data-buttontext="Pay Now"
+                                    data-name="TiffinTrack"
+                                    data-description="Monthly Meal Subscription"
+                                    data-theme.color="#f2a93e">
+                            </script>
+                            </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- account section end -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const radios = document.querySelectorAll('input[name="payment_method"]');
+    const razorpayRadio = document.getElementById("razorpay");
+
+    radios.forEach(radio => {
+        radio.addEventListener("change", function () {
+            if (this.value !== "razorpay") {
+                alert("Currently, only Razorpay is supported as a payment method.");
+                this.checked = false;           // Uncheck the selected one
+                razorpayRadio.checked = true;   // Re-select Razorpay
+            }
+        });
+    });
+});
+</script>
+
+
+{%endblock%}

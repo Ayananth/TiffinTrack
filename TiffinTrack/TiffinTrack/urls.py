@@ -27,6 +27,8 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('coupon/', include('coupons.urls')),
 
+    path('payments/', include('payments.urls')),
+
 ]
 
 if settings.DEBUG:  # Serve media files during development
