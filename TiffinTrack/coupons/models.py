@@ -17,12 +17,13 @@ class Coupon(models.Model):
     def is_valid(self):
         now = timezone.now()
         return self.active and self.valid_from <= now <= self.valid_to
+    
+    def __str__(self):
+        return f"{self.code}"
 
 class CouponUsage(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)
+    subscription = models.ForeignKey('restaurant.Subscriptions', on_delete=models.CASCADE)
     used_at = models.DateTimeField(auto_now_add=True)
 
-class UserWallet(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)

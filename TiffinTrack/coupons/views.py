@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Coupon, CouponUsage
 from users.models import Wallet
 from decimal import Decimal
@@ -9,27 +9,91 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
-@login_required(login_url='login')
-def apply_coupon(request):
-    code = request.POST.get('coupon_code')
-    order_amount = Decimal(request.POST.get('order_total'))
+# @login_required(login_url='login')
+# def apply_coupon(request):
+#     code = request.POST.get('coupon_code')
+#     order_amount = Decimal(request.POST.get('order_total'))
 
+#     try:
+#         coupon = Coupon.objects.get(code=code)
+#         if not coupon.is_valid():
+#             return JsonResponse({'error': 'Coupon is expired or inactive'})
+
+#         # Check if user already used it
+#         if CouponUsage.objects.filter(user=request.user, coupon=coupon).count() >= coupon.usage_limit:
+#             return JsonResponse({'error': 'Coupon usage limit reached'})
+
+#         if order_amount < coupon.min_order_value:
+#             return JsonResponse({'error': f'Minimum order value is ₹{coupon.min_order_value}'})
+
+#         # Log coupon usage
+#         CouponUsage.objects.create(user=request.user, coupon=coupon)
+
+#         return JsonResponse({'success': f'₹{coupon.cashback_amount} cashback added to total amount!'})
+
+#     except Coupon.DoesNotExist:
+#         return JsonResponse({'error': 'Invalid coupon code'})
+
+from coupons.models import Coupon, CouponUsage
+from django.views.decorators.http import require_POST
+from restaurant.models import Subscriptions
+from django.contrib import messages
+
+
+@require_POST
+@login_required
+def apply_coupon(request):
+    subscription_id = request.POST.get('subscription_id')
+    code = request.POST.get('coupon_code')
+    print(f"{subscription_id=}")
+    try:
+        subscription = Subscriptions.objects.get(id=subscription_id)
+        print(subscription)
+    except Subscriptions.DoesNotExist:
+        print("Item not found")
+        messages.error(request, "Please try again! ")
+        return redirect('user-home')
     try:
         coupon = Coupon.objects.get(code=code)
         if not coupon.is_valid():
-            return JsonResponse({'error': 'Coupon is expired or inactive'})
-
-        # Check if user already used it
+            messages.error(request, "Coupon is invalid")
+            return redirect('payment', id=subscription.id)
         if CouponUsage.objects.filter(user=request.user, coupon=coupon).count() >= coupon.usage_limit:
-            return JsonResponse({'error': 'Coupon usage limit reached'})
-
-        if order_amount < coupon.min_order_value:
-            return JsonResponse({'error': f'Minimum order value is ₹{coupon.min_order_value}'})
-
+            messages.error(request, "Usage limit reached")
+            return redirect('payment', id=subscription.id)
+        if subscription.item_total < coupon.min_order_value:
+            messages.error(request, f'Minimum order value is ₹{coupon.min_order_value}')
+            return redirect('payment', id=subscription.id)
         # Log coupon usage
-        CouponUsage.objects.create(user=request.user, coupon=coupon)
-
-        return JsonResponse({'success': f'₹{coupon.cashback_amount} cashback added to total amount!'})
-
+        CouponUsage.objects.create(user=request.user, coupon=coupon, subscription=subscription)
+        subscription.coupon = coupon
+        subscription.save()
+        messages.success(request, "Coupon applied")
+        return redirect('payment', id=subscription_id)
     except Coupon.DoesNotExist:
-        return JsonResponse({'error': 'Invalid coupon code'})
+        messages.error(request, "Coupon code does not exists. ")
+        return redirect('payment', id=subscription.id)
+
+
+
+@login_required(login_url='login')
+@require_POST
+def remove_coupon(request):
+    subscription_id = request.POST.get('subscription_id')
+    try:
+        subscription = Subscriptions.objects.get(id=subscription_id)
+    except Subscriptions.DoesNotExist:
+        messages.error(request, "Please try again! ")
+        return redirect('payment', id=subscription_id)
+    
+    try:
+
+        CouponUsage.objects.filter(user=request.user, coupon=subscription.coupon, subscription=subscription_id).delete()
+        subscription.coupon = None
+        subscription.save()
+        messages.success(request, "Coupon removed")
+        return redirect('payment', id=subscription_id)
+    except Exception as e:
+        messages.error(request,"Please try again")
+        return redirect('payment', id=subscription_id)
+        

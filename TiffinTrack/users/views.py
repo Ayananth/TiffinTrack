@@ -19,7 +19,9 @@ from django.core.paginator import Paginator
 from datetime import timedelta
 from datetime import datetime
 from django.http import Http404
+from coupons.models import Coupon, CouponUsage
 
+from django.http import JsonResponse
 
 
 
@@ -503,6 +505,9 @@ def remove_wallet(request):
     subscription.wallet_amount_used = 0.00
     subscription.save()
     return redirect('payment', id=subscription_id)
+
+
+
 
 
 

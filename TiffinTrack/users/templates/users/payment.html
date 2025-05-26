@@ -84,6 +84,12 @@
                                         <h6 class="fw-semibold text-success">Rs.{{subscription.wallet_amount_used}}</h6>
                                     </div>
                                 {%endif%}
+                                {% if subscription.coupon %}
+                                    <div class="sub-total">
+                                        <h6 class="content-color fw-normal">Coupon Applied</h6>
+                                        <h6 class="fw-semibold text-success">Rs.{{subscription.coupon.cashback_amount}}</h6>
+                                    </div>
+                                {%endif%}
 
 
                             <!-- Wallet Payment Option
@@ -127,10 +133,37 @@
 
                             
                             <!-- Promo Code -->
-                            <div class="promo-code position-relative mb-4">
-                                <input type="text" class="form-control code-form-control" placeholder="Enter promo code">
-                                <a href="#" class="btn theme-btn apply-btn mt-0">APPLY</a>
-                            </div>
+
+                            {% if not subscription.coupon %}
+                                <form id="coupon-form" method="post" action="{% url 'apply-coupon' %}">
+                                    {%csrf_token%}
+                                    <div class="promo-code position-relative mb-4">
+                                        <input type="text" class="form-control code-form-control" id="coupon_code" name="coupon_code" placeholder="Enter coupon code" required />
+                                        <input type="hidden" name="subscription_id" value="{{subscription.id}}">
+                                        <button type="submit" class="btn theme-btn apply-btn mt-0">Apply</button>
+                                    </div>
+                                </form>
+                            {%else%}
+
+                                <form id="coupon-form" method="post" action="{% url 'remove-coupon' %}">
+                                    {%csrf_token%}
+                                    <div class="promo-code position-relative mb-4">
+                                        <input type="text" class="form-control code-form-control" id="coupon_code" name="coupon_code" placeholder="{{subscription.coupon.cashback_amount}}"/>
+                                        <input type="hidden" name="subscription_id" value="{{subscription.id}}">
+                                        <button type="submit" class="btn theme-btn apply-btn mt-0">Remove</button>
+                                    </div>
+                                </form>
+
+                            {%endif%}
+
+
+
+                            <div id="coupon-message"></div>
+
+
+  
+
+
 
                                 <hr>
                                 <div class="grand-total">
@@ -159,6 +192,58 @@
 </section>
 <!-- account section end -->
 
+
+<!-- <script>
+// Get CSRF token from cookie (Django default)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.getElementById('coupon-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const couponCode = document.getElementById('coupon_code').value;
+    const orderTotal = document.getElementById('order_total').value;
+    const csrfToken = getCookie('csrftoken');
+
+    fetch('/coupons/apply/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken,
+        },
+        body: new URLSearchParams({
+            coupon_code: couponCode,
+            order_total: orderTotal,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        const messageDiv = document.getElementById('coupon-message');
+        if (data.success) {
+            messageDiv.style.color = 'green';
+            messageDiv.textContent = data.success;
+        } else if (data.error) {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = data.error;
+        }
+    })
+    .catch(error => {
+        console.error('Error applying coupon:', error);
+    });
+});
+</script> -->
 
 
 
