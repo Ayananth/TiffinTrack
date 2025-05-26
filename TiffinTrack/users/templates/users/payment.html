@@ -173,7 +173,7 @@
                             </div>
 
                             <!-- Payment Form -->
-                            <form method="post" id="payment">
+                            <form method="post" id="payment" action="{% url 'payment' subscription.id%}">
                                 {% csrf_token %}
                                 <input type="hidden" name="paid_amount" value="{{subscription.total_amount}}">
                                 <input type="hidden" id="wallet_amount" name="wallet_amount" value="">

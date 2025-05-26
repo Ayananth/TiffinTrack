@@ -350,15 +350,13 @@ def subscription_cart(request, id=None):
 
 @login_required(login_url='login')
 def order_confirm(request):
-
-
-
     #Place orders
     subscription = request.session.get('subscription')
     if not subscription:
         messages.error("Session expired, Please try again")
         return redirect('home')
     subscription = get_object_or_404(Subscriptions, id=subscription)    
+    subscription.is_active = True
     start_date = subscription.start_date.date()
     end_date = subscription.end_date.date()
     menu = subscription.menu_category
@@ -372,10 +370,11 @@ def order_confirm(request):
                 user=request.user,
                 restaurant=subscription.restaurant,
                 food_category=food_category,
-                food_item=None,  # You can assign a default item here if needed
+                food_item=None,
                 delivery_date=current_date,
                 status='PENDING',
-                address = subscription.address
+                address = subscription.address,
+                subscription_id = subscription
 
             ))
         current_date += timedelta(days=1)
@@ -398,23 +397,16 @@ def order_confirm(request):
 @login_required(login_url='login')
 def payment(request, id):
     wallet = request.user.wallet.balance
+    subscription_id = id
     try:
-        subscription = get_object_or_404(Subscriptions, id=id)
-    except Http404:
-        messages.error(request, "Bad request")
-        return redirect('user-home')
+        subscription = Subscriptions.objects.get(id=subscription_id)
+    except Subscriptions.DoesNotExist:
+        messages.error(request, "Please try again! ")
+        return redirect('payment', id=subscription_id)
+    
     if request.method == 'POST':
-
-        #TODO check if already have a subscription
-        paid_amount = request.POST.get('paid_amount',0)
-        print(f"{paid_amount=}")
-        subscription.paid_total_amount = paid_amount
-        subscription.user = request.user
-        # subscription.is_active =  True
-        subscription.save()
         request.session['subscription'] = subscription.id
-
-        if paid_amount!=0:
+        if subscription.final_total>0:
             return redirect('initiate_payment')
         else:
             return redirect('order-confirm')

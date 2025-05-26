@@ -1,4 +1,5 @@
 # payments/views.py
+from decimal import Decimal
 
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
@@ -14,18 +15,22 @@ from restaurant.models import Subscriptions
 client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 def initiate_payment(request):
-    print("Initiate payment")
-    return redirect('user-home')
-
-    subscription = request.session.get('subscription')
-    if not subscription:
+    subscription_id = request.session.get('subscription')
+    if not subscription_id:
         messages.error("Session expired, Please try again")
         return redirect('home')
-    subscription = get_object_or_404(Subscriptions, id=int(subscription))  
+
+    try:
+        subscription = Subscriptions.objects.get(id=subscription_id)
+    except Subscriptions.DoesNotExist:
+        messages.error(request, "Please try again! ")
+        return redirect('payment', id=subscription_id)
     currency = 'INR'
-    amount = subscription.paid_total_amount
+    amount = subscription.final_total
     print(f"{amount=}")
-    amount = amount*100
+    amount = int(amount * 100)
+    print(f"{amount=}")
+
 
     razorpay_order = client.order.create({
         "amount": amount,
@@ -51,7 +56,6 @@ def initiate_payment(request):
 @csrf_exempt
 def payment_handler(request):
     if request.method == "POST":
-        print("Post request========")
         try:
             payment_id = request.POST.get('razorpay_payment_id')
             order_id = request.POST.get('razorpay_order_id')
