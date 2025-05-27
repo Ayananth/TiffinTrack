@@ -20,6 +20,9 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth import update_session_auth_hash
 
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 
 
@@ -183,8 +186,21 @@ def verify_otp(request):
 def request_email_change(request):
     if request.method == "POST":
         new_email = request.POST.get("new_email")
-        token = secrets.token_urlsafe(32)
+        # Check if email is already used
+        if User.objects.filter(email__iexact=new_email).exclude(id=request.user.id).exists():
+            messages.error(request, "This email is already in use.")
+            return redirect('user-profile')
+        try:
+            validate_email(new_email)
+        except ValidationError:
+            messages.error(request, "Invalid email address.")
+            return redirect('user-profile')
         user = request.user
+        if new_email == user.email:
+            messages.error(request, "No change in Email")
+            return redirect('user-profile')
+        
+        token = secrets.token_urlsafe(32)
         user.pending_email = new_email
         user.email_change_token = token
         user.email_change_expiry = timezone.now() + timezone.timedelta(hours=24)
@@ -244,7 +260,15 @@ def request_password_change(request):
         new_password = request.POST.get("new_password")
 
         if not request.user.check_password(current_password):
-            return render(request, "change_password.html", {"error": "Incorrect current password."})
+            messages.error(request, "Current password is incorrect")
+            return redirect('user-profile')
+        
+        try:
+            validate_password(new_password, user=request.user)
+        except ValidationError as e:
+            for error in e.messages:
+                messages.error(request, error)
+            return redirect('user-profile')
 
         # Sign the data (user ID and new password)
         data = f"{request.user.id}:{new_password}"
