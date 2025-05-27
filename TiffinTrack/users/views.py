@@ -119,14 +119,7 @@ def home(request):
 
 @login_required(login_url='login')
 def update_profile(request):
-    user = request.user
-    reference_point = user.profile.point
-    longitude = reference_point.x
-    latitude = reference_point.y
-    location = get_location_from_point(longitude, latitude)
-    return render(request, 'users/profile.html', {
-        'location' : location,
-    })
+    return render(request, 'users/profile.html')
 
 
 @login_required(login_url='login')
@@ -259,7 +252,6 @@ def restaurant_details(request, pk):
         'restaurant': restaurant,
         'rating': avg_rating,
         'reviews': reviews_count,
-        'location': restaurant.location_name,
         'menu_data': menu_data,
         'review_list': reviews,
         'review_form': review_form,
@@ -550,7 +542,6 @@ def orders(request):
     reference_point = user.profile.point
     longitude = reference_point.x
     latitude = reference_point.y
-    location = get_location_from_point(longitude, latitude)
     subscription = user.subscriptions.filter(is_active=True).order_by('-created_at').first()
     print(f"{subscription=}")
 
@@ -591,7 +582,7 @@ def orders(request):
                 'sort': sort_field,
                 'dir': direction,
                 'wallet_balance': wallet_balance,
-                'location': location}
+                }
     return render(request, './users/orders.html', context)
 
 
