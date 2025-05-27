@@ -109,10 +109,6 @@ class RestaurantProfile(models.Model):
         super().save(*args, **kwargs)
 
         
-
-
-
-
     def __str__(self):
         return self.restaurant_name
 
