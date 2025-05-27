@@ -56,6 +56,7 @@
         <div class="container">
             <div class="category-detail-tab">
                 <div class="row g-4 d-flex justify-content-center">
+                    {% include './messages.html' %}
                     <div class="col-lg-10">
                         <div class="menu-button d-inline-block d-lg-none">
                             <a href="#!"><i class="ri-book-open-line"></i> Menu</a>
@@ -343,195 +344,83 @@
                             </div>
                             <div class="tab-pane fade" id="review" role="tabpanel" tabindex="0">
                                 <div class="review-section">
+
+                                <div class="col-md-6">
+                                    <div class="address-box new-address-box">
+                                    <a href="#address-details" class="btn new-address-btn theme-outline rounded-2 mt-0"
+                                        data-bs-toggle="modal">
+                                        {% if has_reviewed %}
+                                        Edit Review
+                                        {%else%}
+                                        Post Review
+                                        {%endif%}
+                                    </a>
+                                    </div>
+                                </div>
+
+
+
+
                                     <ul class="review-box-list">
+                                        {% for review_item in review_list%}
                                         <li>
                                             <div class="review-box">
                                                 <div class="review-head">
                                                     <div class="review-image">
-                                                        <img class="img-fluid img" src="assets/images/icons/p1.png"
+                                                        <img class="img-fluid img" src="{{review_item.user.profile.profile_pic.url}}"
                                                             alt="p1">
                                                     </div>
                                                     <div
                                                         class="d-flex align-sm-items-center justify-content-between w-100">
                                                         <div>
-                                                            <h6 class="reviewer-name">Gunjan Puri</h6>
+                                                            <h6 class="reviewer-name">{{review_item.user}}</h6>
                                                             <ul class="rating-star">
+                                                                {% for i in review_item.rating|range_filter %}
                                                                 <li>
                                                                     <i class="ri-star-fill star"></i>
                                                                 </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
+                                                                {%endfor%}
+                                                                {% for i in 5|subtract:review_item.rating|range_filter %}
+                                                                    <li><i class="ri-star-line star"></i></li>
+                                                                {% endfor %}
                                                             </ul>
                                                         </div>
                                                         <div>
-                                                            <h6>1 month ago</h6>
+                                                            <h6>{{review_item.created_at|date}}</h6>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="review-content">
-                                                    <h6>Wonderful Experience...!!</h6>
+                                                    {%if review_item.comment%}
+                                                    <h6>{{review_item.comment}}</h6>
+                                                    {%endif%}
+
+                                                    {%if review_item.description%}
                                                     <p>
-                                                        Serve a healthy and good food. Having a parking
-                                                        facility and there are also waiting area
-                                                        available. These place is perfect for Celebration
-                                                        of birthday. Serve a healthy and good food. Having
-                                                        a parking facility and there are also waiting area
-                                                        available.
+                                                        {{review_item.description}}
                                                     </p>
+                                                    {%endif%}
                                                 </div>
+                                                {% if review_item.user == request.user%}
+                                                <div class="d-flex justify-content-end">
+                                                    <form action="{% url 'delete_review' review_item.id %}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this review?');">
+                                                        {% csrf_token %}
+                                                        <button type="submit" style="border: none; background: none; padding: 0;">
+                                                            <i class="ri-delete-bin-line" style="color: red; cursor: pointer;"></i>
+                                                        </button>
+                                                    </form>
+
+                                                </div>
+                                                {%endif%}
                                             </div>
                                         </li>
-                                        <li>
-                                            <div class="review-box">
-                                                <div class="review-head">
-                                                    <div class="review-image">
-                                                        <img class="img-fluid img" src="assets/images/icons/p2.png"
-                                                            alt="p2">
-                                                    </div>
-                                                    <div
-                                                        class="d-flex align-sm-items-center justify-content-between w-100">
-                                                        <div>
-                                                            <h6 class="reviewer-name">Gunjan Puri</h6>
-                                                            <ul class="rating-star">
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                        <div>
-                                                            <h6>1 month ago</h6>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="review-content">
-                                                    <h6>Wonderful Experience...!!</h6>
-                                                    <p>
-                                                        Serve a healthy and good food. Having a parking
-                                                        facility and there are also waiting area
-                                                        available. These place is perfect for Celebration
-                                                        of birthday. Serve a healthy and good food. Having
-                                                        a parking facility and there are also waiting area
-                                                        available.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="review-box">
-                                                <div class="review-head">
-                                                    <div class="review-image">
-                                                        <img class="img-fluid img" src="assets/images/icons/p5.png"
-                                                            alt="p5">
-                                                    </div>
-                                                    <div
-                                                        class="d-flex align-sm-items-center justify-content-between w-100">
-                                                        <div>
-                                                            <h6 class="reviewer-name">Gunjan Puri</h6>
-                                                            <ul class="rating-star">
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                        <div>
-                                                            <h6>1 month ago</h6>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="review-content">
-                                                    <h6>Wonderful Experience...!!</h6>
-                                                    <p>
-                                                        Serve a healthy and good food. Having a parking
-                                                        facility and there are also waiting area
-                                                        available. These place is perfect for Celebration
-                                                        of birthday. Serve a healthy and good food. Having
-                                                        a parking facility and there are also waiting area
-                                                        available.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="review-box">
-                                                <div class="review-head">
-                                                    <div class="review-image">
-                                                        <img class="img-fluid img" src="assets/images/icons/p4.png"
-                                                            alt="p4">
-                                                    </div>
-                                                    <div
-                                                        class="d-flex align-sm-items-center justify-content-between w-100">
-                                                        <div>
-                                                            <h6 class="reviewer-name">Gunjan Puri</h6>
-                                                            <ul class="rating-star">
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                                <li>
-                                                                    <i class="ri-star-fill star"></i>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                        <div>
-                                                            <h6>1 month ago</h6>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="review-content">
-                                                    <h6>Wonderful Experience...!!</h6>
-                                                    <p>
-                                                        Serve a healthy and good food. Having a parking
-                                                        facility and there are also waiting area
-                                                        available. These place is perfect for Celebration
-                                                        of birthday. Serve a healthy and good food. Having
-                                                        a parking facility and there are also waiting area
-                                                        available.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </li>
+
+                                        {%empty%}
+
+                                        <p>No reviews Yet</p>
+
+
+                                        {%endfor%}
                                     </ul>
                                 </div>
                             </div>
@@ -542,6 +431,40 @@
         </div>
     </section>
     <!-- tab section end -->
+
+
+
+    <!-- add-card modal starts -->
+    <div class="modal address-details-modal fade" id="address-details" tabindex="-1" aria-labelledby="addModalAdress"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addModalAdress">
+                        Add your review
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                        <form id="review-form" method="POST" action="{% url 'add_review' %}">
+                            {% csrf_token %}
+                            {{ review_form.as_p }}
+                            <div id="form-errors" class="text-danger mt-2"></div>
+                            <input type="hidden" name="restaurant_id" value="{{restaurant.id}}">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- add-card modal end -->
 
 <script>
   console.log("Hi");

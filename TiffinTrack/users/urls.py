@@ -22,6 +22,8 @@ urlpatterns = [
     path('use_wallet/', views.use_wallet, name='use_wallet'),
     path('remove_wallet/', views.remove_wallet, name='remove_wallet'),
     path('user/address/add/', views.add_user_address, name='add_user_address'),
+    path('add_review/', views.post_review, name='add_review'),
+    path('review/<int:review_id>/delete/', views.delete_review, name='delete_review'),
 
 
 ]

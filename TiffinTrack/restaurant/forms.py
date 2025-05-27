@@ -1,5 +1,5 @@
 from django import forms
-from .models import RestaurantProfile, MenuCategory, FoodItem, FoodCategory
+from .models import RestaurantProfile, MenuCategory, FoodItem, FoodCategory, Review
 from django.contrib.gis.geos import Point
 
 
@@ -56,3 +56,23 @@ class FoodCategoryManageForm(forms.ModelForm):
 
 
 
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment', 'description']
+        widgets = {
+            'rating': forms.NumberInput(attrs={
+                'min': 1, 'max': 5, 'class': 'form-control', 'placeholder': 'Rating (1 to 5)'
+            }),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control', 'placeholder': 'Write your comment...', 'rows': 3
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control', 'placeholder': 'Detailed description (optional)', 'rows': 4
+            }),
+        }
+        labels = {
+            'rating': 'Your Rating',
+            'comment': 'Short Comment',
+            'description': 'Detailed Review (optional)',
+        }

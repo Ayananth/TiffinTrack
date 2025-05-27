@@ -4,8 +4,9 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from accounts.forms import UserUpdateForm, ProfileUpdateForm
+from restaurant.forms import ReviewForm
 from django.contrib.auth.decorators import login_required
-from restaurant.models import RestaurantProfile, FoodItem, FoodCategory, MenuCategory, Subscriptions, Offer
+from restaurant.models import RestaurantProfile, FoodItem, FoodCategory, MenuCategory, Subscriptions, Offer, Review
 from accounts.models import UserProfile, Locations
 from django.db.models import Avg, Max
 from collections import defaultdict
@@ -219,6 +220,9 @@ def restaurant_details(request, pk):
     # Restaurant summary
     avg_rating = restaurant.reviews.aggregate(Avg('rating'))['rating__avg']
     reviews_count = restaurant.reviews.count()
+    reviews = Review.objects.filter(restaurant=restaurant)
+
+
     days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
     # Get active menu categories
@@ -274,13 +278,26 @@ def restaurant_details(request, pk):
             'start_end_time': start_end_time,
         })
 
+    has_reviewed = False
+
+    review = Review.objects.filter(user=request.user, restaurant=restaurant).first()
+    if not review:
+        review=None
+    has_reviewed = review is not None
+    review_form = ReviewForm(instance=review)
+
+
     context = {
         'restaurant': restaurant,
         'rating': avg_rating,
         'reviews': reviews_count,
         'location': restaurant.location_name,
         'menu_data': menu_data,
+        'review_list': reviews,
+        'review_form': review_form,
+        'has_reviewed': has_reviewed,
     }
+
 
     return render(request, 'users/restaurant_detail.html', context)
 
@@ -705,3 +722,50 @@ def add_user_address(request):
             return JsonResponse({'success': False, 'form_html': form_html})
     else:
         return JsonResponse({'error': 'Only POST allowed'}, status=400)
+    
+
+
+
+
+def post_review(request):
+    restaurant_id = request.POST.get('restaurant_id')
+    if not restaurant_id:
+        return redirect('user-home')
+
+    restaurant = get_object_or_404(RestaurantProfile, id=restaurant_id)
+
+    # Get existing review if any
+    existing_review = Review.objects.filter(restaurant=restaurant, user=request.user).first()
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=existing_review)  # pre-fill if exists
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.restaurant = restaurant
+            review.user = request.user
+            review.save()
+
+            if existing_review:
+                messages.success(request, "Your review has been updated successfully.")
+            else:
+                messages.success(request, "Your review has been submitted successfully.")
+
+            return redirect('restaurant-details', pk=restaurant.id)
+        else:
+            messages.error(request, "Please correct the errors in the form.")
+
+    return redirect('restaurant-details', pk=restaurant.id)
+
+@login_required
+def delete_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+
+    # Ensure that only the author can delete their review
+    if review.user != request.user:
+        messages.error(request, "You are not allowed to delete this review.")
+        return redirect('restaurant-detail', id=review.restaurant.id)
+
+    restaurant_id = review.restaurant.id
+    review.delete()
+    messages.success(request, "Your review has been deleted.")
+    return redirect('restaurant-details', id=restaurant_id)
