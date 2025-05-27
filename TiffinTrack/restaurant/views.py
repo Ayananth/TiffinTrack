@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from accounts.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
-from .models import RestaurantProfile, MenuCategory, FoodCategory, FoodItem
+from .models import RestaurantProfile, MenuCategory, FoodCategory, FoodItem, Offer
 from .forms import RestaurantProfileForm, MenuCategoryForm
 from users.models import Orders
 
@@ -18,7 +18,7 @@ from django.utils.timezone import localtime
 from datetime import datetime
 from accounts.models import CustomUser, UserProfile
 from .models import Subscriptions
-from .forms import FoodItemManageForm, MenuManageForm, FoodCategoryManageForm
+from .forms import FoodItemManageForm, MenuManageForm, FoodCategoryManageForm, OfferForm
 
 
 
@@ -481,3 +481,63 @@ def delete_food_category(request, id):
     food = get_object_or_404(FoodCategory, pk=id)
     food.delete()
     return redirect('restaurant-food_category')
+
+
+
+@login_required(login_url='login')
+def offers(request):
+    if request.user.user_type != 'restaurant':
+        messages.error(request, "Not restaurant user")
+        return redirect('login')
+
+    user = request.user
+    restaurant = get_object_or_404(RestaurantProfile, user=request.user)
+    offers = Offer.objects.filter(restaurant=restaurant)
+    context = {
+        'offers': offers
+    }
+
+
+    return render(request, './restaurant/offers.html',
+                  context
+                #   {'form': form}
+                  )
+
+@login_required(login_url='login')
+def offer_create_or_update(request, pk=None):
+    if request.user.user_type != 'restaurant':
+        messages.error(request, "Not restaurant user")
+        return redirect('login')
+    if pk:
+        offer = get_object_or_404(Offer, pk=pk)
+        title = "Update Offer"
+    else:
+        offer = None
+        title = "Add Offer"
+
+    restaurant = request.user.restaurantprofile
+        
+    if request.method == 'POST':
+        form = OfferForm(request.POST, instance=offer, restaurant=restaurant)
+        if form.is_valid():
+            new_offer = form.save(commit=False)
+            new_offer.restaurant = restaurant  # Force assign correct restaurant
+            new_offer.save()
+            form.save_m2m()
+            return redirect('restaurant-offers')
+    else:
+        form = OfferForm(instance=offer, restaurant=restaurant)
+    
+    return render(request, './restaurant/add-offer.html', {
+        'form': form,
+        'title': title
+    })
+
+@login_required(login_url='login')
+def offer_delete(request, pk):
+    if request.user.user_type != 'restaurant':
+        messages.error(request, "Not restaurant user")
+        return redirect('login')
+    offer = get_object_or_404(Offer, pk=pk)
+    offer.delete()
+    return redirect('restaurant-offers')

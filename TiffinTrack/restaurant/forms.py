@@ -76,3 +76,32 @@ class ReviewForm(forms.ModelForm):
             'comment': 'Short Comment',
             'description': 'Detailed Review (optional)',
         }
+
+
+from .models import Offer
+
+class OfferForm(forms.ModelForm):
+    class Meta:
+        model = Offer
+        fields = [
+            'name',
+            'description',
+            'discount_percent',
+            'valid_from',
+            'valid_until',
+            'menu_categories',
+            'is_active',
+        ]
+        widgets = {
+            'valid_from': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'valid_until': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'menu_categories': forms.CheckboxSelectMultiple()
+        }
+
+    def __init__(self, *args, **kwargs):
+        restaurant = kwargs.pop('restaurant', None)
+        super().__init__(*args, **kwargs)
+        if restaurant:
+            self.fields['menu_categories'].queryset = MenuCategory.objects.filter(
+                restaurant=restaurant, is_active=True
+            )

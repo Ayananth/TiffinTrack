@@ -32,6 +32,11 @@ urlpatterns = [
     path('food_category/edit/<int:pk>/', views.category_add_or_update, name='restaurant-food_category-edit'),
     path('food_category/delete/<int:id>/', views.delete_food_category, name='restaurant-food_category-delete'),
 
+    path('offers/', views.offers, name='restaurant-offers'),
+    path('offers/add', views.offer_create_or_update, name='restaurant-offer-add'),
+    path('offers/edit/<int:pk>/', views.offer_create_or_update, name='restaurant-offer-edit'),
+    path('offers/delete/<int:pk>/', views.offer_delete, name='restaurant-offer-delete'),
+
 
 
 
