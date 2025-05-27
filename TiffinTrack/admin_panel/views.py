@@ -14,7 +14,7 @@ from django.utils.timezone import now
 from django.db.models import Count, Q
 from django.utils.timezone import localtime
 from datetime import datetime
-
+from coupons.models import Coupon
 
 
 
@@ -484,3 +484,39 @@ def deliver_order(request, order_id):
         messages.error(request,"Server error")
     finally:
         return redirect('admin-orders')
+    
+
+
+@login_required(login_url='admin-login')
+def coupons(request):
+    user = request.user
+
+    sort_by = request.GET.get('sort', 'delivery_date')  # default: delivery_date
+    direction = request.GET.get('dir', 'asc') 
+    order_prefix = '' if direction == 'asc' else '-'
+    valid_sort_fields = ['delivery_date', 'status']
+    sort_field = sort_by if sort_by in valid_sort_fields else 'delivery_date'
+
+    coupons = Coupon.objects.all().order_by('-created_at')
+
+    restaurant = request.GET.get('restaurant')
+    user = request.GET.get('user')
+    status = request.GET.get('status')
+    delivery_date = request.GET.get('delivery_date')
+
+
+
+    paginator = Paginator(coupons, 10)  # Show 5 orders per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+    print(f"{orders=}")
+    context = {'coupons': page_obj,
+                'sort': sort_field,
+                'dir': direction,
+                
+                }
+    return render(request, './admin_panel/coupon.html', context)
+
+

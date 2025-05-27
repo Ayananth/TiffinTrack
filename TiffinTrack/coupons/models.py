@@ -11,7 +11,8 @@ class Coupon(models.Model):
     valid_to = models.DateTimeField()
     active = models.BooleanField(default=True)
     usage_limit = models.PositiveIntegerField(default=1)  # per user
-    restaurant = models.ForeignKey(RestaurantProfile, null=True, blank=True, on_delete=models.CASCADE)
+    restaurant = models.ManyToManyField(RestaurantProfile, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
     def is_valid(self):

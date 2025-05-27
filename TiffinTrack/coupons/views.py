@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Coupon, CouponUsage
 from users.models import Wallet
 from decimal import Decimal
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-
+from .forms import CouponForm
 
 # Create your views here.
 
@@ -96,4 +96,37 @@ def remove_coupon(request):
     except Exception as e:
         messages.error(request,"Please try again")
         return redirect('payment', id=subscription_id)
-        
+    
+
+
+
+@login_required(login_url='admin-login')
+def coupon_form(request, coupon_id=None):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
+    if coupon_id:
+        coupon = get_object_or_404(Coupon, id=coupon_id)
+        action = "Edit"
+    else:
+        coupon = None
+        action = "Create"
+    
+    if request.method == 'POST':
+        form = CouponForm(request.POST, instance=coupon)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Coupon {action.lower()}ed successfully.")
+            return redirect('admin-coupons')  # replace with your list view
+    else:
+        form = CouponForm(instance=coupon)
+    
+    return render(request, './admin_panel/add_coupon.html', {'form': form})
+
+@login_required(login_url='admin-login')
+def delete_coupon(request, coupon_id):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
+    coupon = get_object_or_404(Coupon, id=coupon_id)
+    coupon.delete()
+    messages.success(request, "Coupon deleted successfully.")
+    return redirect('admin-coupons')  # Replace with your actual list view
