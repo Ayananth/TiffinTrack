@@ -318,42 +318,6 @@ def foods(request):
     return render(request, './admin_panel/food_items.html', context)
 
 
-@login_required(login_url='admin-login')
-def food_add_or_update(request, pk=None):
-    if not request.user.is_superuser:
-        return redirect('admin-login')
-    if pk:
-        food_obj = get_object_or_404(FoodItem, pk=pk)
-    else:
-        food_obj = None
-
-    if request.method == "POST":
-        form = FoodItemManageForm(request.POST, request.FILES, instance=food_obj)
-        if form.is_valid():
-            restaurant = form.save()
-            messages.success(request, f"Food  {'Updated' if pk else 'Created'} ")
-            return redirect('food_items')
-        else:
-            messages.error(request, "Invalid inputs.")
-    else:
-        form = FoodItemManageForm(instance=food_obj)
-
-
-    return render(request, './admin_panel/add-food.html', {'form': form})
-
-
-@login_required(login_url='admin-login')
-def delete_food_item(request, id):
-    if not request.user.is_superuser:
-        return redirect('admin-login')
-    food = get_object_or_404(FoodItem, pk=id)
-    food.delete()
-    return redirect('food_items')
-
-
-
-
-
 # menu Items
 
 @login_required(login_url='admin-login')

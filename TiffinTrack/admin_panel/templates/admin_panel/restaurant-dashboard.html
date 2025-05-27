@@ -92,11 +92,6 @@
                                             </div>
                                             <div class="input-items">
                                                 <div class="row gy-3 mb-4">
-                                                    <!-- food items table here -->
-                                                    <form class="d-inline-flex flex-row-reverse">
-                                                        <a href="{% url 'food_items-add'%}" class="align-items-center btn btn-theme d-flex">
-                                                            <i data-feather="plus-square"></i>Add New
-                                                        </a>
                                                     </form>
 
                                                     <table class="table category-table dataTable no-footer" id="table_id">
@@ -144,12 +139,7 @@
                                                                     <i class="ri-pencil-line"></i>
                                                                   </a>
                                                                 </li>
-                                        
-                                                                <li>
-                                                                  <a href="{% url 'food_items-delete' food_item.id %}" onclick="return confirm('Are you sure you want to delete this user?');">
-                                                                    <i class="ri-delete-bin-line"></i>
-                                                                  </a>
-                                                                </li>
+
                                                               </ul>
                                                             </td>
                                                           </tr>
