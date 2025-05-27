@@ -23,58 +23,76 @@
                               <i class="fa-solid fa-x ps-2 close-icon" style="color: #f42a2a; cursor: pointer;"></i>
                             </li>
                           {% endfor %}
+                          <div id="js-error-message" class="messages d-flex align-items-center">
                         </ul>
                         {% endif %}
                         <div class="title">
                             <div class="loader-line"></div>
                             <h3>Change Profile</h3>
                         </div>
-                        <form method="post" enctype="multipart/form-data">
+                        <form method="post" enctype="multipart/form-data" action="{% url 'update-profile-pic' %}">
+                            {% csrf_token %}
+                            <ul class="profile-details-list">
+                                <li>
+                                    <div class="profile-content">
+                                        <div class="d-flex align-items-center gap-sm-2 gap-1">
+                                            <i class="ri-file-image-line"></i>
+                                            <span>Profile Image :</span>
+                                        </div>
+                                        <h6><input type="file" name="profile_pic"></h6>
+                                    </div>
+                                    <button type="submit" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</button>
+                                </li>
+                            </ul>
+                        </form>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'change-user-name' %}">
                             {% csrf_token %}
                             <ul class="profile-details-list">
                                 <li>
                                     <div class="profile-content">
                                         <div class="d-flex align-items-center gap-sm-2 gap-1">
                                             <i class="ri-user-3-fill"></i>
-                                            <span>Profile Image :</span>
+                                            <span>User Name :</span>
                                         </div>
-                                        <h6><input type="file" name="profile_pic"></h6>
+                                        <h6><input type="text" name="username" placeholder="Enter username" value="{{user.username}}"></h6>
                                     </div>
+                                    <button type="submit" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</button>
                                 </li>
+                            </ul>
+                        </form>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'request_email_change' %}">
+                            {% csrf_token %}
+                            <ul class="profile-details-list">
                                 <li>
                                     <div class="profile-content">
                                         <div class="d-flex align-items-center gap-sm-2 gap-1">
-                                            <i class="ri-user-3-fill"></i>
-                                            <span>Name :</span>
-                                        </div>
-                                        <h6><input type="text" name="username" placeholder="Enter username" value="{{user_form.username.value}}"></h6>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="profile-content">
-                                        <div class="d-flex align-items-center gap-sm-2 gap-1">
-                                            <i class="ri-mail-fill"></i>
+                                            <i class="ri-mail-line"></i>
                                             <span>Email :</span>
                                         </div>
-                                        <h6><input type="email" name="email" placeholder="Enter Email" value="{{user_form.email.value}}" disabled></h6>
-                                        <div class="text-danger">{{ user_form.email.errors }}</div>
+                                        <h6><input type="text" name="new_email" placeholder="Enter username" value="{{user.email}}"></h6>
                                     </div>
-                                    <a href="#email" class="btn theme-outline" data-bs-toggle="modal">Change</a>
-
+                                    <button type="submit" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</button>
                                 </li>
+                            </ul>
+                        </form>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'update-phone' %}">
+                            {% csrf_token %}
+                            <ul class="profile-details-list">
                                 <li>
-                                    <!-- TODO add phone number -->
                                     <div class="profile-content">
                                         <div class="d-flex align-items-center gap-sm-2 gap-1">
-                                            <i class="ri-phone-fill"></i>
-                                            <span>Phone Number :</span>
+                                            <i class="ri-phone-line"></i>
+                                            <span>Phone :</span>
                                         </div>
-                                        <h6><input type="text" name="phone" placeholder="Enter Phone" value="{{user_form.phone.value|default:''}}"></h6>
-                                        <div class="text-danger">{{ user_form.phone.errors }}</div>
+                                        <h6><input type="text" name="phone" placeholder="Enter Phone Number" value="{% if user.phone %} {{user.phone}} {%endif%}"></h6>
                                     </div>
-                                </li>  
-
-
+                                    <button type="submit" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</button>
+                                </li>
+                            </ul>
+                        </form>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'update-profile-pic' %}">
+                            {% csrf_token %}
+                            <ul class="profile-details-list">
                                 <li>
                                     <div class="profile-content">
                                         <div class="d-flex align-items-center gap-sm-2 gap-1">
@@ -85,14 +103,10 @@
                                     </div>
                                     <a href="#password" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</a>
                                 </li>
-
-
-
-
                                 <input type="submit" value="submit" class="btn theme-outline mt-0">
+                                </li>
                             </ul>
-                    </form>
-
+                        </form>
                     </div>
                 </div>
             </div>
@@ -166,6 +180,47 @@
         </div>
     </div>
     <!-- edit password number modal end -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const forms = document.querySelectorAll("form");
+
+    forms.forEach(form => {
+        const inputs = form.querySelectorAll("input[name]");
+
+        // Save the original values
+        inputs.forEach(input => {
+            input.setAttribute("data-original", input.value);
+        });
+
+        form.addEventListener("submit", function (e) {
+            let hasChanged = false;
+
+            inputs.forEach(input => {
+                const original = input.getAttribute("data-original") || "";
+                const current = input.value || "";
+
+                // For file inputs, check if a file is selected
+                if (input.type === "file") {
+                    if (input.files.length > 0) {
+                        hasChanged = true;
+                    }
+                } else {
+                    if (original.trim() !== current.trim()) {
+                        hasChanged = true;
+                    }
+                }
+            });
+
+            if (!hasChanged) {
+                e.preventDefault();
+              
+            }
+        });
+    });
+});
+</script>
+
 
 
 

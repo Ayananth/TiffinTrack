@@ -24,6 +24,8 @@ urlpatterns = [
     path('user/address/add/', views.add_user_address, name='add_user_address'),
     path('add_review/', views.post_review, name='add_review'),
     path('review/<int:review_id>/delete/', views.delete_review, name='delete_review'),
-
+    path('update-profile-pic/', views.update_profile_pic, name='update-profile-pic'),
+    path('update-user-name/', views.change_username, name='change-user-name'),
+    path('update-phone/', views.update_phone_number, name='update-phone'),
 
 ]

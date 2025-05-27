@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
@@ -25,6 +26,7 @@ from django.http import JsonResponse
 
 from django.utils import timezone
 from django.template.loader import render_to_string
+from accounts.models import CustomUser
 
 
 
@@ -118,45 +120,11 @@ def home(request):
 @login_required(login_url='login')
 def update_profile(request):
     user = request.user
-    profile = user.profile
-    email = user.email
-
     reference_point = user.profile.point
     longitude = reference_point.x
     latitude = reference_point.y
     location = get_location_from_point(longitude, latitude)
-    print("test")
-
-    user_form = UserUpdateForm(instance=user)
-    print(f"{user.profile=}")
-    profile_form = ProfileUpdateForm(instance=user.profile)
-
-    if request.method == 'POST':
-        print("POST request received")
-        user_form = UserUpdateForm(request.POST, instance=user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=user.profile)
-
-        if user_form.is_valid() and profile_form.is_valid():
-            print("Forms are valid")
-            user_form_instance = user_form.save(commit=False)
-            user_form_instance.email = email 
-            user_form_instance.save()
-            profile_form.save()
-            messages.success(request, "Profile updated successfully!")
-            return redirect('user-profile')  # Redirect to a profile page after saving
-        else:
-            print("Forms are not valid")
-            print(user_form.errors)
-            print(profile_form.errors)
-            messages.error(request, "Error updating profile. Please check the form.")
-
-
-
-
-
     return render(request, 'users/profile.html', {
-        'user_form': user_form,
-        'profile_form': profile_form,
         'location' : location,
     })
 
@@ -769,3 +737,65 @@ def delete_review(request, review_id):
     review.delete()
     messages.success(request, "Your review has been deleted.")
     return redirect('restaurant-details', id=restaurant_id)
+
+
+@login_required(login_url='login')
+def update_profile_pic(request):
+    if request.method == 'POST' and request.FILES.get('profile_pic'):
+        profile = request.user.profile
+        profile.profile_pic = request.FILES['profile_pic']
+        profile.save()
+        messages.success(request, "Profile picture updated successfully.")
+        return redirect('user-profile')  # Replace with your actual profile view name
+    else:
+        messages.error(request, "Please upload a valid image.")
+    
+    return render(request, 'users/update_profile_pic.html')
+
+@login_required
+def change_username(request):
+    if request.method == "POST":
+        new_username = request.POST.get("username", "").strip()
+        if not new_username:
+            messages.error(request, "Username cannot be empty.")
+            return redirect("user-profile")
+        if new_username == request.user.username:
+            messages.error(request, "New username must be different from the current one.")
+            return redirect("user-profile")
+        if CustomUser.objects.filter(username__iexact=new_username).exclude(id=request.user.id).exists():
+            messages.error(request, "This username is already taken.")
+            return redirect("user-profile")
+        request.user.username = new_username
+        request.user.save()
+        messages.success(request, "Username successfully updated.")
+
+    return redirect("user-profile")
+
+@login_required
+def update_phone_number(request):
+    PHONE_REGEX = r'^\+?\d{10,15}$'
+    user = request.user
+    if request.method == "POST":
+        new_phone = request.POST.get("phone", "").strip()
+        
+        if not new_phone:
+            messages.error(request, "Phone number cannot be empty.")
+            return redirect("user-profile")
+        
+        if not re.match(PHONE_REGEX, new_phone):
+            messages.error(request, "Enter a valid phone number (10-15 digits, optional '+').")
+            return redirect("user-profile")
+               
+        if user.phone == new_phone:
+            messages.error(request, "New phone number must be different from the current one.")
+            return redirect("user-profile")
+        
+        if CustomUser.objects.filter(phone=new_phone).exclude(id=request.user.id).exists():
+            messages.error(request, "This phone number is already in use.")
+            return redirect("user-profile")
+        
+        user.phone = new_phone
+        user.save()
+        messages.success(request, "Phone number updated successfully.")
+    
+    return redirect("user-profile")
