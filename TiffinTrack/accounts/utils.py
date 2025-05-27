@@ -71,18 +71,21 @@ def verify_otp_sms(otp):
 
 
 def get_location_from_point(longitude, latitude):
-    geolocator = Nominatim(user_agent="ayspm123@gmail.com")
-    location = geolocator.reverse((latitude, longitude), exactly_one=True)
-    print(location)
-    print(f"location from point : {location.address}")
-    if location:
-        address = location.raw.get("address", {})
-        print(f"{address=}")
-    print(list(address.values()))
-    place = list(address.values())[0:2]
-    print(place)
-    place = ', '.join(place)
-    print(place)
-    return place
-
+    try:
+        geolocator = Nominatim(user_agent="ayspm123@gmail.com")
+        location = geolocator.reverse((latitude, longitude), exactly_one=True)
+        print(location)
+        print(f"location from point : {location.address}")
+        if location:
+            address = location.raw.get("address", {})
+            print(f"{address=}")
+        print(list(address.values()))
+        place = list(address.values())[0:2]
+        print(place)
+        place = ', '.join(place)
+        print(place)
+        return place
+    except Exception as e:
+        print(f"Error from get_location_from_point, {e}")
+        return ""
 
