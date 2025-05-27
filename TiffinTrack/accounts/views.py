@@ -155,7 +155,20 @@ def verify_otp(request):
             request.session.pop('otp_sent', None)
             request.session.pop('otp_sent_time', None)
             request.session.pop('phone', None)
-            user, created = CustomUser.objects.get_or_create(username=phone, phone=phone)
+
+            if CustomUser.objects.filter(phone=phone).exists():
+                messages.error(request, "This number is already registered")
+                return redirect('login')
+
+
+            
+            try:
+                user, created = CustomUser.objects.get_or_create(username=phone, phone=phone)
+            except Exception as e:
+                messages.error(request, "Please try again")
+                print(f"{e=}")
+                return redirect('login')
+
             login(request, user)
             return redirect("user-home")
             #TODO error message display
