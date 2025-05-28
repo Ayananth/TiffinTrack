@@ -35,6 +35,6 @@ def send_email_on_new_restaurant(sender, instance, created, **kwargs):
             View here: http://localhost:8000{url}
                     ''',
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=admin_emails,  # Change this to the actual admin email(s)
+            recipient_list=admin_emails,
             fail_silently=False,
         )
