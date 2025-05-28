@@ -38,8 +38,8 @@
                             <div class="distance d-flex align-items-center">
                                 <h4 class="text-white shop-time">{{restaurant.location_name}}</h4>
                                 <h4 class="rating-star">
-                                    <span class="star"><i class="ri-star-s-fill"></i></span>{{rating}}
-                                    ({{reviews}}+ Reviews)
+                                    <span class="star"><i class="ri-star-s-fill"></i></span>{{rating|floatformat:1}}
+                                    ({{reviews}} Reviews)
                                 </h4>
                             </div>
                         </div>
@@ -63,7 +63,7 @@
                         </div>
                         <ul class="nav nav-tabs tab-style1" id="myTab" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="order-tab" data-bs-toggle="tab"
+                                <button class="nav-link {% if not next %} active {%endif%}" id="order-tab" data-bs-toggle="tab"
                                     data-bs-target="#online" type="button" role="tab">
                                     View Menu
                                 </button>
@@ -81,14 +81,14 @@
                                 </button>
                             </li> -->
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#review"
+                                <button class="nav-link {% if next %} active {%endif%}" id="activity-tab" data-bs-toggle="tab" data-bs-target="#review"
                                     type="button" role="tab">
                                     Reviews
                                 </button>
                             </li>
                         </ul>
                         <div class="tab-content product-details-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="online" role="tabpanel" tabindex="0">
+                            <div class="tab-pane fade {% if not next %} show active {%endif%}" id="online" role="tabpanel" tabindex="0">
 
 
                                 <!-- body here -->
@@ -342,7 +342,7 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="review" role="tabpanel" tabindex="0">
+                            <div class="tab-pane fade {% if next %} show active {%endif%}" id="review" role="tabpanel" tabindex="0">
                                 <div class="review-section">
 
                                 <div class="col-md-6">
@@ -449,7 +449,7 @@
                     <div class="row g-3">
 
                         <div class="col-md-6">
-                        <form id="review-form" method="POST" action="{% url 'add_review' %}">
+                        <form id="review-form" method="POST" action="{% url 'add_review' %}?next=review">
                             {% csrf_token %}
                             {{ review_form.as_p }}
                             <div id="form-errors" class="text-danger mt-2"></div>

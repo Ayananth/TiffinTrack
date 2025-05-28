@@ -1,6 +1,8 @@
 import re
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
+from django.urls import reverse
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -178,6 +180,8 @@ from collections import defaultdict
 def restaurant_details(request, pk):
     restaurant = get_object_or_404(RestaurantProfile, pk=pk)
 
+    next = request.GET.get('next')
+
     # Restaurant summary
     avg_rating = restaurant.reviews.aggregate(Avg('rating'))['rating__avg']
     reviews_count = restaurant.reviews.count()
@@ -256,6 +260,7 @@ def restaurant_details(request, pk):
         'review_list': reviews,
         'review_form': review_form,
         'has_reviewed': has_reviewed,
+        'next':next
     }
 
 
@@ -693,6 +698,11 @@ def post_review(request):
 
     restaurant = get_object_or_404(RestaurantProfile, id=restaurant_id)
 
+    restaurant_id = restaurant.id
+    redirect_url = reverse('restaurant-details', kwargs={'pk': restaurant_id})
+    query_string = urlencode({'next': 'review'})
+    
+
     # Get existing review if any
     existing_review = Review.objects.filter(restaurant=restaurant, user=request.user).first()
 
@@ -709,11 +719,12 @@ def post_review(request):
             else:
                 messages.success(request, "Your review has been submitted successfully.")
 
-            return redirect('restaurant-details', pk=restaurant.id)
+            # return redirect('restaurant-details', pk=restaurant.id)
+            return redirect(f'{redirect_url}?{query_string}')
         else:
             messages.error(request, "Please correct the errors in the form.")
 
-    return redirect('restaurant-details', pk=restaurant.id)
+    return redirect(f'{redirect_url}?{query_string}')
 
 @login_required
 def delete_review(request, review_id):
@@ -725,9 +736,11 @@ def delete_review(request, review_id):
         return redirect('restaurant-detail', id=review.restaurant.id)
 
     restaurant_id = review.restaurant.id
+    redirect_url = reverse('restaurant-details', kwargs={'pk': restaurant_id})
+    query_string = urlencode({'next': 'review'})
     review.delete()
     messages.success(request, "Your review has been deleted.")
-    return redirect('restaurant-details', id=restaurant_id)
+    return redirect(f'{redirect_url}?{query_string}')
 
 
 @login_required(login_url='login')
