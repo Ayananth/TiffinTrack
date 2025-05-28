@@ -52,9 +52,7 @@ def home(request):
     restaurant_name = request.GET.get('restaurant_name')
     print(user.profile.point)
     reference_point = user.profile.point
-    longitude = reference_point.x
-    latitude = reference_point.y
-    location_name = get_location_from_point(longitude, latitude)
+
 
     # Filter restaurants within 20 km
     nearby_restaurants= RestaurantProfile.objects.annotate(
@@ -111,7 +109,6 @@ def home(request):
 
     context = {
         'restaurants': page_obj,
-        'location': location_name,
         'restaurant_offers': dict(restaurant_offers),
         'offer':True
     }
