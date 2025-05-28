@@ -9,6 +9,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from coupons.models import Coupon
 from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
+
 
 
 
@@ -158,18 +160,20 @@ class Subscriptions(models.Model):
         if active_offers.exists():
             offer = active_offers.first()
             offer_amount = (self.menu_category.total_price * self.num_days) * (offer.discount_percent / 100)
-            return offer_amount
+            return Decimal(offer_amount).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
 
         return Decimal('0.00')
 
-
     @property
     def item_total(self):
-        return self.menu_category.total_price * self.num_days
+        amount = self.menu_category.total_price * self.num_days
+        return Decimal(amount).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
 
     @property
     def discount(self):
-        return self.coupon.cashback_amount if self.coupon else 0
+        if self.coupon:
+            return Decimal(self.coupon.cashback_amount).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+        return Decimal('0.00')
 
     @property
     def total_after_discount(self):
@@ -177,11 +181,13 @@ class Subscriptions(models.Model):
         offer_amount = self.offer_discount
         coupon_discount = self.discount
 
-        return base_total - offer_amount - coupon_discount
+        total = base_total - offer_amount - coupon_discount
+        return total.quantize(Decimal('0.01'), rounding=ROUND_DOWN)
 
     @property
     def final_total(self):
-        return max(self.total_after_discount - self.wallet_amount_used, 0)
+        total = self.total_after_discount - self.wallet_amount_used
+        return max(total, Decimal('0.00')).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
 
 
 
