@@ -30,5 +30,9 @@ urlpatterns = [
 
     path('refer/', views.refer, name='refer'),
 
+    path("api/coupons/", views.available_coupons_json, name="all_coupons"),
+    path("api/coupons/<int:restaurant_id>/", views.available_coupons_json, name="restaurant_coupons"),
+
+
 
 ]

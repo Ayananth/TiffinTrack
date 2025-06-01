@@ -3,6 +3,180 @@
 {% block content %}
 
 
+<style>
+    .loader-line {
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, #f2a93e, #f07054);
+        margin-bottom: 10px;
+    }
+    
+    .coupons-section {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+    
+    .title h3 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .title h6 {
+        color: #666;
+        font-weight: 400;
+        margin-bottom: 20px;
+    }
+    
+    .coupon-box {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .coupon-box:hover:not(.disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    
+    .coupon-box.disabled {
+        opacity: 0.6;
+        background: #f5f5f5;
+        pointer-events: none;
+    }
+    
+    .coupon-box.disabled::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(0,0,0,0.1) 10px,
+            rgba(0,0,0,0.1) 20px
+        );
+        pointer-events: none;
+    }
+    
+    .coupon-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .coupon-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 15px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    
+    .coupon-badge.percentage {
+        background: linear-gradient(135deg, #f2a93e, #f07054);
+        color: white;
+    }
+    
+    .coupon-badge.fixed {
+        background: linear-gradient(135deg, #f07054, #f2a93e);
+        color: white;
+    }
+    
+    .coupon-badge.shipping {
+        background: linear-gradient(135deg, #f2a93e, #f07054);
+        color: white;
+    }
+    
+    .coupon-code {
+        background: #f8f9fa;
+        padding: 5px 12px;
+        border-radius: 5px;
+        font-family: monospace;
+        font-weight: bold;
+        color: #333;
+        border: 2px dashed #f2a93e;
+    }
+    
+    .coupon-details h6 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .coupon-description {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    
+    .coupon-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 15px;
+    }
+    
+    .btn.theme-btn {
+        background: linear-gradient(135deg, #f2a93e, #f07054);
+        border: none;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn.theme-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(242, 169, 62, 0.3);
+        color: white;
+    }
+    
+    .btn.applied-btn {
+        background: #28a745;
+        border: none;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: not-allowed;
+    }
+    
+    .used-label {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #f07054;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 600;
+        transform: rotate(15deg);
+    }
+    
+    .expiry-warning {
+        color: #f07054;
+        font-weight: 600;
+    }
+</style>
+
+
     <!-- page head section starts -->
     <section class="page-head-section">
         <div class="container page-heading">
@@ -24,8 +198,30 @@
 <section class="account-section section-b-space pt-0">
     <div class="container">
         <div class="layout-sec">
-            <div class="row justify-content-center">
-                <div class="col-lg-8 col-xl-6">
+            <div class="row g-lg-4 g-4">
+
+
+                <!-- coupon here -->
+
+                <div class="col-lg-8"> 
+                    <!-- actual section here for coupon -->
+                        <!-- HTML part (somewhere in your template) -->
+                    <div class="coupons-section">
+                        <div class="title">
+                            <div class="loader-line"></div>
+                            <h3>Available Coupons</h3>
+                            <h6>
+                                Apply coupons to save more on your order. Choose from the available offers below.
+                            </h6>
+                        </div>
+                        <div class="row g-3" id="coupon-list">
+                            cd
+                        </div> <!-- Dynamic content goes here -->
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4">
                     <div class="order-summery-section">
                         <div class="checkout-detail">
                             <!-- Delivery Address -->
@@ -152,10 +348,10 @@
                                 </form>
                             {%else%}
 
-                                <form id="coupon-form" method="post" action="{% url 'remove-coupon' %}">
+                                <form id="coupon-form-cancel" method="post" action="{% url 'remove-coupon' %}">
                                     {%csrf_token%}
                                     <div class="promo-code position-relative mb-4">
-                                        <input type="text" class="form-control code-form-control" id="coupon_code" name="coupon_code" placeholder="{{subscription.coupon.cashback_amount}}"/>
+                                        <input type="text" class="form-control code-form-control" id="coupon_code" name="coupon_code" placeholder="{{subscription.coupon.code}}"/>
                                         <input type="hidden" name="subscription_id" value="{{subscription.id}}">
                                         <button type="submit" class="btn theme-btn apply-btn mt-0">Remove</button>
                                     </div>
@@ -200,57 +396,134 @@
 <!-- account section end -->
 
 
-<!-- <script>
-// Get CSRF token from cookie (Django default)
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
+
+<script>
+
+    function applyCoupon(code, btn) {
+        const form = document.getElementById('coupon-form');
+        const input = document.getElementById('coupon_code');
+
+
+        if (form && input) {
+            input.value = code;   // Set the coupon code
+            form.submit();        // Submit the form
+        } else {
+            console.error("Coupon form or input not found.");
         }
     }
-    return cookieValue;
-}
 
-document.getElementById('coupon-form').addEventListener('submit', function(e) {
-    e.preventDefault();
 
-    const couponCode = document.getElementById('coupon_code').value;
-    const orderTotal = document.getElementById('order_total').value;
-    const csrfToken = getCookie('csrftoken');
+function fetchAndDisplayCoupons(restaurantId = null) {
+    const url = restaurantId 
+        ? `/api/coupons/${restaurantId}/` 
+        : `/api/coupons/`;
 
-    fetch('/coupons/apply/', {
-        method: 'POST',
+    fetch(url, {
+        method: 'GET',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
         },
-        body: new URLSearchParams({
-            coupon_code: couponCode,
-            order_total: orderTotal,
-        }),
+        credentials: 'include' // Required if using session auth
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) throw new Error("Failed to fetch coupons");
+        return response.json();
+    })
     .then(data => {
-        const messageDiv = document.getElementById('coupon-message');
-        if (data.success) {
-            messageDiv.style.color = 'green';
-            messageDiv.textContent = data.success;
-        } else if (data.error) {
-            messageDiv.style.color = 'red';
-            messageDiv.textContent = data.error;
+        const couponList = document.getElementById('coupon-list');
+        couponList.innerHTML = ''; // Clear previous content
+
+        if (data.coupons.length === 0) {
+            couponList.innerHTML = `<div class="col-12"><p>No available coupons at the moment.</p></div>`;
+            return;
         }
+
+        data.coupons.forEach(coupon => {
+            const percentage = Math.round((coupon.cashback_amount / coupon.min_order_value) * 100);
+            const validTill = new Date(coupon.valid_to).toLocaleDateString('en-US', {
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
+            const appliedCouponCode = "{{ subscription.coupon.code|default:'' }}";
+            const isApplied = coupon.code === appliedCouponCode;
+            const item_total = parseFloat("{{subscription.item_total}}");
+            console.log(item_total);
+            console.log(coupon.min_order_value);
+            
+            
+            if (item_total < coupon.min_order_value){
+                isEligible = false
+            } else {
+                isEligible = true
+            }
+
+
+            const couponHTML = `
+                    <div class="col-md-6">
+
+
+                                ${
+                                    isEligible
+                                    ? `<div class="coupon-box">`
+                                    : `<div class="coupon-box disabled">`
+                                }
+
+
+
+
+                            <div class="coupon-header">
+                                <div class="coupon-badge percentage">
+                                    <i class="ri-percent-line"></i>
+                                    ${percentage}% OFF
+                                </div>
+
+                                ${
+                                    isEligible
+                                    ? `<div class="coupon-code">${coupon.code}</div>`
+                                    : `<div class="coupon-code text-danger">Min order: ₹${coupon.min_order_value}</div>`
+                                }
+
+
+
+                                
+                            </div>
+                            <div class="coupon-details">
+                                <h6>Get ₹${coupon.cashback_amount} Off on Orders Above ₹${coupon.min_order_value}</h6>
+                                <div class="coupon-description">
+                                    Enjoy instant savings with this coupon. Hurry before it expires!
+                                </div>
+                                <div class="coupon-meta">
+                                    <span><i class="ri-calendar-line"></i> Valid till ${validTill}</span>
+                                    <span><i class="ri-shopping-cart-line"></i> Min order: ₹${coupon.min_order_value}</span>
+                                </div>
+                                ${
+                                    isApplied
+                                    ? `<button class="btn theme-btn"><i class="ri-price-tag-3-line"></i> Applied</button>`
+                                    : `<button class="btn theme-btn" onclick="applyCoupon('${coupon.code}', this)">
+                                        <i class="ri-price-tag-3-line"></i> Apply Coupon
+                                    </button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+            `;
+
+            couponList.insertAdjacentHTML('beforeend', couponHTML);
+        });
     })
-    .catch(error => {
-        console.error('Error applying coupon:', error);
+    .catch(err => {
+        document.getElementById('coupon-list').innerHTML = `
+            <div class="col-12"><p>Error loading coupons: ${err.message}</p></div>`;
     });
+}
+// Call this when the page loads or when restaurant changes
+document.addEventListener("DOMContentLoaded", (event) => {
+    const restaurant_id = {{subscription.restaurant.id}};
+    fetchAndDisplayCoupons(restaurant_id); // Or pass restaurant ID like fetchAndDisplayCoupons(3)
+
 });
-</script> -->
+
+</script>
 
 
 

@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.urls import reverse
 from urllib.parse import urlencode
+from django.views.decorators.http import require_GET
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -871,3 +872,53 @@ def refer(request):
 
 
     return render(request,'./users/refer.html', context)
+
+
+def get_available_coupons_for_user(user, restaurant=None):
+    now = timezone.now()
+    coupons = Coupon.objects.filter(active=True, valid_from__lte=now, valid_to__gte=now)
+
+    if restaurant:
+        coupons = coupons.filter(restaurant=restaurant)
+
+    available_coupons = []
+
+    for coupon in coupons:
+        usage_count = CouponUsage.objects.filter(user=user, coupon=coupon).count()
+        if usage_count < coupon.usage_limit:
+            available_coupons.append(coupon)
+
+    return available_coupons
+
+
+
+
+@login_required
+@require_GET
+def available_coupons_json(request, restaurant_id=None):
+    user = request.user
+    restaurant = None
+
+    if restaurant_id:
+        try:
+            restaurant = RestaurantProfile.objects.get(id=restaurant_id)
+        except RestaurantProfile.DoesNotExist:
+            return JsonResponse({"error": "Restaurant not found"}, status=404)
+
+    coupons = get_available_coupons_for_user(user, restaurant)
+
+    data = []
+    for c in coupons:
+        data.append({
+            "code": c.code,
+            "cashback_amount": float(c.cashback_amount),
+            "min_order_value": float(c.min_order_value),
+            "valid_from": c.valid_from.isoformat(),
+            "valid_to": c.valid_to.isoformat(),
+            "usage_limit": c.usage_limit,
+
+        })
+
+    print(f"{data=}")
+
+    return JsonResponse({"coupons": data})
