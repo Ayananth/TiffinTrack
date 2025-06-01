@@ -57,6 +57,11 @@ def accounts_sign_up(request):
     password = request.POST.get("password")
     print(username, password)
 
+    referral = request.GET.get('ref')
+    if referral:
+        request.session['referral_code'] = referral
+
+
     if request.method == 'POST':
         print("post req")
 
