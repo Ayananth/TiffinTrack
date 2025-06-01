@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from restaurant.models import RestaurantProfile
+import random
+import string
 
 class Coupon(models.Model):
     code = models.CharField(max_length=20, unique=True)
@@ -28,3 +30,15 @@ class CouponUsage(models.Model):
     subscription = models.ForeignKey('restaurant.Subscriptions', on_delete=models.CASCADE)
     used_at = models.DateTimeField(auto_now_add=True)
 
+
+def generate_unique_referral_code():
+    while True:
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        if not Referral.objects.filter(code=code).exists():
+            return code
+
+class Referral(models.Model):
+    code = models.CharField(max_length=10, unique=True, default=generate_unique_referral_code)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    referred_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='referred_by', blank=True)
+    bonus_earned = models.DecimalField(max_digits=6, decimal_places=2, default=0)

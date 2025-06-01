@@ -78,6 +78,9 @@ class UserProfile(models.Model):
     location_name = models.CharField(max_length=255, default="thrissur")
 
     point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
+    referral_code_used = models.CharField(max_length=10, blank=True, null=True)
+    referral_bonus_used = models.BooleanField(default=False)
+
 
 
     def __str__(self):
