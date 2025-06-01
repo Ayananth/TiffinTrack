@@ -336,7 +336,8 @@ def subscription_cart(request, id=None):
             print("Form not valid")
     else:
         form = SubscriptionForm()
-        address_form = AddressForm()
+        
+    address_form = AddressForm()
 
 
     context = {'addresses': addresses,  'form': form, 'address_form': address_form}
