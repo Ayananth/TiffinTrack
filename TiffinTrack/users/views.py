@@ -30,6 +30,8 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from accounts.models import CustomUser
 
+from .constants import *
+
 
 
 
@@ -41,6 +43,7 @@ from .models import Address, Orders, Wallet
 from .forms import AddressForm, SubscriptionForm
 from django.utils import timezone
 from collections import defaultdict
+from coupons.models import Referral
 
 
 
@@ -52,6 +55,22 @@ def home(request):
     restaurant_name = request.GET.get('restaurant_name')
     print(user.profile.point)
     reference_point = user.profile.point
+
+
+    referral = request.session.get('referral_code')
+    print(referral)
+    if referral:
+        try:
+            referral_obj = Referral.objects.get(code=referral)
+            if referral_obj.user != user and not user.profile.referral_code_used and not referral_obj.referred_users.filter(id=user.id).exists():
+                referral_obj.referred_users.add(user)
+                referral_obj.save()
+                user.profile.referral_code_used = referral
+                user.profile.save()
+        except Referral.DoesNotExist:
+            pass
+        del request.session['referral_code']
+
 
 
     # Filter restaurants within 20 km
@@ -347,30 +366,63 @@ def order_confirm(request):
     current_date = start_date
     while current_date <= end_date:
         for food_category in food_categories:
-            orders_to_create.append(Orders(
+            # Check if an order already exists
+            order_exists = Orders.objects.filter(
                 user=request.user,
                 restaurant=subscription.restaurant,
                 food_category=food_category,
-                food_item=None,
                 delivery_date=current_date,
-                status='PENDING',
-                address = subscription.address,
-                subscription_id = subscription
+                subscription_id=subscription
+            ).exists()
 
-            ))
+            if not order_exists:
+                orders_to_create.append(Orders(
+                    user=request.user,
+                    restaurant=subscription.restaurant,
+                    food_category=food_category,
+                    food_item=None,
+                    delivery_date=current_date,
+                    status='PENDING',
+                    address=subscription.address,
+                    subscription_id=subscription
+                ))
         current_date += timedelta(days=1)
-    print(f"{orders_to_create=}")
-    # Create all orders at once
-    Orders.objects.bulk_create(orders_to_create)
+
+    if orders_to_create:
+        Orders.objects.bulk_create(orders_to_create)
     subscription.save()
 
     wallet_amount = subscription.wallet_amount_used
-
+    wallet, _ = Wallet.objects.get_or_create(user=request.user)
     if wallet_amount:
-        wallet, _ = Wallet.objects.get_or_create(user=request.user)
         wallet.debit(int(wallet_amount), description=f"Used for subscription")
 
     del request.session['subscription']
+
+
+    #add referal bonus
+    profile = request.user.profile
+
+    if profile.referral_code_used and not profile.referral_bonus_used:
+        try:
+            referred_by = Referral.objects.get(code = profile.referral_code_used)
+            #add wallet amounts
+
+            #current user wallet
+            wallet.credit(REFERRAL_AMOUNT, description=f"Referral bonus")
+            #referer wallet
+            referer_wallet,_ = Wallet.objects.get_or_create(user=referred_by.user)
+            referer_wallet.credit(REFERRER_AMOUNT, description=f"Referral bonus from {request.user}")
+            profile.referral_bonus_used = True
+            profile.save()
+            referred_by.bonus_earned += REFERRER_AMOUNT
+            referred_by.save()
+            
+
+
+
+        except Referral.DoesNotExist:
+            pass
 
 
     return render(request, 'users/success.html')
@@ -800,3 +852,22 @@ def update_phone_number(request):
         messages.success(request, "Phone number updated successfully.")
     
     return redirect("user-profile")
+
+
+
+@login_required
+def refer(request):
+    user = request.user
+    referral, created = Referral.objects.get_or_create(user=user)
+    pending = UserProfile.objects.filter(referral_code_used=referral.code, referral_bonus_used=False).count()
+
+
+    context = {
+        'title': 'Refer and Earn',
+        'referral': referral,
+        'pending': pending
+    }
+
+
+
+    return render(request,'./users/refer.html', context)
