@@ -28,4 +28,7 @@ urlpatterns = [
     path('update-user-name/', views.change_username, name='change-user-name'),
     path('update-phone/', views.update_phone_number, name='update-phone'),
 
+    path('refer/', views.refer, name='refer'),
+
+
 ]
