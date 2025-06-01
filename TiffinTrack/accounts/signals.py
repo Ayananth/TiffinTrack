@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from accounts.models import CustomUser
 from django.urls import reverse
+from coupons.models import Referral
 
 
 
@@ -16,6 +17,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created and instance.user_type == 'normal':
         UserProfile.objects.create(user=instance)
         Wallet.objects.get_or_create(user=instance)    
+        Referral.objects.get_or_create(user=instance)
 
 @receiver(post_save, sender=RestaurantProfile)
 def send_email_on_new_restaurant(sender, instance, created, **kwargs):
