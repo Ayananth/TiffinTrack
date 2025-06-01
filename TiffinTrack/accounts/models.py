@@ -74,12 +74,20 @@ class UserProfile(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default.png')
-
     location_name = models.CharField(max_length=255, default="thrissur")
-
     point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
     referral_code_used = models.CharField(max_length=10, blank=True, null=True)
     referral_bonus_used = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old = UserProfile.objects.get(pk=self.pk)
+            if old.point != self.point:
+                self.location_name = get_location_from_point(self.point.x, self.point.y)
+        else:
+            self.location_name = get_location_from_point(self.point.x, self.point.y)
+        super().save(*args, **kwargs)
+
 
 
 
