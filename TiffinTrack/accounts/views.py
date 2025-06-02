@@ -105,7 +105,7 @@ def send_otp(request):
         status = send_otp_sms()
         if status == "failed":
             print("OTP failed")
-            messages.error("Please try again!")
+            messages.error(request, "Please try again!")
             return render(request, "./accounts/send_otp.html")
             
         print("OTP sent")

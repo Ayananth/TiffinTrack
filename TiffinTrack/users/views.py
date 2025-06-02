@@ -354,8 +354,8 @@ def order_confirm(request):
     #Place orders
     subscription = request.session.get('subscription')
     if not subscription:
-        messages.error("Session expired, Please try again")
-        return redirect('home')
+        messages.error(request, "Session expired, Please try again")
+        return redirect('user-home')
     subscription = get_object_or_404(Subscriptions, id=subscription)    
     subscription.is_active = True
     subscription.user = request.user
