@@ -17,8 +17,8 @@ client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_S
 def initiate_payment(request):
     subscription_id = request.session.get('subscription')
     if not subscription_id:
-        messages.error("Session expired, Please try again")
-        return redirect('home')
+        messages.error(request, "Session expired, Please try again")
+        return redirect('user-home')
 
     try:
         subscription = Subscriptions.objects.get(id=subscription_id)
@@ -84,3 +84,6 @@ def payment_handler(request):
         return render(request, 'payments/payment_failed.html')
 
     
+def payment_failed(request):
+    messages.error(request, "Payment was cancelled. Please try again.")
+    return render(request, 'payments/payment_failed.html')
