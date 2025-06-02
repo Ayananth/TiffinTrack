@@ -1,15 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Payment Failed</title>
-</head>
-<body>
-    <div class="container">
-        <h1>Payment Failed</h1>
+
+
+{% extends "users/base.html" %}
+{% load static %}
+{% block content %}
+
+
+
+
+    <!-- page head section starts -->
+    <section class="page-head-section">
+        <div class="container page-heading">
+            <h2 class="h3 mb-3 text-white text-center">Confirm Order</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb flex-lg-nowrap justify-content-center justify-content-lg-star">
+                    <li class="breadcrumb-item">
+                        <a href="index.html"><i class="ri-home-line"></i>Home</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Confirm Order
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+    <!-- page head section end -->
+
+    <!--  account section starts -->
+    <section class="account-section section-b-space pt-0">
+        <div class="container">
+            <div class="layout-sec">
+                <div class="row g-lg-4 g-4 d-flex justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="payment-section">
+                                <div class="container">
+        <h3>Payment Failed</h3>
         <p>Oops! Something went wrong while processing your payment.</p>
         <p>Please try again or contact support if the issue persists.</p>
-        <a href="{% url 'initiate_payment' %}">Go Back to Home</a>
+        <a href="{% url 'initiate_payment' %}">Go Back to payment page</a>
     </div>
-</body>
-</html>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- account section end -->
+
+{%endblock%}

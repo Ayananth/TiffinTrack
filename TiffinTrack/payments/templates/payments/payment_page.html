@@ -26,7 +26,7 @@
     <section class="account-section section-b-space pt-0">
         <div class="container">
             <div class="layout-sec">
-                <div class="row g-lg-4 g-4">
+                <div class="row g-lg-4 g-4 d-flex justify-content-center">
                     <div class="col-lg-8">
                         <div class="payment-section">
                             <div class="title mb-0">
@@ -88,19 +88,8 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end mt-3">
-                            <form action="{{ callback_url }}" method="POST">
-                            {% csrf_token %}
-                            <script src="https://checkout.razorpay.com/v1/checkout.js"
-                                    data-key="{{ razorpay_key_id }}"
-                                    data-amount="{{ amount }}"
-                                    data-currency="INR"
-                                    data-order_id="{{ order_id }}"
-                                    data-buttontext="Pay Now"
-                                    data-name="TiffinTrack"
-                                    data-description="Monthly Meal Subscription"
-                                    data-theme.color="#f2a93e">
-                            </script>
-                            </form>
+                                <button id="rzp-button">Pay Now</button>
+                                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
                             </div>
 
                         </div>
@@ -126,6 +115,60 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
+
+
+
+
+<script>
+    var options = {
+        "key": "{{ razorpay_key_id }}",
+        "amount": "{{ amount }}",  // in paise
+        "currency": "INR",
+        "name": "TiffinTrack",
+        "description": "Monthly Meal Subscription",
+        "order_id": "{{ order_id }}",
+        "handler": function (response) {
+            // On successful payment
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{{ callback_url }}";
+
+            const csrfToken = "{{ csrf_token }}";
+
+            const addField = (name, value) => {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = name;
+                input.value = value;
+                form.appendChild(input);
+            };
+
+            addField("csrfmiddlewaretoken", csrfToken);
+            addField("razorpay_payment_id", response.razorpay_payment_id);
+            addField("razorpay_order_id", response.razorpay_order_id);
+            addField("razorpay_signature", response.razorpay_signature);
+
+            document.body.appendChild(form);
+            form.submit();
+        },
+        "modal": {
+            "ondismiss": function () {
+                // Handle payment cancellation here
+                window.location.href = "{% url 'payment_cancelled' %}";
+            }
+        },
+        "theme": {
+            "color": "#f2a93e"
+        }
+    };
+
+    var rzp = new Razorpay(options);
+    document.getElementById('rzp-button').onclick = function (e) {
+        rzp.open();
+        e.preventDefault();
+    };
+</script>
+
 
 
 {%endblock%}
