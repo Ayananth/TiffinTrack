@@ -37,8 +37,13 @@
                                 Sit and relax while your order is being worked on. It’ll take
                                 5 min before you get it.
                             </p>
-                            <div class="account-btn d-flex justify-content-center gap-2">
-                                <a href="{% url 'manage_subscription' %}" class="btn theme-btn mt-0">Manage Subscription</a>
+                            <div class="d-flex justify-content-center gap-2">
+                                <div class="account-btn d-flex justify-content-center gap-2">
+                                    <a href="{% url 'manage_subscription' %}" class="btn theme-btn mt-0">Manage Subscription</a>
+                                </div>
+                                <div class="account-btn d-flex justify-content-center gap-2">
+                                    <a href="{% url 'invoice_pdf' subscription.id%}" target="_blank" class="btn theme-btn mt-0">Download Invoice</a>
+                                </div>
                             </div>
                         </div>
                     </div>

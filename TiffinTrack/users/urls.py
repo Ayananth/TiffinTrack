@@ -34,5 +34,8 @@ urlpatterns = [
     path("api/coupons/<int:restaurant_id>/", views.available_coupons_json, name="restaurant_coupons"),
 
 
+    path('invoice/<int:invoice_id>/pdf/', views.generate_invoice_pdf, name='invoice_pdf'),
+
+
 
 ]

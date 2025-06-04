@@ -38,11 +38,18 @@
                                                 <h5 class="brand-name dark-text fw-medium">
                                                     {{subscription.restaurant.restaurant_name}}
                                                 </h5>
-                                                <h6 class="fw-medium content-color text-end">
-                                                    {% if subscription.is_active %}
-                                                    <h6 class="order-deliver-label">active</h6>
-                                                    {%endif%}
-                                                </h6>
+                                                <div class="right">
+                                                    <h6 class="fw-medium content-color text-end">
+                                                        {% if subscription.is_active %}
+                                                        <h6 class="order-deliver-label text-success">active</h6>
+                                                        {%endif%}
+                                                    </h6>
+                                                    <h6 class="fw-medium content-color text-end">
+                                                        {% if subscription.is_active %}
+                                                        <h6 class="order-deliver-label text-primary"><a href="{% url 'invoice_pdf' subscription.id%}" target="_blank">Invoice</a></h6>
+                                                        {%endif%}
+                                                    </h6>
+                                                </div>
                                             </div>
                                             <table class="fw-medium dark-text">
                                                 <tr class="">

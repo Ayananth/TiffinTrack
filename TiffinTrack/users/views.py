@@ -1,4 +1,5 @@
 import re
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.urls import reverse
@@ -32,6 +33,10 @@ from django.template.loader import render_to_string
 from accounts.models import CustomUser
 
 from .constants import *
+
+from django.http import HttpResponse
+from weasyprint import HTML
+import tempfile
 
 
 
@@ -354,8 +359,9 @@ def order_confirm(request):
     #Place orders
     subscription = request.session.get('subscription')
     if not subscription:
-        messages.error(request, "Session expired, Please try again")
-        return redirect('user-home')
+        messages.success(request, "View your subscription here")
+        return redirect('manage_subscription')
+    #TODO check if subscription exists
     subscription = get_object_or_404(Subscriptions, id=subscription)    
     subscription.is_active = True
     subscription.user = request.user
@@ -427,7 +433,7 @@ def order_confirm(request):
             pass
 
 
-    return render(request, 'users/success.html')
+    return render(request, 'users/success.html', {'subscription': subscription})
 
 
 @login_required(login_url='login')
@@ -589,6 +595,10 @@ def manage_subscription(request):
         'delivery_data': delivery_data,
         'refund' : refund
     }
+
+    print(f"{context=}")
+
+
     return render(request, './users/manage_subscription.html', context)
     
 
@@ -923,3 +933,40 @@ def available_coupons_json(request, restaurant_id=None):
     print(f"{data=}")
 
     return JsonResponse({"coupons": data})
+
+
+
+#invoice
+
+@login_required(login_url='login')
+def generate_invoice_pdf(request, invoice_id):
+
+    headers = []
+    user = request.user
+    if invoice_id:
+        subscription = Subscriptions.objects.filter(id=invoice_id).first()
+        print("Subscription id present")
+        print(subscription)
+    else:
+        subscription = Subscriptions.objects.filter(is_active=True, user=user).order_by('-created_at').first()
+
+    if not subscription:
+        context = {
+            'headers': headers,
+            'message': "No active subscription found.",
+        }
+        return render(request, 'users/manage_subscription.html', context)
+
+    invoice = {
+        'headers': headers,
+        'subscription':subscription,
+        'user':user,
+        'date': timezone.now().date(),
+    }
+    
+    html_string = render_to_string('./users/invoice.html', invoice)
+    html = HTML(string=html_string, base_url=settings.BASE_DIR)
+    result = html.write_pdf()
+    response = HttpResponse(result, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename=invoice_{invoice_id}.pdf'
+    return response
