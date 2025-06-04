@@ -218,7 +218,7 @@ def request_email_change(request):
         try:
             send_mail(
                 "Email Confirmation",
-                f"Click here to confirm the password: {confirm_url}",
+                f"Click here to confirm the email: {confirm_url}",
                 settings.DEFAULT_FROM_EMAIL,
                 [new_email],
                 fail_silently=False  # Force errors to show
