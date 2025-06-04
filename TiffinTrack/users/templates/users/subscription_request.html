@@ -17,16 +17,7 @@
         </div>
     </section>
     <!-- page head section end -->
-                {% if messages %}
-                <ul class="messages d-flex align-items-center" id="error-message">
-                  {% for message in messages %}
-                    <li class="d-flex align-items-center">
-                      <h4 class="text-{{ message.tags }} m-0">{{ message }}</h4>
-                      <i class="fa-solid fa-x ps-2 close-icon" style="color: #f42a2a; cursor: pointer;"></i>
-                    </li>
-                  {% endfor %}
-                </ul>
-                {% endif %}
+     
 
     <!--  account section starts -->
     <section class="account-section section-b-space pt-0">
@@ -34,6 +25,7 @@
             <div class="layout-sec">
                 <div class="row g-lg-4 g-4 d-flex justify-content-center">
                     <div class="col-lg-8">
+                        {%include './messages.html' %}
 
                         <form method="post" id="subscription">
                             {% csrf_token %}
