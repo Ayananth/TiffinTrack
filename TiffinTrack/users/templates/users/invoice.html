@@ -1,0 +1,172 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TiffinTrack Invoice</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      color: #333;
+    }
+
+    .invoice-box {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #eee;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .invoice-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .invoice-header img {
+      max-height: 60px;
+    }
+
+    .invoice-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
+    .invoice-info div {
+      width: 48%;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table th, table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+  font-size: 14px;
+  word-wrap: break-word;
+  white-space: normal;
+  max-width: 150px;
+}
+
+
+    table th {
+      background-color: #f5f5f5;
+    }
+
+
+    .charges-summary td {
+      border: none;
+    }
+
+    .charges-summary tr td:last-child {
+      text-align: right;
+    }
+
+    .note {
+      margin-top: 30px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      margin-top: 40px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-box">
+    <div class="invoice-header">
+      <img src="http://127.0.0.1:8000/static/frontend/assets/images/logo/Tiffin.png" alt="TiffinTrack Logo">
+      <h2>TiffinTrack</h2>
+      <p>Monthly Tiffin Subscription Invoice</p>
+    </div>
+
+    <div class="invoice-info">
+      <div>
+        <strong>From:</strong><br>
+        TiffinTrack Pvt Ltd<br>
+        Kochi, Kerala, India<br>
+        Email: support@tiffintrack.com
+      </div>
+
+      <div>
+        <strong>To:</strong><br>
+        {{user}}<br>
+        {{user.email}}<br>
+        {{user.phone}}
+      </div>
+    </div>
+
+    <table>
+      <tr>
+        <th>Invoice No</th>
+        <td>#{{subscription.id}}</td>
+        <th>Order Date</th>
+        <td>{{subscription.created_at|date}}</td>
+      </tr>
+      <tr>
+        <th>Payment Method</th>
+        <td>Online</td>
+        <th>Status</th>
+        <td>Paid</td>
+      </tr>
+    </table>
+
+    <table>
+      <thead>
+        <tr>
+            <th>Restaurant</th>
+            <th>Menu</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Number of Days</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{subscription.restaurant.restaurant_name}}</td>
+          <td>{{subscription.menu_category}}</td>
+        <td>{{subscription.start_date|date}}</td>
+        <td>{{subscription.end_date|date}}</td>
+        <td>{{subscription.num_days}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="charges-summary">
+      <tr>
+        <td>Subtotal:</td>
+        <td>₹{{subscription.item_total}}</td>
+      </tr>
+      <tr>
+        <td>Discount:</td>
+        <td>₹{{subscription.offer_discount}}</td>
+      </tr>
+      <tr>
+        <td><strong>Total after discount:</strong></td>
+        <td><strong>₹{{subscription.total_after_discount}}</strong></td>
+      </tr>
+    </table>
+
+    <p class="note">
+      Thank you for subscribing to TiffinTrack. This invoice is auto-generated for your records.
+    </p>
+
+    <p class="footer">
+      TiffinTrack – Simplifying Daily Meals.<br>
+      www.tiffintrack.com | support@tiffintrack.com
+    </p>
+  </div>
+</body>
+</html>
