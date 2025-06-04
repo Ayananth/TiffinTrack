@@ -1,0 +1,6 @@
+html::selection,
+body::selection,
+*::selection {
+  background-color: Highlight;
+  color: HighlightText;
+}

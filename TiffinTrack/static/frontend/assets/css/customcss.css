@@ -1,5 +1,13 @@
 /* Custom css */
 
+
+html::selection,
+body::selection,
+*::selection {
+  background-color: Highlight;
+  color: HighlightText;
+}
+
 /* horizontal list for restaurant details page menu body */
 
 .horizontal-list {
