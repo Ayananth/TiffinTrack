@@ -163,4 +163,16 @@
       }
     });
   </script>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {   
+    document.querySelectorAll('a[href^="/media/uploads/"]').forEach(function (link) {
+        const fileName = link.textContent.replace('uploads/', '');
+        link.textContent = fileName;
+    });
+});
+</script>
+
 {%endblock%}
