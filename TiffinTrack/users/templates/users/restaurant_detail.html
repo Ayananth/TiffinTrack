@@ -86,6 +86,12 @@
                                     Reviews
                                 </button>
                             </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#photos"
+                                    type="button" role="tab">
+                                    Photos
+                                </button>
+                            </li>
                         </ul>
                         <div class="tab-content product-details-content" id="myTabContent">
                             <div class="tab-pane fade {% if not next %} show active {%endif%}" id="online" role="tabpanel" tabindex="0">
@@ -422,6 +428,20 @@
 
                                         {%endfor%}
                                     </ul>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade " id="photos" role="tabpanel" tabindex="0">
+                                <div class="review-section">
+
+                                    {% if images %}
+                                    <div class="images">
+                                    {% for image_obj in images%}
+                                        <img src="{{image_obj.image.url}}" class="m-5" alt="" style="width: 300px; height: 200px; object-fit: cover; border-radius: 8px;">
+                                        {%endfor%}
+                                    </div>
+                                    {%else%}
+                                    <p>No images</p>
+                                    {%endif%}
                                 </div>
                             </div>
                         </div>

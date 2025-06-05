@@ -12,7 +12,7 @@ from accounts.forms import UserUpdateForm, ProfileUpdateForm
 from restaurant.forms import ReviewForm
 from django.contrib.auth.decorators import login_required
 from restaurant.models import RestaurantProfile, FoodItem, FoodCategory, MenuCategory, Subscriptions, Offer, Review
-from accounts.models import UserProfile, Locations
+from accounts.models import UserProfile, Locations, RestaurantImage
 from django.db.models import Avg, Max
 from collections import defaultdict
 from decimal import Decimal
@@ -273,6 +273,8 @@ def restaurant_details(request, pk):
     has_reviewed = review is not None
     review_form = ReviewForm(instance=review)
 
+    images = RestaurantImage.objects.filter(restaurant=restaurant)
+
 
     context = {
         'restaurant': restaurant,
@@ -282,7 +284,8 @@ def restaurant_details(request, pk):
         'review_list': reviews,
         'review_form': review_form,
         'has_reviewed': has_reviewed,
-        'next':next
+        'next':next,
+        'images': images
     }
 
 
