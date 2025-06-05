@@ -124,13 +124,15 @@ def restaurant_register(request):
 
 
     if request.method == "POST":
-        form = RestaurantProfileForm(request.POST, request.FILES)
+        form = RestaurantProfileForm(request.POST, request.FILES, instance=restaurant)
         if form.is_valid():
             restaurant = form.save(commit=False)
             restaurant.user_type = 'restaurant'
             restaurant.user = request.user
             restaurant.is_approved = False
             restaurant.save()
+            request.user.user_type = 'restaurant'
+            request.user.save()
             name = form.cleaned_data.get('restaurant_name')
             messages.success(request, f"Restaurant request sent")
             return redirect('restaurant-register')
