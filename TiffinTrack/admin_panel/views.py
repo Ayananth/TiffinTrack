@@ -182,8 +182,11 @@ def restaurants(request):
     
 
     restaurants = RestaurantProfile.objects.all().order_by('is_approved','-created_at')
+    paginator = Paginator(restaurants, 10)  # Show 10 users per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     context = {
-        'restaurants': restaurants
+        'restaurants': page_obj
     }
     return render(request, './admin_panel/restaurants.html', context)
 
@@ -381,8 +384,11 @@ def foods(request):
         return redirect('admin-login')
 
     foods = FoodItem.objects.all().order_by('-created_at')
+    paginator = Paginator(foods, 10)  # Show 10 users per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     context = {
-        'foods': foods
+        'foods': page_obj
     }
     return render(request, './admin_panel/food_items.html', context)
 
@@ -395,8 +401,11 @@ def menus(request):
         return redirect('admin-login')
 
     menus = MenuCategory.objects.all().order_by('-created_at')
+    paginator = Paginator(menus, 10)  # Show 10 users per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     context = {
-        'menus': menus
+        'menus': page_obj
     }
     return render(request, './admin_panel/menus.html', context)
 
@@ -442,8 +451,11 @@ def food_category(request):
         return redirect('admin-login')
 
     foods = FoodCategory.objects.all().order_by('-created_at')
+    paginator = Paginator(foods, 10)  # Show 10 users per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     context = {
-        'foods': foods
+        'foods': page_obj
     }
     return render(request, './admin_panel/food_categories.html', context)
 

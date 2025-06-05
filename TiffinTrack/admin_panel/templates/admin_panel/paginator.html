@@ -17,6 +17,7 @@
 </div> -->
 
 
+{% if orders.paginator.num_pages > 1 %}
 <div class="pagination p-4">
     <span class="step-links">
         {% with request.GET.urlencode as current_query %}
@@ -38,3 +39,4 @@
         {% endwith %}
     </span>
 </div>
+{% endif %}
