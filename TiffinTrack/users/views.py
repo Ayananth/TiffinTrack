@@ -617,10 +617,10 @@ def orders(request):
     valid_sort_fields = ['delivery_date', 'status']
     sort_field = sort_by if sort_by in valid_sort_fields else 'delivery_date'
 
-    status = request.GET.get('status')
+    status = request.GET.get('status', "PENDING")
     delivery_date = request.GET.get('delivery_date')
 
-    orders = Orders.objects.filter(user=user, status="PENDING").order_by(f"{order_prefix}{sort_field}")
+    orders = Orders.objects.filter(user=user).order_by(f"{order_prefix}{sort_field}")
 
     if subscription:
         orders = orders.filter(subscription_id=subscription)
