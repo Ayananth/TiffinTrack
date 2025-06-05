@@ -29,16 +29,21 @@
                                 <div class="col-12">
                                     <ul class="nav nav-pills flex-nowrap mb-3" id="pills-tab" role="tablist">
                                         <li class="nav-item m-0" role="presentation">
-                                            <button class="nav-link active" id="pills-home-tab"
+                                            <button class="nav-link {%if not page %}active{%endif%}" id="pills-home-tab"
                                                 data-bs-toggle="pill" data-bs-target="#pills-home"
-                                                type="button">Profile</button>
+                                                type="button">Profile</button> 
+                                        </li>
+                                        <li class="nav-item m-0" role="presentation">
+                                            <button class="nav-link {%if page %}active{%endif%}" id="pills-images-tab"
+                                                data-bs-toggle="pill" data-bs-target="#pills-images"
+                                                type="button">Photos</button>
                                         </li>
                                     </ul>
                                 </div>
                                 <!-- settings -->
                                 <div class="col-12">
                                     <div class="tab-content" id="pills-tabContent">
-                                        <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
+                                        <div class="tab-pane fade {%if not page%} show active{%endif%}" id="pills-home" role="tabpanel">
                                             <div class="input-items">
                                                 <div class="row gy-3">
 
@@ -72,6 +77,54 @@
                                                         </div>
                                                     </form>
                                                 </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade {%if page%} show active{%endif%}" id="pills-images" role="tabpanel">
+                                            <div class="input-items">
+
+                                                <div class="row g-3">
+
+                                                <!-- Loop through existing images -->
+                                                {% for img in restaurant_obj.images.all %}
+                                                    <div class="col-md-3">
+                                                    <div class="card position-relative shadow-sm">
+                                                        <img src="{{ img.image.url }}" class="card-img-top" alt="Restaurant Image">
+
+                                                        <!-- Delete Icon -->
+                                                        <a href="{% url 'delete-restaurant-image' img.id %}" class="position-absolute top-0 end-0 m-0 text-danger" style="text-decoration: none;" title="Delete">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                        </a>
+                                                    </div>
+                                                    </div>
+                                                {% endfor %}
+
+                                                <!-- Card to Add New Photo -->
+                                                <div class="col-md-3">
+                                                    <form method="post" enctype="multipart/form-data" action="{% url 'add-restaurant-image' restaurant_obj.id %}">
+                                                    {% csrf_token %}
+                                                    <label for="new_image_upload" style="cursor:pointer;">
+                                                        <div class="card d-flex align-items-center justify-content-center border-dashed" style="height: 200px;">
+                                                        <div class="text-muted text-center">
+                                                            <i class="bi bi-plus-circle fs-2"></i><br>
+                                                            <span>Add Photo</span>
+                                                        </div>
+                                                        </div>
+                                                    </label>
+                                                    <input type="file" name="image" id="new_image_upload" class="d-none" onchange="this.form.submit()">
+                                                    </form>
+                                                </div>
+
+                                                </div>
+
+
+
+
                                             </div>
                                         </div>
 
@@ -174,5 +227,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+<script>
+  if (window.location.search.length > 0) {
+    window.history.replaceState(null, '', window.location.pathname);
+  }
+</script>
+
 
 {%endblock%}

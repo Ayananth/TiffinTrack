@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.core.paginator import Paginator
 
 from django.contrib import messages
@@ -16,7 +16,7 @@ from django.utils.timezone import now
 from django.db.models import Count, Q
 from django.utils.timezone import localtime
 from datetime import datetime
-from accounts.models import CustomUser, UserProfile
+from accounts.models import CustomUser, UserProfile, RestaurantImage
 from .models import Subscriptions
 from .forms import FoodItemManageForm, MenuManageForm, FoodCategoryManageForm, OfferForm
 
@@ -164,8 +164,14 @@ def profile(request):
             messages.error(request, "Invalid inputs.")
     else:
         form = RestaurantProfileForm(instance=restaurant)
+
+
     
     context = {'form': form, 'restaurant_obj': restaurant}
+
+    upload = request.GET.get('upload')
+    if upload == 'image':
+        context.update({'page':'image'})
     return render(request, './restaurant/restaurant-profile.html', context)
 
 
@@ -543,3 +549,35 @@ def offer_delete(request, pk):
     offer = get_object_or_404(Offer, pk=pk)
     offer.delete()
     return redirect('restaurant-offers')
+
+
+
+@login_required(login_url='login')
+def image_delete(request, pk):
+    if request.user.user_type != 'restaurant':
+        messages.error(request, "Not restaurant user")
+        return redirect('login')
+    try:
+        image = RestaurantImage.objects.get(pk=pk)
+    except RestaurantImage.DoesNotExist:
+        messages.error(request, "Image not found or already deleted.")
+        return redirect(f'{reverse("restaurant-profile")}?upload=image')
+    image.delete()
+    messages.success(request, "Image deleted")
+    return redirect(f'{reverse("restaurant-profile")}?upload=image')
+
+@login_required(login_url='login')
+def image_add(request, pk):
+    restaurant = get_object_or_404(RestaurantProfile, id=pk, user=request.user)
+    if request.method == 'POST' and request.FILES.get('image'):
+        image_file = request.FILES['image']
+        if not image_file.content_type.startswith('image/'):
+            messages.error(request, 'Only image files are allowed.')
+            return redirect(f'{reverse("restaurant-profile")}?upload=image')
+        if image_file.size > 2 * 1024 * 1024:
+            messages.error(request, f'Maximum file size is {2} MB.')
+            return redirect(f'{reverse("restaurant-profile")}?upload=image')
+        RestaurantImage.objects.create(restaurant=restaurant, image=image_file)
+        messages.success(request, "Image added")
+    return redirect(f'{reverse("restaurant-profile")}?upload=image')
+

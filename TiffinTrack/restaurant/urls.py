@@ -38,6 +38,15 @@ urlpatterns = [
     path('offers/delete/<int:pk>/', views.offer_delete, name='restaurant-offer-delete'),
 
 
+    path('images/add/<int:pk>/', views.image_add, name='add-restaurant-image'),
+    path('images/delete/<int:pk>/', views.image_delete, name='delete-restaurant-image'),
+    
+
+
+
+    
+
+
 
 
 

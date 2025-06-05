@@ -10,7 +10,9 @@ admin.site.register(Locations)
 
 from django.contrib.gis.admin import GISModelAdmin
 from django.contrib import admin
-from .models import RestaurantProfile
+from .models import RestaurantProfile, RestaurantImage
+
+admin.site.register(RestaurantImage)
 
 @admin.register(RestaurantProfile)
 class RestaurantProfileAdmin(GISModelAdmin):

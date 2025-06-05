@@ -126,3 +126,10 @@ class RestaurantProfile(models.Model):
 
 
 
+class RestaurantImage(models.Model):
+    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='uploads/restaurant_images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Image for {self.restaurant.restaurant_name}"
