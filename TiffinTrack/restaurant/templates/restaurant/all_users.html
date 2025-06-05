@@ -57,21 +57,23 @@
                             
                             <td>{{user.address}}</td>
                             <td>{{user.user.phone}} </td>
-                            <td class="">{{ user.start_date }}</td>
-                            <td>{{user.end_date}}</td>
+                            <td class="">{{ user.start_date|date }}</td>
+                            <td>{{user.end_date|date}}</td>
                           </tr>
                           {% endfor %}
                         </tbody>
                       </table>
                     </div>
+{% include "./pagination.html" with page_obj=page_obj %}
+
+
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
-      
-      <!-- Pagination Controls -->
-       {% include "./paginator.html" %}
+
+
+
 
     </div>
 </div>
