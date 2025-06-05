@@ -810,6 +810,16 @@ def delete_review(request, review_id):
 @login_required(login_url='login')
 def update_profile_pic(request):
     if request.method == 'POST' and request.FILES.get('profile_pic'):
+
+        image_file = request.FILES['profile_pic']
+        if not image_file.content_type.startswith('image/'):
+            messages.error(request, 'Only image files are allowed.')
+            return redirect("user-profile")
+        if image_file.size > 2 * 1024 * 1024:
+            messages.error(request, f'Maximum file size is {2} MB.')
+            return redirect("user-profile")
+
+
         profile = request.user.profile
         profile.profile_pic = request.FILES['profile_pic']
         profile.save()
