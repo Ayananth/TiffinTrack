@@ -31,7 +31,7 @@
                                                         <div class="row gy-3">
                                                             {% csrf_token %}
                                                                 {% for field in form %}
-                                                                <div class="col-12 gy-3">
+                                                                <div class="col-md-6 gy-3">
                                                                     <div class="input-box">
                                                                         <h6>{{ field.label }}</h6>
                                                                         <span>{{ field }}</span>
