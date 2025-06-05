@@ -25,7 +25,7 @@ def send_email_on_new_restaurant(sender, instance, created, **kwargs):
         admin_emails = list(CustomUser.objects.filter(is_superuser=True).values_list('email', flat=True))
         url = reverse('restaurants')
         send_mail(
-            subject='New Restaurant Registration',
+            subject='TiffinTrack-New Restaurant Registration',
             message=f'''
             A new restaurant has registered, Approve it now!:
             Name: {instance.restaurant_name}

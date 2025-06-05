@@ -217,7 +217,7 @@ def request_email_change(request):
         print("sending mail")
         try:
             send_mail(
-                "Email Confirmation",
+                "TiffinTrack-Email Confirmation",
                 f"Click here to confirm the email: {confirm_url}",
                 settings.DEFAULT_FROM_EMAIL,
                 [new_email],
@@ -284,7 +284,7 @@ def request_password_change(request):
             reverse("confirm_password_change", args=[token])
         )
         send_mail(
-            subject="Confirm Password Change",
+            subject="TiffinTrack-Confirm Password Change",
             message=f"Click the link to confirm your password change:\n{confirm_url}",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[request.user.email],
