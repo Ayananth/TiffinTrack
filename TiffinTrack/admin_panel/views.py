@@ -6,15 +6,18 @@ from django.contrib import messages
 from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm, FoodItemManageForm, MenuManageForm, FoodCategoryManageForm
 from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
-from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory
+from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory, Subscriptions
 from django.core.paginator import Paginator
 from users.models import Orders
-from django.db.models import Count
 from django.utils.timezone import now
-from django.db.models import Count, Q
 from django.utils.timezone import localtime
 from datetime import datetime
 from coupons.models import Coupon
+
+from django.db.models import Count, Sum, Q
+from django.utils import timezone
+from datetime import timedelta
+from datetime import date
 
 
 
@@ -46,16 +49,82 @@ def admin_logout(request):
 def home(request):
     if not request.user.is_superuser:
         return redirect('admin-login')
-    username = request.POST.get("username")
-    if request.method == 'POST' and username:
-        print(f"{username=}")
-        users = CustomUser.objects.filter(username=username)
-    else:
-        users = CustomUser.objects.all()
+    today = date.today()
+    start_date = today.replace(day=1)
+    end_date = today
+    start_date = request.GET.get('start_date', start_date)
+    end_date = request.GET.get('end_date', end_date)
+    if isinstance(start_date, str):
+        start_date = timezone.datetime.strptime(start_date, '%Y-%m-%d').date()
+    if isinstance(end_date, str):
+        end_date = timezone.datetime.strptime(end_date, '%Y-%m-%d').date()
+
+    print(f"{start_date=}")
+    print(f"{end_date=}")
+
+    orders = Orders.objects.filter(delivery_date__range=(start_date, end_date))
+    print(f"{orders.values()=}")
+    total_orders = orders.count()
+    total_revenue = orders.filter(status='DELIVERED').aggregate(
+        revenue=Sum('food_category__price'))['revenue'] or 0
+    total_subscriptions = Subscriptions.objects.filter(
+        created_at__date__range=(start_date, end_date)
+    ).count()
+    active_restaurants = RestaurantProfile.objects.filter(received_orders__delivery_date__range=(start_date, end_date)).distinct().count()
+    most_ordered_restaurant = orders.values(
+        'restaurant__restaurant_name'
+    ).annotate(count=Count('id')).order_by('-count').first()
+
+    top_restaurants = orders.filter(status='DELIVERED').values(
+        'restaurant__id',
+        'restaurant__restaurant_name',
+    ).annotate(
+        revenue=Sum('food_category__price')
+    ).order_by('-revenue')[:3]
+
+    print(f"{top_restaurants=}")
+
+    total_orders = Orders.objects.count()
+    pending_orders = Orders.objects.filter(status='PENDING').count()
+    delivered_orders = Orders.objects.filter(status='DELIVERED').count()
+    cancelled_orders = Orders.objects.filter(status='CANCELLED').count()
+
+    # For chart
+    order_status_labels = ['Pending', 'Delivered', 'Cancelled']
+    order_status_data = [pending_orders, delivered_orders, cancelled_orders]
+
+    
+
     context = {
-        'users': users
+        'start_date': start_date,
+        'end_date': end_date,
+        'total_orders': total_orders,
+        'total_revenue': total_revenue,
+        'total_subscriptions': total_subscriptions,
+        'active_restaurants': active_restaurants,
+        'most_ordered_restaurant': most_ordered_restaurant['restaurant__restaurant_name'] if most_ordered_restaurant else "N/A",
+        'top_restaurant_by_revenue': top_restaurants[0]['restaurant__restaurant_name'] if top_restaurants else "N/A",
+        'top_restaurants': top_restaurants,
+        'total_orders': total_orders,
+        'pending_orders': pending_orders,
+        'delivered_orders': delivered_orders,
+        'cancelled_orders': cancelled_orders,
+        'order_status_labels': order_status_labels,
+        'order_status_data': order_status_data,
     }
+
+    chart_labels = [item['restaurant__restaurant_name'] for item in top_restaurants]
+    chart_data = [float(item['revenue']) for item in top_restaurants]
+
+    context.update({
+        'chart_labels': chart_labels,
+        'chart_data': chart_data,
+    })
+
+    print(f"{context=}")
+
     return render(request, './admin_panel/dashboard.html', context)
+
 
 @login_required(login_url='admin-login')
 def all_users(request):
@@ -520,3 +589,38 @@ def coupons(request):
     return render(request, './admin_panel/coupon.html', context)
 
 
+
+
+
+
+def sales_report_overview(request):
+    today = date.today()
+    start_date = today.replace(day=1)
+    end_date = today
+    start_date = request.GET.get('start_date', start_date)
+    end_date = request.GET.get('end_date', end_date)
+    if isinstance(start_date, str):
+        start_date = timezone.datetime.strptime(start_date, '%Y-%m-%d').date()
+    if isinstance(end_date, str):
+        end_date = timezone.datetime.strptime(end_date, '%Y-%m-%d').date()
+    orders = Orders.objects.filter(delivery_date__range=(start_date, end_date))
+    total_orders = orders.count()
+    total_revenue = orders.filter(status='DELIVERED').aggregate(
+        revenue=Sum('food_category__price'))['revenue'] or 0
+    total_subscriptions = Subscriptions.objects.filter(
+        created_at__date__range=(start_date, end_date)
+    ).count()
+    active_restaurants = RestaurantProfile.objects.filter(received_orders__delivery_date__range=(start_date, end_date)).distinct().count()
+    most_ordered_item = orders.values('food_item__name').annotate(
+        count=Count('id')).order_by('-count').first()
+    context = {
+        'start_date': start_date,
+        'end_date': end_date,
+        'total_orders': total_orders,
+        'total_revenue': total_revenue,
+        'total_subscriptions': total_subscriptions,
+        'active_restaurants': active_restaurants,
+        'most_ordered_item': most_ordered_item['food_item__name'] if most_ordered_item else "N/A",
+    }
+
+    return render(request, './admin_panel/dashboard.html', context)
