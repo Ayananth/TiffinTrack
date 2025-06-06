@@ -14,11 +14,11 @@ from coupons.models import Coupon
 
 from django.db.models import Count
 from django.utils.timezone import now
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from django.utils.timezone import localtime
 from datetime import datetime
 from accounts.models import CustomUser, UserProfile, RestaurantImage
-from .models import Subscriptions
+from .models import Subscriptions, RestaurantTransaction
 from .forms import FoodItemManageForm, MenuManageForm, FoodCategoryManageForm, OfferForm
 
 
@@ -614,3 +614,60 @@ def coupons(request):
                 }
     return render(request, './restaurant/coupon.html', context)
 
+from django.utils import timezone
+
+
+@login_required(login_url='login')
+def payment_dashboard(request):
+    restaurant = request.user.restaurantprofile
+
+    today = timezone.now().date()
+    start_of_month = today.replace(day=1)
+    end_of_default = today  # ← Use today as default end date
+
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else start_of_month
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else end_of_default
+    except ValueError:
+        start_date, end_date = start_of_month, end_of_default
+
+    subscriptions = Subscriptions.objects.filter(
+        restaurant=restaurant,
+        is_active=True,
+        created_at__date__range=(start_date, end_date)
+    ).order_by('-created_at')
+
+    refunds = Orders.objects.filter(
+        restaurant=restaurant,
+        status='CANCELLED',
+        refund_issued=True,
+        delivery_date__range=(start_date, end_date)
+    ).order_by('-delivery_date')
+
+
+
+
+    total_credits = sum([sub.final_total for sub in subscriptions])
+    total_debits = sum([order.food_category.price for order in refunds if order.food_category])
+    net_balance = total_credits - total_debits
+
+
+
+
+
+
+
+    context = {
+        'subscriptions': subscriptions,
+        'refunds': refunds,
+        'total_credits': total_credits,
+        'total_debits': total_debits,
+        'net_balance': net_balance,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+
+    return render(request, 'restaurant/payment_dashboard.html', context)

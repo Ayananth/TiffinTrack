@@ -47,6 +47,10 @@ urlpatterns = [
     path('coupons/add', coupon_views.restaurant_coupon_form, name='restaurant-coupons-add'),
     path('coupons/add/<int:coupon_id>/', coupon_views.restaurant_coupon_form, name='restaurant-coupons-edit'),
     path('coupons/delete/<int:coupon_id>/', coupon_views.restaurant_delete_coupon, name='restaurant-coupons-delete'),
+
+
+    path('payments/', views.payment_dashboard, name='payment'),
+
     
 
 
