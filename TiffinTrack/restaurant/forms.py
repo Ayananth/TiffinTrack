@@ -35,6 +35,14 @@ class FoodItemManageForm(forms.ModelForm):
         model = FoodItem
         exclude = ['restaurant']
 
+    def __init__(self, *args, **kwargs):
+        restaurant = kwargs.pop('restaurant', None)
+        super().__init__(*args, **kwargs)
+
+        if restaurant:
+            self.fields['menu_category'].queryset = MenuCategory.objects.filter(restaurant=restaurant)
+            self.fields['food_category'].queryset = FoodCategory.objects.filter(restaurant=restaurant)
+
 
 
 class MenuManageForm(forms.ModelForm):
@@ -53,6 +61,14 @@ class FoodCategoryManageForm(forms.ModelForm):
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
             'cancellation_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        restaurant = kwargs.pop('restaurant', None)
+        super().__init__(*args, **kwargs)
+
+        if restaurant:
+            self.fields['menu_category'].queryset = MenuCategory.objects.filter(restaurant=restaurant)
+
 
 
 

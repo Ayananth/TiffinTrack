@@ -24,7 +24,6 @@
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>Resaurant Name</th>
                                                     <th>Category</th>
                                                     <th>Price</th>
                                                     <th>Option</th>
@@ -34,11 +33,6 @@
                                                 {% for food in foods %}
                                                     <tr>
                                                         <td class="f-w-600">{{food.id}}</td>
-                                                        <td>
-                                                            <div class="user-name">
-                                                                <span>{{food.restaurant.restaurant_name}}</span>
-                                                            </div>
-                                                        </td>
                                                         <td>{{food.name}}</td>
 
                                                         <td class="">{{food.price}}</td>

@@ -378,7 +378,7 @@ def food_add_or_update(request, pk=None):
 
 
     if request.method == "POST":
-        form = FoodItemManageForm(request.POST, request.FILES, instance=food_obj)
+        form = FoodItemManageForm(request.POST, request.FILES, instance=food_obj, restaurant=restaurant_obj)
         if form.is_valid():
             restaurant_form = form.save(commit=False)
             restaurant_form.restaurant = restaurant_obj
@@ -389,7 +389,8 @@ def food_add_or_update(request, pk=None):
             messages.error(request, "Invalid inputs.")
             print(form.errors)
     else:
-        form = FoodItemManageForm(instance=food_obj)
+        form = FoodItemManageForm(instance=food_obj, restaurant=restaurant_obj)
+
 
 
     return render(request, './restaurant/add-food.html', {'form': form})
@@ -454,7 +455,7 @@ def menu_food_item(request, id):
 def food_category(request):
 
 
-    foods = FoodCategory.objects.all().order_by('-created_at')
+    foods = FoodCategory.objects.filter(restaurant = request.user.restaurantprofile).order_by('-created_at')
     context = {
         'foods': foods
     }
@@ -480,7 +481,7 @@ def category_add_or_update(request, pk=None):
         else:
             messages.error(request, "Invalid inputs.")
     else:
-        form = FoodCategoryManageForm(instance=food_obj)
+        form = FoodCategoryManageForm(instance=food_obj, restaurant=restaurant_obj)
 
 
     return render(request, './restaurant/add-category.html', {'form': form})

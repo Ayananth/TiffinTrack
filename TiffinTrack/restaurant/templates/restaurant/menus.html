@@ -24,7 +24,6 @@
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>Resaurant Name</th>
                                                     <th>Menu Name</th>
                                                     <th>Option</th>
                                                 </tr>
@@ -33,11 +32,6 @@
                                                 {% for menu in menus %}
                                                     <tr>
                                                         <td class="f-w-600">{{menu.id}}</td>
-                                                        <td>
-                                                            <div class="user-name">
-                                                                <span>{{menu.restaurant.restaurant_name}}</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <div class="user-name">
                                                                 <span>{{menu.name}}</span>
