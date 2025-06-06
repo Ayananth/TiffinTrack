@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .models import RestaurantProfile, MenuCategory, FoodCategory, FoodItem, Offer
 from .forms import RestaurantProfileForm, MenuCategoryForm
 from users.models import Orders
+from coupons.models import Coupon
 
 
 
@@ -580,4 +581,36 @@ def image_add(request, pk):
         RestaurantImage.objects.create(restaurant=restaurant, image=image_file)
         messages.success(request, "Image added")
     return redirect(f'{reverse("restaurant-profile")}?upload=image')
+
+
+
+@login_required(login_url='login')
+def coupons(request):
+    user = request.user
+    try:
+        restaurant = RestaurantProfile.objects.get(user=user) 
+    except RestaurantProfile.DoesNotExist:
+        return render('restaurant-home')
+
+    sort_by = request.GET.get('sort', 'delivery_date')  # default: delivery_date
+    direction = request.GET.get('dir', 'asc') 
+    order_prefix = '' if direction == 'asc' else '-'
+    valid_sort_fields = ['delivery_date', 'status']
+    sort_field = sort_by if sort_by in valid_sort_fields else 'delivery_date'
+    coupons = Coupon.objects.filter(restaurant=restaurant).order_by('-created_at')
+    user = request.GET.get('user')
+    status = request.GET.get('status')
+    delivery_date = request.GET.get('delivery_date')
+    paginator = Paginator(coupons, 10)  # Show 5 orders per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+    print(f"{orders=}")
+    context = {'coupons': page_obj,
+                'sort': sort_field,
+                'dir': direction,
+                
+                }
+    return render(request, './restaurant/coupon.html', context)
 

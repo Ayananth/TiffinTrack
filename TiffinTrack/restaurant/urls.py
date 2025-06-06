@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from coupons import views as coupon_views
 urlpatterns = [
     # path('login/',views.restaurant_login, name='restaurant-login'),
     path('logout/',views.restaurant_logout, name='restaurant-logout'),
@@ -40,6 +41,12 @@ urlpatterns = [
 
     path('images/add/<int:pk>/', views.image_add, name='add-restaurant-image'),
     path('images/delete/<int:pk>/', views.image_delete, name='delete-restaurant-image'),
+
+
+    path('coupons/', views.coupons, name='restaurant-coupons'),
+    path('coupons/add', coupon_views.restaurant_coupon_form, name='restaurant-coupons-add'),
+    path('coupons/add/<int:coupon_id>/', coupon_views.restaurant_coupon_form, name='restaurant-coupons-edit'),
+    path('coupons/delete/<int:coupon_id>/', coupon_views.restaurant_delete_coupon, name='restaurant-coupons-delete'),
     
 
 
