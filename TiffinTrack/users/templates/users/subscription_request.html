@@ -51,7 +51,7 @@
                                             <div class="row g-3">
                                                 <div class="col-sm-6">
                                                     <label for="inputAddress" class="form-label">Start Date</label>
-                                                    <input type="date" name="start_date" class="form-control" id="inputAddress" required>
+                                                    <input type="date" value="{{ today|date:'Y-m-d' }}" name="start_date" class="form-control" id="inputAddress" required>
             {% if form.start_date.errors %}
                 <div class="text-danger small">
                     {{ form.start_date.errors.0 }}
@@ -60,7 +60,7 @@
                                                 </div>
                                                 <div class="col-sm-6">
                                                     <label for="inputAddress" class="form-label">End Date</label>
-                                                    <input type="date" name="end_date" class="form-control" id="inputAddress" required>
+                                                    <input type="date" value="{{ tomorrow|date:'Y-m-d' }}" name="end_date" class="form-control" id="inputAddress" required>
 
             {% if form.end_date.errors %}
                 <div class="text-danger small">
@@ -84,7 +84,7 @@
                                     <div id="collapseTwo" class="accordion-collapse collapse show"
                                         data-bs-parent="#accordionExample">
                                         <div class="accordion-body">
-                        <div class="address-section mt-0">
+                        <div class="address-section mt-0 p-0">
                             <div class="title">
                                 <div class="loader-line"></div>
                                 <h3>Select Saved Address</h3>

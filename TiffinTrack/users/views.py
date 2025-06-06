@@ -294,6 +294,7 @@ def restaurant_details(request, pk):
     return render(request, 'users/restaurant_detail.html', context)
 
     
+from datetime import date, timedelta
 
 
 
@@ -349,8 +350,13 @@ def subscription_cart(request, id=None):
         
     address_form = AddressForm()
 
+    today = date.today()
+    tomorrow = today + timedelta(days=1)
 
-    context = {'addresses': addresses,  'form': form, 'address_form': address_form}
+
+    context = {'addresses': addresses,  'form': form, 'address_form': address_form,
+               'today': today,
+               'tomorrow': tomorrow}
     print(f"{context=}")
     return render(request, 'users/subscription_request.html', context)
     
