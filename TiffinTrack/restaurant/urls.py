@@ -50,6 +50,8 @@ urlpatterns = [
 
 
     path('payments/', views.payment_dashboard, name='payment'),
+    path('payments/export/', views.export_payments_csv, name='export-payments-csv'),
+
 
     
 

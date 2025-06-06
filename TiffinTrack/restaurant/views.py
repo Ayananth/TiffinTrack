@@ -671,3 +671,77 @@ def payment_dashboard(request):
     }
 
     return render(request, 'restaurant/payment_dashboard.html', context)
+
+
+
+
+import csv
+from django.http import HttpResponse
+
+@login_required(login_url='login')
+def export_payments_csv(request):
+    restaurant = request.user.restaurantprofile
+
+    today = timezone.now().date()
+    start_of_month = today.replace(day=1)
+    end_of_default = today
+
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else start_of_month
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else end_of_default
+    except ValueError:
+        start_date, end_date = start_of_month, end_of_default
+
+    # Get data
+    subscriptions = Subscriptions.objects.filter(
+        restaurant=restaurant,
+        is_active=True,
+        created_at__date__range=(start_date, end_date)
+    ).order_by('-created_at')
+
+    refunds = Orders.objects.filter(
+        restaurant=restaurant,
+        status='CANCELLED',
+        refund_issued=True,
+        delivery_date__range=(start_date, end_date)
+    ).order_by('-delivery_date')
+
+    # Create the response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="payment_report_{timezone.now().strftime("%Y-%m-%d")}.csv"'
+
+    writer = csv.writer(response)
+    
+    # Subscriptions section
+    writer.writerow(['=== Subscription Payments ==='])
+    writer.writerow(['User', 'Start Date', 'End Date', 'Total', 'Offer Discount', 'Coupon Discount', 'Wallet Used', 'Created At'])
+
+    for sub in subscriptions:
+        writer.writerow([
+            sub.user.username if sub.user else 'Anonymous',
+            sub.start_date.date(),
+            sub.end_date.date(),
+            sub.item_total,
+            sub.offer_discount,
+            sub.discount,
+            sub.wallet_amount_used,
+            sub.created_at.strftime("%Y-%m-%d %H:%M"),
+        ])
+
+    # Refunds section
+    writer.writerow([])
+    writer.writerow(['=== Refunds Issued ==='])
+    writer.writerow(['User', 'Food Category', 'Refund Amount', 'Delivery Date'])
+
+    for refund in refunds:
+        writer.writerow([
+            refund.user.username,
+            refund.food_category.name if refund.food_category else '',
+            refund.food_category.price if refund.food_category else '0.00',
+            refund.delivery_date.strftime("%Y-%m-%d"),
+        ])
+
+    return response

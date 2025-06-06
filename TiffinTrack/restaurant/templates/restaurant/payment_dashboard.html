@@ -41,6 +41,12 @@
   </div>
 </form>
 
+<div class="d-flex justify-content-end">
+    <a href="{% url 'export-payments-csv' %}?start_date={{ start_date }}&end_date={{ end_date }}" class="btn btn-success mb-3">
+        Export to CSV
+    </a>
+</div>
+
 <div class="row">
   <div class="col-md-4">
     <div class="card bg-success text-white">
@@ -72,33 +78,48 @@
 
 <hr>
 
-<h4>Recent Subscription Payments</h4>
+
+<h4>Subscription Payments</h4>
 <table class="table table-bordered table-striped">
   <thead>
     <tr>
       <th>User</th>
+      <th>Start</th>
+      <th>End</th>
       <th>Total</th>
-      <th>Date</th>
+      <th>Offer Discount</th>
+      <th>Coupon Discount</th>
+      <th>Wallet Used</th>
+      <th>Final Total</th>
+      <th>Created At</th>
     </tr>
   </thead>
   <tbody>
     {% for sub in subscriptions %}
-    <tr>
-      <td>{{ sub.user.username }}</td>
-      <td>₹{{ sub.final_total }}</td>
-      <td>{{ sub.created_at|date:"Y-m-d H:i" }}</td>
-    </tr>
+      <tr>
+        <td>{{ sub.user.username }}</td>
+        <td>{{ sub.start_date|date:"Y-m-d" }}</td>
+        <td>{{ sub.end_date|date:"Y-m-d" }}</td>
+        <td>₹{{ sub.item_total }}</td>
+        <td>₹{{ sub.offer_discount }}</td>
+        <td>₹{{ sub.discount }}</td>
+        <td>₹{{ sub.wallet_amount_used }}</td>
+        <td>₹{{ sub.final_total }}</td>
+        <td>{{ sub.created_at|date:"Y-m-d H:i" }}</td>
+      </tr>
     {% empty %}
-    <tr><td colspan="3">No subscriptions</td></tr>
+      <tr><td colspan="9">No subscriptions found.</td></tr>
     {% endfor %}
   </tbody>
 </table>
+
 
 <h4>Recent Refunds</h4>
 <table class="table table-bordered table-striped">
   <thead>
     <tr>
       <th>User</th>
+      <th>Category</th>
       <th>Amount</th>
       <th>Delivery Date</th>
     </tr>
@@ -107,6 +128,7 @@
     {% for refund in refunds %}
     <tr>
       <td>{{ refund.user.username }}</td>
+      <td>{{refund.food_category.name}}</td>
       <td>₹{{ refund.food_category.price }}</td>
       <td>{{ refund.delivery_date }}</td>
     </tr>
