@@ -8,7 +8,7 @@ from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
 from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory, Subscriptions
 from django.core.paginator import Paginator
-from users.models import Orders
+from users.models import Orders, RestaurantReport
 from django.utils.timezone import now
 from django.utils.timezone import localtime
 from datetime import datetime
@@ -636,3 +636,43 @@ def sales_report_overview(request):
     }
 
     return render(request, './admin_panel/dashboard.html', context)
+
+
+@login_required(login_url='admin-login')
+def report_restaurant(request):
+    user = request.user
+
+
+
+    restaurant = request.GET.get('restaurant')
+    user = request.GET.get('user')
+    status = request.GET.get('status')
+    created = request.GET.get('created')
+
+
+
+    reports = RestaurantReport.objects.all()
+
+
+
+    paginator = Paginator(reports, 10)  # Show 5 orders per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+    print(f"{orders=}")
+    context = {'reports': page_obj,
+                }
+    return render(request, './admin_panel/report.html', context)
+
+
+
+@login_required(login_url='admin-login')
+def delete_report(request, id):
+    if not request.user.is_superuser:
+        return redirect('admin-login')
+    report = get_object_or_404(RestaurantReport, id=id)
+    report.delete()
+    messages.success(request, "report deleted successfully.")
+    return redirect('admin-report-restaurant')
+

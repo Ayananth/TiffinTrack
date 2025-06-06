@@ -54,6 +54,13 @@ urlpatterns = [
 
 
 
+    path('restaurant-reports/', views.report_restaurant, name='admin-report-restaurant'),
+    path('report/delete/<int:id>/', views.delete_report, name='admin-report-delete'),
+
+
+
+
+
     
 
 

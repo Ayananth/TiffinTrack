@@ -134,3 +134,13 @@ class Orders(models.Model):
 
     def __str__(self):
         return f"Order #{self.id} by {self.user} from {self.restaurant}"
+
+
+class RestaurantReport(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE)  # assuming you have a Restaurant model
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Report by {self.user} on {self.restaurant}"

@@ -46,7 +46,7 @@ import tempfile
 
 
 from .models import Address, Orders, Wallet
-from .forms import AddressForm, SubscriptionForm
+from .forms import AddressForm, SubscriptionForm, RestaurantReportForm
 from django.utils import timezone
 from collections import defaultdict
 from coupons.models import Referral
@@ -272,6 +272,7 @@ def restaurant_details(request, pk):
         review=None
     has_reviewed = review is not None
     review_form = ReviewForm(instance=review)
+    report_form = RestaurantReportForm()
 
     images = RestaurantImage.objects.filter(restaurant=restaurant)
 
@@ -285,7 +286,8 @@ def restaurant_details(request, pk):
         'review_form': review_form,
         'has_reviewed': has_reviewed,
         'next':next,
-        'images': images
+        'images': images,
+        'report_form': report_form
     }
 
 
@@ -983,3 +985,21 @@ def generate_invoice_pdf(request, invoice_id):
     response = HttpResponse(result, content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename=invoice_{invoice_id}.pdf'
     return response
+
+
+
+
+@login_required
+def report_restaurant(request, restaurant_id):
+    restaurant = get_object_or_404(RestaurantProfile, id=restaurant_id)
+    if request.method == 'POST':
+        form = RestaurantReportForm(request.POST)
+        if form.is_valid():
+            report = form.save(commit=False)
+            report.user = request.user
+            report.restaurant = restaurant
+            report.save()
+            messages.success(request, 'Your report has been submitted.')
+    return redirect('restaurant-details', pk=restaurant.id)
+    
+

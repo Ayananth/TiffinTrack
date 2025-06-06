@@ -43,3 +43,16 @@ class AddressForm(forms.ModelForm):
                 field.widget.attrs.update({'class': 'form-check-input'})
             else:
                 field.widget.attrs.update({'class': 'form-control'})
+
+
+# forms.py
+
+from .models import RestaurantReport
+
+class RestaurantReportForm(forms.ModelForm):
+    class Meta:
+        model = RestaurantReport
+        fields = ['message']
+        widgets = {
+            'message': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Write your report here...'})
+        }

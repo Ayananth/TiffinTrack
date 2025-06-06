@@ -20,9 +20,11 @@
                         </div>
                         <div class="restaurant-description">
                             <div class="categories-icon">
-                                <a href="#!" id="liveToastBtn">
-                                    <i class="ri-share-line icon text-white"></i>
+                                <a href="#" class="text-white" data-bs-toggle="modal" data-bs-target="#report">
+                                <i class="ri-flag-fill"></i> Report
                                 </a>
+
+
                                 <a href="#!" class="like-btn animate inactive">
                                     <i class="ri-heart-3-fill fill-icon"></i>
                                     <i class="ri-heart-3-line text-white outline-icon"></i>
@@ -485,6 +487,41 @@
         </div>
     </div>
     <!-- add-card modal end -->
+
+
+
+    <!-- add-card modal starts -->
+    <div class="modal report-modal fade" id="report" tabindex="-1" aria-labelledby="addModalAdress"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addModalAdress">
+                        Report this restaurant
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                        <form id="review-form" method="POST" action="{% url 'report-restaurant' restaurant.id %}?next=review">
+                            {% csrf_token %}
+                            {{ report_form.as_p }}
+                            <div id="form-errors" class="text-danger mt-2"></div>
+                            <input type="hidden" name="restaurant_id" value="{{restaurant.id}}">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- add-card modal end -->
+
 
 <script>
   console.log("Hi");
