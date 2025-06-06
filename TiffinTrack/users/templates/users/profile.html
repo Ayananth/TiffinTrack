@@ -39,7 +39,8 @@
                                             <i class="ri-file-image-line"></i>
                                             <span>Profile Image :</span>
                                         </div>
-                                        <h6><input type="file" name="profile_pic"></h6>
+                                        <label id="current_profile" for="profile_pic">{{request.user.profile.profile_pic}}</label>
+                                        <h6><input type="file" name="profile_pic" id="profile_pic"></h6>
                                     </div>
                                     <button type="submit" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</button>
                                 </li>
@@ -217,6 +218,17 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const link = document.getElementById('current_profile');
+    if (link) {
+        const fileName = link.textContent.replace('uploads/', '');
+        link.textContent = fileName;
+    }
 });
 </script>
 
