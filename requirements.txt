@@ -1,1 +1,9 @@
-django == 5.1.7
+Django==5.1.7
+geopy==2.4.1
+python-dotenv==1.1.0
+razorpay==1.4.2
+twilio==9.5.2
+weasyprint==65.1
+django-allauth==65.9.0
+psycopg2==2.9.10
+cryptography==45.0.4
