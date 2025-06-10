@@ -18,6 +18,8 @@ from django.db.models import Count, Sum, Q
 from django.utils import timezone
 from datetime import timedelta
 from datetime import date
+import logging
+logger = logging.getLogger('myapp') 
 
 
 
@@ -59,11 +61,7 @@ def home(request):
     if isinstance(end_date, str):
         end_date = timezone.datetime.strptime(end_date, '%Y-%m-%d').date()
 
-    print(f"{start_date=}")
-    print(f"{end_date=}")
-
     orders = Orders.objects.filter(delivery_date__range=(start_date, end_date))
-    print(f"{orders.values()=}")
     total_orders = orders.count()
     total_revenue = orders.filter(status='DELIVERED').aggregate(
         revenue=Sum('food_category__price'))['revenue'] or 0
@@ -81,9 +79,6 @@ def home(request):
     ).annotate(
         revenue=Sum('food_category__price')
     ).order_by('-revenue')[:3]
-
-    print(f"{top_restaurants=}")
-
     total_orders = Orders.objects.count()
     pending_orders = Orders.objects.filter(status='PENDING').count()
     delivered_orders = Orders.objects.filter(status='DELIVERED').count()
@@ -121,8 +116,6 @@ def home(request):
         'chart_data': chart_data,
     })
 
-    print(f"{context=}")
-
     return render(request, './admin_panel/dashboard.html', context)
 
 
@@ -132,7 +125,6 @@ def all_users(request):
         return redirect('admin-login')
     username = request.POST.get("username")
     if request.method == 'POST' and username:
-        print(f"{username=}")
         users = CustomUser.objects.filter(username=username).order_by('-created_at')
     else:
         users = CustomUser.objects.all().order_by('-created_at')
@@ -152,8 +144,6 @@ def add_users(request):
     if not request.user.is_superuser:
         return redirect('admin-login')
     if request.method == "POST":
-        print(request.POST.dict())  # cleaner view
-        print("Adding new user by admin")
         form = AdminUserRegisterForm(request.POST)
         if form.is_valid():
             form.save()
@@ -161,11 +151,9 @@ def add_users(request):
             messages.success(request, f"User created for {username}")
             return redirect('all-users')
         else:
-            print("Form not valid")
             messages.error(request, "Form not valid")
             return render(request, './admin_panel/add_user.html', {'form': form})
 
-    print("Add new user menu from admin side")
     form = AdminUserRegisterForm()
     context = {
         'form': form
@@ -244,7 +232,6 @@ def restaurant_dashboard(request, pk=None):
     # selected_date = localtime().date()
     # today = selected_date
     selected_date = today
-    print(today)
     restaurant = get_object_or_404(RestaurantProfile, pk=pk)
 
     date_str = request.GET.get('date')
@@ -264,7 +251,6 @@ def restaurant_dashboard(request, pk=None):
         .annotate(total_orders=Count('id'))
         .order_by('food_category__name')
     )
-    print(f"{food_category_orders=}")
     # Cancelled orders per food category for today
     cancelled_orders = (
         Orders.objects.filter(
@@ -276,7 +262,6 @@ def restaurant_dashboard(request, pk=None):
         .annotate(cancelled_orders=Count('id'))
         .order_by('food_category__name')
     )
-    print(f"{cancelled_orders=}")
 
     # Merge both querysets into a single list of dicts
     data = {}
@@ -345,28 +330,18 @@ def delete_user(request, id):
 def update_user(request, id):
     if not request.user.is_superuser:
         return redirect('admin-login')
-    print("_-------------------------------")
     user = get_object_or_404(CustomUser, id=id)
-    print(user.is_blocked)
-    print("_-------------------------------")
     if request.method == 'POST':
-        print("Updating user by admin")
-        print(request.POST.dict())
-        print("Updating user by admin")
         form = UserUpdateForm(request.POST, instance=user)  # Pre-fill with existing user data
         if form.is_valid():
-            print("Form is valid")
             form.save()
             messages.success(request, "User updated successfully")
             return redirect('update-user', id=id)  # Redirect to the profile page
         else:
             messages.error(request, "Form not valid")
-            print("Form not valid")
-            print(form.errors)
             return redirect('update-user', id=id)   
         
     else:
-        print("Else")
         form = UserUpdateForm(instance=user)  # Pre-fill with existing user data
 
     return render(request, './admin_panel/update_user.html', {'form': form})
@@ -527,8 +502,6 @@ def orders(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-
-    print(f"{orders=}")
     context = {'orders': page_obj,
                 'sort': sort_field,
                 'dir': direction,
@@ -547,21 +520,20 @@ def cancel_order(request, order_id):
         else:
             messages.error(request, "Order cannot be cancelled.")
     except Exception as e:
-        print(f"{e=}")
+        logger.error(f"{e=}")
         messages.error(request,"Server error")
     finally:
         return redirect('admin-orders')
     
 @login_required(login_url='admin-login')
 def deliver_order(request, order_id):
-    print("Delivering order")
     try:
         order = get_object_or_404(Orders, id=order_id)
         order.status = "DELIVERED"
         order.save()
         messages.success(request, f"Order Delivered")
     except Exception as e:
-        print(f"{e=}")
+        logger.error(f"{e=}")
         messages.error(request,"Server error")
     finally:
         return redirect('admin-orders')
@@ -590,9 +562,6 @@ def coupons(request):
     paginator = Paginator(coupons, 10)  # Show 5 orders per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-
-    print(f"{orders=}")
     context = {'coupons': page_obj,
                 'sort': sort_field,
                 'dir': direction,
@@ -658,9 +627,6 @@ def report_restaurant(request):
     paginator = Paginator(reports, 10)  # Show 5 orders per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-
-    print(f"{orders=}")
     context = {'reports': page_obj,
                 }
     return render(request, './admin_panel/report.html', context)

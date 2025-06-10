@@ -38,6 +38,9 @@ from django.http import HttpResponse
 from weasyprint import HTML
 import tempfile
 
+import logging
+logger = logging.getLogger('myapp') 
+
 
 
 
@@ -54,17 +57,14 @@ from coupons.models import Referral
 
 
 
+
 @login_required(login_url='login')
 def home(request):
-    print(request.user)
     user = request.user
     restaurant_name = request.GET.get('restaurant_name')
-    print(user.profile.point)
     reference_point = user.profile.point
 
-
     referral = request.session.get('referral_code')
-    print(referral)
     if referral:
         try:
             referral_obj = Referral.objects.get(code=referral)
@@ -105,11 +105,6 @@ def home(request):
     page_obj = paginator.get_page(page_number)
 
 
-
-    # menu = get_object_or_404(MenuCategory, id=1)
-    # food_categories = menu.food_categories.all()
-    # print(f"{food_categories=}")
-
     # Collect restaurant IDs shown on this page
     restaurant_ids = [restaurant.id for restaurant in page_obj]
 
@@ -126,10 +121,6 @@ def home(request):
     restaurant_offers = defaultdict(list)
     for offer in active_offers:
         restaurant_offers[offer.restaurant_id].append(offer)
-
-    print(dict(restaurant_offers))
-
-
 
 
     context = {
@@ -148,8 +139,7 @@ def update_profile(request):
 
 @login_required(login_url='login')
 def update_user_location(request):
-    print(request.POST)
-    print("update_user_location")
+
     latitude = float(request.POST.get("latitude"))
     longitude = float(request.POST.get("longitude"))
     point = Point(longitude, latitude)
@@ -300,23 +290,17 @@ from datetime import date, timedelta
 
 @login_required(login_url='login')
 def subscription_cart(request, id=None):
-    print("subscription page")
-    print(f"{id=}")
-
 
     user = request.user
     addresses = Address.objects.filter(user=user)
     menu = get_object_or_404(MenuCategory, id=id)
-    print(f"{menu=}")
-
 
     if request.method == 'POST':
         form = SubscriptionForm(request.POST)
         if form.is_valid():
-            print("form valid")
+
             subscription = form.save(commit=False)
             end_date = request.POST.get('end_date')
-            print("-----------------------")
 
             start_date = subscription.start_date
 
@@ -327,10 +311,8 @@ def subscription_cart(request, id=None):
                 is_active = True
             )
             if overlapping_subscriptions.exists():
-                print("subscription Already exists")
                 messages.error(request, "You already have a subscription")
                 return redirect('subscription-request', id=id)
-            print("No existing subscription")
             subscription.restaurant = menu.restaurant
             subscription.menu_category = menu
             number_of_days = form.cleaned_data.get('end_date') - form.cleaned_data.get('start_date')
@@ -344,7 +326,7 @@ def subscription_cart(request, id=None):
             return redirect('payment', id=subscription.id)
         else:
             messages.error(request, "Form not valid")
-            print("Form not valid")
+            logger.error("Form not valid")
     else:
         form = SubscriptionForm()
         
@@ -357,7 +339,6 @@ def subscription_cart(request, id=None):
     context = {'addresses': addresses,  'form': form, 'address_form': address_form,
                'today': today,
                'tomorrow': tomorrow}
-    print(f"{context=}")
     return render(request, 'users/subscription_request.html', context)
     
 
@@ -380,7 +361,6 @@ def order_confirm(request):
     end_date = subscription.end_date.date()
     menu = subscription.menu_category
     food_categories = menu.food_categories.all()
-    print(f"{food_categories=}")
     orders_to_create = []
     current_date = start_date
     while current_date <= end_date:
@@ -475,12 +455,9 @@ def payment(request, id):
 @require_POST
 def use_wallet(request):
     subscription_id = request.POST.get('subscription_id')
-    print(f"{subscription_id=}")
     try:
         subscription = Subscriptions.objects.get(id=subscription_id)
-        print(subscription)
     except Subscriptions.DoesNotExist:
-        print("Item not found")
         messages.error(request, "Please try again! ")
         return redirect('user-home')
     wallet_balance = request.user.wallet.balance
@@ -528,18 +505,12 @@ def manage_subscription(request):
     ]
 
     if request.method == 'POST':
-        print("post requesttasdf")
-        print(request.POST)
         id = request.POST.get('subscription_id')
-        print(id)
         if id:
-            print(id)
             subscription = get_object_or_404(Subscriptions, id=id)
-            print(f"{subscription=}")
             subscription.is_active = False
             subscription.save()
             orders = subscription.orders.filter(status='PENDING')
-            print(f"{orders=}")
             for order in orders:
                 order.cancel()
             messages.success(request,"Your subscription and orders are cancelled")
@@ -549,7 +520,6 @@ def manage_subscription(request):
             return render(request, './users/manage_subscription.html', context)
 
     subscription = Subscriptions.objects.filter(is_active=True, user=user).order_by('-created_at').first()
-    print(f"{subscription=}")
 
     if not subscription:
         context = {
@@ -587,19 +557,11 @@ def manage_subscription(request):
         data['cancelled'] = cancelled
         data['pending'] = pending
 
-        print(f"{refund=}")
+
         refund += delivered * food_category.price
-        print(f"{refund} = {pending} * {food_category.price}")
-
-        print(f"{refund=}")
-
         refund = subscription.final_total - refund
-        
-
         delivery_data[food_category] = data  # or food_category.name if it has one
         
-        print(f"{delivery_data=}")
-
     context = {
         'headers': headers,
         'subscription':subscription,
@@ -607,7 +569,7 @@ def manage_subscription(request):
         'refund' : refund
     }
 
-    print(f"{context=}")
+
 
 
     return render(request, './users/manage_subscription.html', context)
@@ -620,7 +582,7 @@ def orders(request):
     longitude = reference_point.x
     latitude = reference_point.y
     subscription = user.subscriptions.filter(is_active=True).order_by('-created_at').first()
-    print(f"{subscription=}")
+
 
     sort_by = request.GET.get('sort', 'delivery_date')  # default: delivery_date
     direction = request.GET.get('dir', 'asc') 
@@ -652,8 +614,6 @@ def orders(request):
     wallet_balance = wallet.balance if wallet else 0
 
 
-
-    print(f"{orders=}")
     context = {'orders': page_obj,
                'title':"Orders",
                 'sort': sort_field,
@@ -665,14 +625,12 @@ def orders(request):
 
 @login_required
 def cancel_order(request, order_id):
-    print("Order cancellation")
+
     try:
         order = get_object_or_404(Orders, id=order_id, user=request.user)
         now = timezone.now()
         cancellation_datetime = datetime.combine(now.date(), order.food_category.cancellation_time)
         cancellation_datetime = timezone.make_aware(cancellation_datetime, timezone.get_current_timezone())
-        print(f"{now=}")
-        print(f"{cancellation_datetime=}")
 
         if now > cancellation_datetime:
             messages.error(request, "Late for order cancellation")
@@ -682,7 +640,7 @@ def cancel_order(request, order_id):
         else:
             messages.error(request, "Order cannot be cancelled.")
     except Exception as e:
-        print(f"{e=}")
+        logger.error(f"{e=}")
         messages.error(request,"Server error")
     finally:
         return redirect('orders')
@@ -690,14 +648,11 @@ def cancel_order(request, order_id):
 
 @login_required
 def extend_subscription(request, order_id):
-    print("Order cancellation")
     try:
         order = get_object_or_404(Orders, id=order_id, user=request.user)
         now = timezone.now()
         cancellation_datetime = datetime.combine(order.delivery_date, order.food_category.cancellation_time)
         cancellation_datetime = timezone.make_aware(cancellation_datetime, timezone.get_current_timezone())
-        print(f"{now=}")
-        print(f"{cancellation_datetime=}")
 
         if now > cancellation_datetime:
             messages.error(request, "Late for order cancellation")
@@ -718,7 +673,7 @@ def extend_subscription(request, order_id):
             messages.error(request, "Order cannot be rescheduled.")
 
     except Exception as e:
-        print(f"{e=}")
+        logger.error(f"{e=}")
         messages.error(request,"Server error")
     finally:
         return redirect('orders')
@@ -951,8 +906,6 @@ def available_coupons_json(request, restaurant_id=None):
 
         })
 
-    print(f"{data=}")
-
     return JsonResponse({"coupons": data})
 
 
@@ -966,8 +919,6 @@ def generate_invoice_pdf(request, invoice_id):
     user = request.user
     if invoice_id:
         subscription = Subscriptions.objects.filter(id=invoice_id).first()
-        print("Subscription id present")
-        print(subscription)
     else:
         subscription = Subscriptions.objects.filter(is_active=True, user=user).order_by('-created_at').first()
 

@@ -21,37 +21,19 @@ from accounts.models import CustomUser, UserProfile, RestaurantImage
 from .models import Subscriptions, RestaurantTransaction
 from .forms import FoodItemManageForm, MenuManageForm, FoodCategoryManageForm, OfferForm
 
+import logging
+logger = logging.getLogger('myapp') 
 
-
-# def restaurant_login(request):
-    
-#     if request.user.is_authenticated:
-#         return redirect('restaurant-home')
-#     if request.method == "POST":
-#         username = request.POST.get("username")
-#         password = request.POST.get("password")
-#         user = authenticate(request, username=username, password=password)
-#         if user is not None:
-#             print("logging in")
-#             login(request, user)
-#             return redirect('restaurant-home')
-#         else:
-#             print("Invalid credentials")
-#             messages.success(request, "Invalid username or password")
-#     return render(request, './restaurant/login.html')
 
 
 @login_required(login_url='login')
 def home(request):
-    print("Home page")
-    print(request.user)
     if request.user.user_type != 'restaurant':
         messages.error(request, "Not restaurant user")
         return redirect('login')
     
     today = '2025-05-19'
     selected_date = today
-    print(today)
     restaurant = get_object_or_404(RestaurantProfile, user=request.user)
 
     date_str = request.GET.get('date')
@@ -71,7 +53,6 @@ def home(request):
         .annotate(total_orders=Count('id'))
         .order_by('food_category__name')
     )
-    print(f"{food_category_orders=}")
     # Cancelled orders per food category for today
     cancelled_orders = (
         Orders.objects.filter(
@@ -83,8 +64,6 @@ def home(request):
         .annotate(cancelled_orders=Count('id'))
         .order_by('food_category__name')
     )
-    print(f"{cancelled_orders=}")
-
     # Merge both querysets into a single list of dicts
     data = {}
     for item in food_category_orders:
@@ -184,7 +163,6 @@ def menu_category_list(request):
     # Assuming the user is logged in and has a restaurant profile
     restaurant = request.user.restaurantprofile
     menu_categories = MenuCategory.objects.filter(restaurant=restaurant)
-    print(f"{menu_categories.values()=}")
     context = {
         'menu_categories': menu_categories,
     }
@@ -228,13 +206,10 @@ def menu_category_edit(request, pk):
 @login_required(login_url='login')
 def menu_category_delete(request, pk):
     menu_category = get_object_or_404(MenuCategory, pk=pk)
-    print(f"{menu_category=}")
     if menu_category:
-        print("Deleting menu category")
         menu_category.delete()
         messages.success(request, 'Menu category deleted successfully!')
         return redirect('menu_category_list')
-    print("Not deleting menu category")
     
     return render(request, 'restaurant/menu.html')
 
@@ -249,7 +224,6 @@ def menu_category_delete(request, pk):
 
 @login_required(login_url='login')
 def food_category_list(request):
-    print(f"{request.user.restaurantprofile=}")
     restaurant = request.user.restaurantprofile
     food_categories = FoodCategory.objects.filter(restaurant=restaurant)
     return render(request, 'restaurant/food_category_list.html', {'food_categories': food_categories})
@@ -300,8 +274,6 @@ def orders(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-
-    print(f"{orders=}")
     context = {'orders': page_obj,
                 'sort': sort_field,
                 'dir': direction,
@@ -320,21 +292,20 @@ def cancel_order(request, order_id):
         else:
             messages.error(request, "Order cannot be cancelled.")
     except Exception as e:
-        print(f"{e=}")
+        logger.error(f"{e=}")
         messages.error(request,"Server error")
     finally:
         return redirect('restaurant-orders')
     
 @login_required(login_url='admin-login')
 def deliver_order(request, order_id):
-    print("Delivering order")
     try:
         order = get_object_or_404(Orders, id=order_id)
         order.status = "DELIVERED"
         order.save()
         messages.success(request, f"Order Delivered")
     except Exception as e:
-        print(f"{e=}")
+        logger.error(f"{e=}")
         messages.error(request,"Server error")
     finally:
         return redirect('restaurant-orders')
@@ -387,7 +358,7 @@ def food_add_or_update(request, pk=None):
             return redirect('restaurant-food_items')
         else:
             messages.error(request, "Invalid inputs.")
-            print(form.errors)
+            logger.error(form.errors)
     else:
         form = FoodItemManageForm(instance=food_obj, restaurant=restaurant_obj)
 
@@ -606,8 +577,6 @@ def coupons(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-
-    print(f"{orders=}")
     context = {'coupons': page_obj,
                 'sort': sort_field,
                 'dir': direction,

@@ -15,7 +15,6 @@ class RestaurantProfileForm(forms.ModelForm):
     }))
     def clean_point(self):
         value = self.cleaned_data['point']
-        print("Raw point field value received:", value)
         try:
             lon, lat = map(float, value.split(','))
             return Point(lon, lat)

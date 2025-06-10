@@ -25,7 +25,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 
 
-
+import logging
+logger = logging.getLogger('myapp') 
 
 
 #TODO dont give access to admin
@@ -36,13 +37,12 @@ def accounts_login(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-        print(username, password)
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             return redirect(login_redirect_view(request))
         else:
-            print("Invalid credentials")
+            logger.warning("Invalid credentials")
             messages.error(request, "Invalid username or password")
     return render(request, './accounts/login.html')
 
@@ -52,32 +52,24 @@ def accounts_logout(request):
     return redirect('user-home')
 
 def accounts_sign_up(request):
-    print("register")
     username = request.POST.get("username")
     password = request.POST.get("password")
-    print(username, password)
-
     referral = request.GET.get('ref')
     if referral:
         request.session['referral_code'] = referral
 
 
     if request.method == 'POST':
-        print("post req")
-
         form = UserRegisterForm(request.POST) 
         if form.is_valid():
-            print("form not valid")
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f"Account created for {username}! Try login")
             return redirect('login')
         else:
-            print("form not valid")
-            print(form.errors)
+
             messages.error(request, "Form not valid")   
     else:
-        print("Else")
         form = UserRegisterForm()
     context = {  
         'form':form  
@@ -93,25 +85,16 @@ def send_otp(request):
         return redirect('verify_otp')
 
     phone = request.session.get('phone') or request.POST.get('phone')
-    print(f"{phone=}")
 
     if request.method == 'POST' or phone:
         if not phone or not phone.isdigit() or len(phone) != 10:
             messages.error(request, "Invalid phone number")
             return render(request, "./accounts/send_otp.html")
 
-        # otp_obj, created = PhoneOTP.objects.get_or_create(phone=phone)
-        # otp_obj.generate_otp()
         status = send_otp_sms()
         if status == "failed":
-            print("OTP failed")
             messages.error(request, "Please try again!")
             return render(request, "./accounts/send_otp.html")
-            
-        print("OTP sent")
-
-        # TODO: Replace with Twilio
-        # print(f"OTP for {phone} is {otp_obj.otp}")
 
         request.session['phone'] = phone
         request.session['otp_sent'] = True
@@ -174,7 +157,9 @@ def verify_otp(request):
                 user, created = CustomUser.objects.get_or_create(username=phone, phone=phone)
             except Exception as e:
                 messages.error(request, "Please try again")
-                print(f"{e=}")
+                logger.warning("Verify otp error")
+                logger.error(e)
+
                 return redirect('login')
 
             login(request, user)
@@ -214,7 +199,7 @@ def request_email_change(request):
         confirm_url = request.build_absolute_uri(
             f"/accounts/confirm-email-change/?token={token}"
         )
-        print("sending mail")
+        logger.info("sending mail")
         try:
             send_mail(
                 "TiffinTrack-Email Confirmation",
@@ -224,8 +209,8 @@ def request_email_change(request):
                 fail_silently=False  # Force errors to show
             )
         except Exception as e:
-            print(f"Email sending failed: {e}")
-        print("mail send")
+            logger.error(f"Email sending failed: {e}")
+        logger.info("mail send")
         messages.success(request,"Confirmation email sent to your new email. Please check your inbox.")
 
     return redirect('user-profile')

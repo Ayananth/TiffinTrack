@@ -4,12 +4,13 @@ from django.shortcuts import render, redirect
 from twilio.rest import Client
 from django.conf import settings
 from geopy.geocoders import Nominatim
+import logging
+logger = logging.getLogger('myapp') 
 
 
 
 def login_redirect_view(request):
     user = request.user
-    print(user)
     if user.is_normal_user:
         return reverse('user-home')
     elif user.is_restaurant_user:
@@ -49,8 +50,6 @@ def send_otp_sms():
     except Exception as e:
         return "failed"
 
-    print(verification.sid)
-# return verification.sid
 
 def verify_otp_sms(otp):
     try:
@@ -59,8 +58,6 @@ def verify_otp_sms(otp):
             .services('VAdf09a320224ebf348a443a54f1cab8ce') \
             .verification_checks \
             .create(to='+919544670122', code=otp)  # The code user enters
-
-        print(verification_check.status)
         return verification_check.status
     except Exception as e:
         return "Try resending the OTP"
@@ -74,18 +71,13 @@ def get_location_from_point(longitude, latitude):
     try:
         geolocator = Nominatim(user_agent="ayspm123@gmail.com")
         location = geolocator.reverse((latitude, longitude), exactly_one=True)
-        print(location)
-        print(f"location from point : {location.address}")
+        logger.info(f"location from point : {location.address}")
         if location:
             address = location.raw.get("address", {})
-            print(f"{address=}")
-        print(list(address.values()))
         place = list(address.values())[0:2]
-        print(place)
         place = ', '.join(place)
-        print(place)
         return place
     except Exception as e:
-        print(f"Error from get_location_from_point, {e}")
+        logger.error(f"Error from get_location_from_point, {e}")
         return ""
 

@@ -213,3 +213,52 @@ EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 RAZORPAY_KEY_ID=os.environ['RAZORPAY_KEY_ID']
 RAZORPAY_KEY_SECRET=os.environ['RAZORPAY_KEY_SECRET']
+
+
+import os
+if DEBUG:
+    handlers = ['console', 'file']
+else:
+    handlers = ['file']
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} [{name}] {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
+            'formatter': 'verbose',
+        },
+    },
+
+    'loggers': {
+        'django': {
+            'handlers': handlers,
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'myapp': {  # Replace with your app name
+            'handlers': handlers,
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

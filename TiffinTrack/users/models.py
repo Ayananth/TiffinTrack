@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
 from restaurant.models import FoodCategory, FoodItem, RestaurantProfile, Subscriptions
+import logging
+logger = logging.getLogger('myapp') 
 
 class Wallet(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wallet')
@@ -114,11 +116,11 @@ class Orders(models.Model):
 
     def cancel(self):
         if self.status != 'PENDING':
-            print("Error: order already cancelled")
+            logger.error("Error: order already cancelled")
             return False  # Cannot cancel delivered or already cancelled orders
 
         if self.refund_issued:
-            print("Error: Refund already processed")
+            logger.error("Error: Refund already processed")
             return False  # Refund already processed
 
         # Update status

@@ -27,9 +27,7 @@ def initiate_payment(request):
         return redirect('payment', id=subscription_id)
     currency = 'INR'
     amount = subscription.final_total
-    print(f"{amount=}")
     amount = int(amount * 100)
-    print(f"{amount=}")
 
 
     razorpay_order = client.order.create({

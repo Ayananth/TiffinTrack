@@ -27,7 +27,6 @@ class BlockedUserLogoutMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        print("Mildware is running")
         if request.user.is_authenticated:
             if hasattr(request.user, 'is_blocked') and request.user.is_blocked:
                 logout(request)
@@ -40,9 +39,7 @@ class LoginRedirectMessageMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        print("Login redirect message middleware")
         if not request.user.is_authenticated:
-            print("User not authenticated")
             if '/login/' in request.path and 'next' in request.GET:
                 messages.error(request, "Please login to continue.")
         return self.get_response(request)

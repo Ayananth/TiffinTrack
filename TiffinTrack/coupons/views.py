@@ -11,6 +11,8 @@ from coupons.models import Coupon, CouponUsage
 from django.views.decorators.http import require_POST
 from restaurant.models import Subscriptions, RestaurantProfile
 from django.contrib import messages
+import logging
+logger = logging.getLogger('myapp') 
 
 
 @require_POST
@@ -18,12 +20,9 @@ from django.contrib import messages
 def apply_coupon(request):
     subscription_id = request.POST.get('subscription_id')
     code = request.POST.get('coupon_code')
-    print(f"{subscription_id=}")
     try:
         subscription = Subscriptions.objects.get(id=subscription_id)
-        print(subscription)
     except Subscriptions.DoesNotExist:
-        print("Item not found")
         messages.error(request, "Please try again! ")
         return redirect('user-home')
     try:
@@ -139,8 +138,6 @@ def restaurant_delete_coupon(request, coupon_id):
 
     restaurant = get_object_or_404(RestaurantProfile, user=request.user)
     coupon = get_object_or_404(Coupon, id=coupon_id)
-
-    print(f"{coupon=}")
 
     if restaurant in coupon.restaurant.all():
         coupon.restaurant.remove(restaurant)

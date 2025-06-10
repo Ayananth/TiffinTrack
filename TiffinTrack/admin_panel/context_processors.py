@@ -5,6 +5,5 @@ from restaurant.models import RestaurantProfile
 def restaurant_requests(request):
     if request.user.is_authenticated and request.user.is_superuser:
         restaurant_requests = RestaurantProfile.objects.filter(is_approved=False).count()
-        print(f"Restaurant requests count: {restaurant_requests}")
         return {'restaurant_requests': restaurant_requests}
     return {'restaurant_requests': 0}
