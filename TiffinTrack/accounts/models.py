@@ -108,7 +108,7 @@ class RestaurantProfile(models.Model):
     restaurant_image = models.ImageField(upload_to='uploads/', null=True)
     point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
     address = models.TextField(max_length=255, blank=True, null=True)
-    location_name = models.TextField(blank=True, null=True)
+    location_name = models.TextField(blank=True, null=True, max_length=255)
     admin_comments = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):

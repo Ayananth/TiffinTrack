@@ -105,9 +105,9 @@ TEMPLATES = [
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id':'936967268283-0cst0tslmo9sftl4mpea8prdp57f7qc8.apps.googleusercontent.com',
-            'secret': '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',
-          
+            'client_id': os.environ['CLIENT_ID'],
+            'secret': os.environ['GOOGLE_SECRET'],
+
         },
         'SCOPE': ['profile','email',],
          'AUTH_PARAMS': {'access_type': 'online'},
@@ -132,11 +132,11 @@ WSGI_APPLICATION = 'TiffinTrack.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'TiffinTrack-dev',        # PostgreSQL database name
-        'USER': 'postgres',        # PostgreSQL username
-        'PASSWORD': 'postgres',# PostgreSQL password
-        'HOST': 'localhost',           # Or your remote host
-        'PORT': '5432',                # Default PostgreSQL port
+        'NAME': os.environ['DB_NAME'],        # PostgreSQL database name
+        'USER': os.environ['DB_USER'],        # PostgreSQL username
+        'PASSWORD': os.environ['DB_PASSWORD'],# PostgreSQL password
+        'HOST': os.environ['DB_HOST'],           # Or your remote host
+        'PORT': os.environ['DB_PORT'],                # Default PostgreSQL port
     },
 }
 
@@ -189,9 +189,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # settings.py
-TWILIO_ACCOUNT_SID = 'AC361b5dd32f369cee5bff0768b82e866f'
-TWILIO_AUTH_TOKEN = '1f6b473a0172d6d1752b41c3c6bdae95'
-TWILIO_PHONE_NUMBER = '+16593005248'
+TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
+TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
+TWILIO_PHONE_NUMBER = os.environ['TWILIO_PHONE_NUMBER']
 
 
 MESSAGE_TAGS = {
@@ -203,13 +203,13 @@ MESSAGE_TAGS = {
 
 #Password reset
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = os.environ['EMAIL_HOST']
+EMAIL_PORT = os.environ['EMAIL_PORT']
+EMAIL_USE_TLS = os.environ['EMAIL_USE_TLS']
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']  # Use App Password for Gmail
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 
 
-RAZORPAY_KEY_ID = "rzp_test_A49cdiWJAL14RZ"
-RAZORPAY_KEY_SECRET = "JJd8GFkFjXPr8Ywxoj7q32q4"
+RAZORPAY_KEY_ID=os.environ['RAZORPAY_KEY_ID']
+RAZORPAY_KEY_SECRET=os.environ['RAZORPAY_KEY_SECRET']
