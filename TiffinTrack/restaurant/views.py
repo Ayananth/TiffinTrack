@@ -301,6 +301,9 @@ def cancel_order(request, order_id):
 def deliver_order(request, order_id):
     try:
         order = get_object_or_404(Orders, id=order_id)
+        if order.delivery_date > timezone.now().date():
+            messages.error(request, "Cannot mark as delivered before delivery date.")
+            return redirect('restaurant-orders')
         order.status = "DELIVERED"
         order.save()
         messages.success(request, f"Order Delivered")
