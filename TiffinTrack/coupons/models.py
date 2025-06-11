@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 import random
 import string
+from restaurant.models import RestaurantProfile
 
 class Coupon(models.Model):
     code = models.CharField(max_length=20, unique=True)
