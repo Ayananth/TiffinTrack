@@ -122,6 +122,9 @@ LOGIN_REDIRECT_URL = 'user-home'
 LOGOUT_REDIRECT_URL = 'login'
 
 
+SOCIALACCOUNT_ADAPTER = 'accounts.adapters.CustomSocialAccountAdapter'
+SOCIALACCOUNT_AUTO_SIGNUP = True
+
 
 
 
