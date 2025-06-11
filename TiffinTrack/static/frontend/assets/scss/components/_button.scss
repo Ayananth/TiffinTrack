@@ -1,0 +1,93 @@
+/*=====================
+  3.2  Button Style start
+==========================*/
+.btn {
+  padding: calc(8px + (10 - 8) * ((100vw - 320px) / (1920 - 320)))
+    calc(10px + (25 - 10) * ((100vw - 320px) / (1920 - 320)));
+  font-size: calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320)));
+  font-weight: 500;
+  white-space: nowrap;
+
+  &:active,
+  &:focus-visible {
+    border-color: transparent !important;
+    color: #fff !important;
+  }
+
+  &.btn-sm {
+    padding: calc(4px + (7 - 4) * ((100vw - 320px) / (1920 - 320)))
+      calc(10px + (18 - 10) * ((100vw - 320px) / (1920 - 320)));
+  }
+
+  &-inline {
+    padding-inline: 15px;
+  }
+}
+
+.theme-btn {
+  color: #fff;
+  background-color: rgba(var(--theme-color), 1);
+  border-radius: 4px;
+  background: $gradient-fill;
+  border: none;
+  border-radius: 100px;
+
+  &:active {
+    color: rgba(var(--white), 1) !important;
+    background-color: rgba(var(--theme-color), 1) !important;
+  }
+
+  &:hover {
+    color: #fff;
+    background-color: rgba(var(--theme-color), 1);
+  }
+}
+
+.theme-outline {
+  border: 1px solid rgba(var(--theme-color), 1);
+  color: rgba(var(--theme-color), 1);
+  border-radius: 100px;
+  transition: 0.4s ease;
+
+  &:hover {
+    background: $gradient-fill;
+    color: #fff;
+  }
+}
+
+.gray-btn {
+  background-color: rgba(var(--box-bg), 1);
+  color: rgba(var(--content-color), 1);
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  &:hover {
+    background-color: rgba(var(--box-bg), 1);
+    color: rgba(var(--light-text), 1);
+  }
+}
+
+.border-btn {
+  background-color: rgba(var(--white), 1);
+  color: rgba(var(--theme-color), 1);
+  border: 1px solid rgba(var(--theme-color), 1);
+  border-radius: 4px;
+}
+
+.btn-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1;
+  color: rgba(var(--light-text), 1);
+
+  &:hover {
+    color: rgba(var(--light-text), 1);
+  }
+}

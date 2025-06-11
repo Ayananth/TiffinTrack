@@ -1,0 +1,81 @@
+
+{% extends "./base.html" %}
+
+{% block content %}
+
+<!-- Container-fluid starts-->
+                <!-- All User Table Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>Offers</h5>
+                                        <form class="d-inline-flex">
+                                            <a href="{% url 'restaurant-offer-add'%}" class="align-items-center btn btn-theme d-flex">
+                                                <i data-feather="plus-square"></i>Add New
+                                            </a>
+                                        </form>
+                                    </div>
+
+                                    <div class="table-responsive theme-scrollbar table-product">
+                                        <table class="table category-table dataTable no-footer" id="table_id">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Discount</th>
+                                                    <th>From</th>
+                                                    <th>To</th>
+                                                    <th>Menu</th>
+                                                    <th>Option</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for offer in offers %}
+                                                    <tr>
+
+                                                        <td>{{offer.name}}</td>
+                                                        <td>{{offer.discount_percent}}%</td>
+                                                        <td>{{offer.valid_from|date}}</td>
+                                                        <td>{{offer.valid_until|date}}</td>
+                                                        <td>
+                                                            {% for category in offer.menu_categories.all %}
+                                                                    {{ category.name }} <br>
+                                                            {% endfor %}
+                                                        </td>
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="{% url 'restaurant-offer-edit' offer.id %}">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="{% url 'restaurant-offer-delete' offer.id %}" onclick="return confirm('Are you sure you want to delete this offer?');">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                        
+                                    </div>
+                            {% include "./pagination.html" with page_obj=offers %}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- All User Table Ends-->
+
+
+            <!-- Container-fluid end -->
+
+            {%endblock%}

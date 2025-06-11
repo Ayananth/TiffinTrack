@@ -1,0 +1,38 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+
+  <div class="container py-5">
+    <h2 class="mb-4">📊 {{restaurant}} Dashboard {{selected_date}}</h2>
+      <form method="get" class="form-inline mb-3">
+    <label for="date" class="mr-2">Select Date:</label>
+    <input type="date" id="date" name="date" class="form-control mr-2" value="{{ selected_date|date:'Y-m-d' }}">
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </form>
+
+    <table class="table table-bordered table-striped shadow">
+      <thead class="table">
+        <tr>
+          <th>Food Category</th>
+          <th>Total Orders</th>
+          <th>Cancelled Orders</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in dashboard_data %}
+          <tr>
+            <td>{{ item.category }}</td>
+            <td>{{ item.total_orders }}</td>
+            <td>{{ item.cancelled_orders }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">No orders placed today.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+<!-- Container-fluid Ends-->
+{% endblock content %}

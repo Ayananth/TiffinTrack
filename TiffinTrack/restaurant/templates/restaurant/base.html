@@ -1,0 +1,426 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Zomo admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+    <meta name="keywords"
+        content="admin template,Zomo admin template, dashboard template, flat admin template, responsive admin template, web app">
+
+        <meta name="author" content="pixelstrap">
+        <link rel="icon" href="{% static 'backend/assets/images/favicon.png' %}" type="image/x-icon">
+        <link rel="shortcut icon" href="{% static 'backend/assets/images/favicon.png' %}" type="image/x-icon">
+        <title>TiffinTrack</title>
+        
+        <!-- Google font-->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+        
+        <!-- Linear Icon css -->
+        <link rel="stylesheet" href="{% static 'backend/assets/css/linearicon.css' %}">
+        
+        <!-- fontawesome css -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/vendors/font-awesome.css' %}">
+        
+        <!-- Themify icon css-->
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/vendors/themify.css' %}">
+        
+        <!-- ratio css -->
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/ratio.css' %}">
+        
+        <!-- remixicon css -->
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/remixicon.css' %}">
+        
+        <!-- Feather icon css-->
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/vendors/feather-icon.css' %}">
+        
+        <!-- Plugins css -->
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/vendors/scrollbar.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/vendors/animate.css' %}">
+        
+        <!-- Bootstrap css-->
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/vendors/bootstrap.css' %}">
+        
+        <!-- vector map css -->
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/vector-map.css' %}">
+        
+        <!-- swiper slider -->
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/vendors/swiper-bundle.min.css' %}">
+        
+        <!-- Slick Slider Css -->
+        <link rel="stylesheet" href="{% static 'backend/assets/css/vendors/slick.css' %}">
+        
+        <!-- App css -->
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'backend/assets/css/customcss.css' %}">
+        
+</head>
+
+<body>
+
+    <!-- tap on top start -->
+    <div class="tap-top">
+        <i class="ri-arrow-up-double-fill"></i>
+    </div>
+    <!-- tap on tap end -->
+
+    <!-- loader start -->
+    <div class="loader-wrapper"> 
+        <img src="./backend/assetsimages/loader.gif" alt="">
+    </div>
+    <!-- loader end -->
+
+    <!-- page-wrapper Start-->
+    <div class="page-wrapper compact-wrapper" id="pageWrapper">
+        <!-- Page Header Start-->
+        <div class="page-header">
+            <div class="header-wrapper m-0">
+                <div class="header-logo-wrapper p-0">
+                    <div class="logo-wrapper">
+                        <a href="index.html">
+                            <img class="img-fluid main-logo" src="backend/assetsimages/logo/1.png" alt="logo">
+                            <img class="img-fluid white-logo" src="backend/assetsimages/logo/1-white.png" alt="logo">
+                        </a>
+                    </div>
+                     <div class="toggle-sidebar">
+                        <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i>
+                        <a href="index.html">
+                            <img class="img-fluid for-light" src="backend/assetsimages/logo/1.png" alt="logo">
+                            <img class="img-fluid for-dark" src="backend/assetsimages/logo/1-white.png" alt="logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="welcome-title">
+                    <h5>
+                        Food that's you loved!
+                        <img src="./backend/assetsimages/header.gif" alt="">
+                    </h5>
+                    <span>
+                        Delight your taste with our most famous food !!
+                    </span>
+                </div>
+                        {%if not restaurant_registration%}
+                
+                <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
+                    <ul class="nav-menus">
+
+                        <li class="profile-nav onhover-dropdown pe-0 me-0">
+                            <div class="media profile-media">
+                                <div class="user-name-hide media-body">
+                                    <p class="mb-0 font-roboto">{{user}}<i class="middle ri-arrow-down-s-line"></i></p>
+                                </div>
+                            </div>
+                            <ul class="profile-dropdown onhover-show-div">
+                                <li>
+                                    <a data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                        href="javascript:void(0)">
+                                        <i data-feather="log-out"></i>
+                                        <span>Log out</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                {%endif%}
+                <div class="input-box">
+                    <i class="ri-search-line"></i>
+                    <input class="search-box" type="search" placeholder="What are you looking for?">
+                    <i class="close-icon" data-feather="x"></i>
+                </div>
+            </div>
+        </div> 
+        <!-- Page Header Ends-->
+
+        <!-- Page Body Start-->
+        <div class="page-body-wrapper">
+            <!-- Page Sidebar Start-->
+            <div class="sidebar-wrapper">
+                <div>
+                    <div class="logo-wrapper logo-wrapper-center">
+                        <a href="index.html" data-bs-original-title="" title="">
+                            <img class="img-fluid for-white" src="backend/assetsimages/logo/full-white.svg" alt="logo">
+                        </a>
+                        <div class="back-btn">
+                            <i class="fa fa-angle-left"></i>
+                        </div>
+                        <div class="toggle-sidebar">
+                            <i class="ri-apps-2-line status_toggle middle sidebar-toggle"></i>
+                        </div>
+                    </div>
+                    <div class="logo-icon-wrapper">
+                        <a href="index.html">
+                            <img class="img-fluid main-logo" src="backend/assetsimages/logo/logo.png" alt="logo">
+                        </a>
+                    </div>
+                    <nav class="sidebar-main">
+                        <div class="left-arrow" id="left-arrow">
+                            <i data-feather="arrow-left"></i>
+                        </div>
+
+
+                        <div id="sidebar-menu">
+                            <ul class="sidebar-links" id="simple-bar">
+
+                        {%if not restaurant_registration%}
+
+                                <li class="back-btn"></li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="{% url 'restaurant-home'%}">
+                                        <i class="ri-home-line"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav d-flex justify-content-between align-items-center" href="{%url 'restaurant-profile' %}">
+                                        <span class="d-flex align-items-center">
+                                            <i class="ri-shopping-bag-2-line"></i>
+                                            <span>Profile</span>
+                                        </span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="{% url 'restaurant-menu_items'%}">
+                                        <i class="ri-store-3-line"></i>
+                                        <span>Menu Items</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="{% url 'menu_items' %}">Menu Items</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="{% url 'menu_items-add' %}">Add New Menu</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="{% url 'restaurant-food_category' %}">
+                                        <i class="ri-bowl-line"></i>
+                                        <span>Category</span>
+                                    </a>
+                                </li>
+
+
+
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="{% url 'restaurant-food_items' %}">
+                                        <i class="ri-bowl-line"></i>
+                                        <span>Foods</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="{%url 'restaurant-food_items'%}">Food List</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="{%url 'restaurant-food_items-add'%}">Create Food</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title" href="{% url 'restaurant-users' %}">
+                                        <i class="ri-user-3-line"></i>
+                                        <span>Users</span>
+                                    </a>
+                                </li>
+
+
+
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title" href="{% url 'restaurant-orders' %}">
+                                        <i class="ri-archive-line"></i>
+                                        <span>Orders</span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title" href="{% url 'restaurant-offers' %}">
+                                        <i class="ri-coupon-line"></i>
+                                        <span>Offers</span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title" href="{% url 'restaurant-coupons' %}">
+                                        <i class="ri-coupon-line"></i>
+                                        <span>Coupons</span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title" href="{% url 'payment' %}">
+                                        <i class="ri-money-rupee-circle-line"></i>
+                                        <span>Payments</span>
+                                    </a>
+                                </li>
+
+                                {%endif%}
+
+
+                            </ul>
+                        </div>
+
+
+                        <div class="right-arrow" id="right-arrow">
+                            <i data-feather="arrow-right"></i>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+            <!-- Page Sidebar Ends-->
+
+            <!-- index body start -->
+            <div class="page-body">
+                <div class="container-fluid messages">
+                    {% if messages %}
+                    <ul class="messages d-flex align-items-center" id="error-message">
+                      {% for message in messages %}
+                        <li class="d-flex align-items-center">
+                          <h4 class="text-{{ message.tags }} m-0">{{ message }}</h4>
+                          <i class="fa-solid fa-x ps-2 close-icon" style="color: #f42a2a; cursor: pointer;"></i>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                {% block content %}
+                {% endblock content %}
+                <!-- footer start-->
+                <div class="container-fluid">
+                    <footer class="footer">
+                        <div class="row">
+                            <div class="col-md-12 footer-copyright text-center">
+                                <!-- <p class="mb-0">Copyright 2024 ©Zomo template by pixelstrap</p> -->
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+                <!-- footer End-->
+            </div>
+            <!-- index body end -->
+
+        </div>
+        <!-- Page Body End -->
+    </div>
+    <!-- page-wrapper End-->
+
+    <!-- Modal Start -->
+    <div class="modal theme-modal fade" id="staticBackdrop" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Logging Out</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Are you sure you want to log out?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
+                    aria-label="Close">No</button>
+                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a href="{% url 'logout' %}">Yes</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End -->
+
+
+    <!-- latest js -->
+    <script src="{% static 'backend/assets/js/jquery-3.6.0.min.js' %}"></script>
+    
+    <!-- Bootstrap js -->
+    <script src="{% static 'backend/assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    
+    <!-- feather icon js -->
+    <script src="{% static 'backend/assets/js/icons/feather-icon/feather.min.js' %}"></script>
+    <script src="{% static 'backend/assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+    
+    <!-- scrollbar simplebar js -->
+    <script src="{% static 'backend/assets/js/scrollbar/simplebar.js' %}"></script>
+    <script src="{% static 'backend/assets/js/scrollbar/custom.js' %}"></script>
+    
+    <!-- Sidebar jquery -->
+    <script src="{% static 'backend/assets/js/config.js' %}"></script>
+    
+    <!-- tooltip init js -->
+    <script src="{% static 'backend/assets/js/tooltip-init.js' %}"></script>
+    
+    <!-- Plugins JS -->
+    <script src="{% static 'backend/assets/js/sidebar-menu.js' %}"></script>
+    
+    <!-- Apexchar js -->
+    <script src="{% static 'backend/assets/js/chart/apex-chart/apex-chart1.js' %}"></script>
+    <script src="{% static 'backend/assets/js/chart/apex-chart/moment.min.js' %}"></script>
+    <script src="{% static 'backend/assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+    <script src="{% static 'backend/assets/js/chart/apex-chart/stock-prices.js' %}"></script>
+    <script src="{% static 'backend/assets/js/chart/apex-chart/chart-custom1.js' %}"></script>
+    
+    <!-- swiper slider -->
+    <script src="{% static 'backend/assets/js/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'backend/assets/js/custom-swiper.js' %}"></script>
+    
+    <!-- customizer js -->
+    <script src="{% static 'backend/assets/js/customizer.js' %}"></script>
+    
+    <!-- ratio js -->
+    <script src="{% static 'backend/assets/js/ratio.js' %}"></script>
+    
+    <!-- Theme js -->
+    <script src="{% static 'backend/assets/js/script.js' %}"></script>
+    
+    <script>
+        $("#checkall").change(function () {
+      var checked = $(this).is(":checked");
+      if (checked) {
+          $(".custom-checkbox").each(function () {
+              $(this).prop("checked", true);
+          });
+  
+      } else {
+          $(".custom-checkbox").each(function () {
+              $(this).prop("checked", false);
+          });
+      }
+  });
+      </script>
+
+<script>
+    let e = document.getElementById("error-message")
+    console.log(e);
+    if(e){
+        setTimeout(() => {
+           e.remove() 
+        }, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+const closeIcons = document.querySelectorAll('.close-icon');
+closeIcons.forEach(function (icon) {
+  icon.addEventListener('click', function () {
+    const errorMessage = document.getElementById('error-message');
+    if (errorMessage) {
+      errorMessage.remove();
+        }
+    });
+    });
+});
+
+    
+</script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+/**=====================
+    avatars CSS start
+==========================**/
+.customers {
+    ul {
+        display: inline-block;
+
+        li {
+            img {
+                border: 2px dashed $white;
+                box-shadow: -2px 2px 4px 0px rgba(0, 0, 0, 0.2);
+                transition: 0.5s;
+
+                &:hover {
+                    transform: translateY(-4px) scale(1.02);
+                    transition: 0.5s;
+                }
+            }
+
+            +li {
+                margin-left: -10%;
+            }
+
+            &:nth-child(4) {
+                margin-left: -4px;
+            }
+        }
+    }
+
+    &.avatar-group {
+        margin-right: 30px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+/**=====================
+     avatars CSS Ends
+==========================**/

@@ -1,0 +1,50 @@
+/**=====================
+     Form Input CSS Start
+==========================**/
+%input-mixin1 {
+	position: absolute;
+	z-index: 2;
+	left: 10px;
+	font-size: 14px;
+	width: 20px;
+	margin-left: -2.5px;
+	text-align: center;
+	padding: 10px 0;
+	top: 1px;
+}
+
+%input-mixin2 {
+	position: absolute;
+	z-index: 2;
+	left: 10px;
+	font-size: 14px;
+	width: 20px;
+	margin-left: -2.5px;
+	text-align: center;
+	padding: 10px 0;
+	top: 1px;
+}
+
+.input-group-square {
+
+	.input-group-text,
+	.form-control {
+		border-radius: 0;
+	}
+}
+
+.input-group-dashed {
+
+	.input-group-text,
+	.form-control {
+		background: $light-color;
+	}
+}
+
+.input-group-air {
+	box-shadow: 0 3px 20px 0 $light-semi-gray;
+}
+
+/**=====================
+     Form Input CSS Ends
+==========================**/

@@ -1,0 +1,216 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+
+    <style>
+        .referral-card {
+            background: linear-gradient(135deg, #f2a93e 0%, #f07054 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #f2a93e;
+        }
+        
+        .referral-url-box {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+        
+        .referral-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .badge-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+    </style>
+<!-- page head section starts -->
+{% include "./profile-head.html" %}
+<!-- page head section end -->
+
+<!-- profile section starts -->
+<section class="profile-section section-b-space">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-lg-3">
+                {% include "./profile-sidebar.html" %}
+            </div>
+
+            <div class="col-lg-9">
+                <div class="my-order-content">
+                    {% include "./messages.html" %}
+                    <div class="container mt-4">
+                        <h2>{{ title }}</h2>
+
+
+
+                        <div class="referral-card">
+                            <div class="row align-items-center">
+                                <div class="col-12">
+                                    <h3 class="mb-3"><i class="fas fa-link me-2"></i>Your Referral Link</h3>
+                                    <div class="referral-url-box">
+                                        <div class="d-flex align-items-center">
+                                            <input type="text" class="form-control bg-transparent border-0 text-white"
+                                                id="referralUrl" value="http://localhost:8000/accounts/signup/?ref={{referral.code}}" readonly>
+                                            <button class="btn copy-btn ms-2" onclick="copyReferralLink()">
+                                                <i class="fas fa-copy"></i> Copy
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <small class="mt-2 d-block opacity-75">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Share this link with friends and earn Rs.100 for each successful referral!
+                                    </small>
+                                </div>
+                            </div>
+
+
+                            <div class="row m-4">
+                                <div class="col-md-4 mb-3">
+                                    <div class="stats-card">
+                                        <div class="stats-number">{{referral.referred_users.count}}</div>
+                                        <h5 class="text-muted mb-0">Total Referrals</h5>
+                                        <small class="text-success">
+                                            <!-- <i class="fas fa-arrow-up"></i> +3 this month -->
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="stats-card">
+                                        <div class="stats-number">{{referral.bonus_earned}}</div>
+                                        <h5 class="text-muted mb-0">Total Earned</h5>
+                                        <small class="text-success">
+                                            <!-- <i class="fas fa-arrow-up"></i> +$30 this month -->
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="stats-card">
+                                        <div class="stats-number">{{pending}}</div>
+                                        <h5 class="text-muted mb-0">Pending Credits</h5>
+                                        <small class="text-warning">
+                                            <i class="fas fa-clock"></i> Processing
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+<!-- profile section end -->
+    <script>
+        function copyReferralLink() {
+            const referralUrl = document.getElementById('referralUrl');
+            const copyBtn = document.querySelector('.copy-btn');
+            const originalContent = copyBtn.innerHTML;
+            
+            // Modern clipboard API approach
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(referralUrl.value).then(() => {
+                    // Show success feedback
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    copyBtn.classList.add('btn-success');
+                    copyBtn.classList.remove('copy-btn');
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalContent;
+                        copyBtn.classList.remove('btn-success');
+                        copyBtn.classList.add('copy-btn');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    fallbackCopy();
+                });
+            } else {
+                // Fallback for older browsers
+                fallbackCopy();
+            }
+            
+            function fallbackCopy() {
+                try {
+                    referralUrl.select();
+                    referralUrl.setSelectionRange(0, 99999);
+                    document.execCommand('copy');
+                    
+                    // Show success feedback
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    copyBtn.classList.add('btn-success');
+                    copyBtn.classList.remove('copy-btn');
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalContent;
+                        copyBtn.classList.remove('btn-success');
+                        copyBtn.classList.add('copy-btn');
+                    }, 2000);
+                    
+                } catch (err) {
+                    console.error('Failed to copy: ', err);
+                    alert('Unable to copy automatically. Please select and copy the URL manually.');
+                }
+            }
+        }
+</script>
+
+
+{%endblock%}

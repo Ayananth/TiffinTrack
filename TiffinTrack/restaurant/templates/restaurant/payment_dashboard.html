@@ -1,0 +1,180 @@
+
+{% extends "./base.html" %}
+
+{% block content %}
+
+<!-- Container-fluid starts-->
+                <!-- All User Table Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    {% include "./messages.html" %}
+                                    <div class="title-header option-title">
+                                        <!-- <h5>Payment Dashboard</h5> -->
+                                        <!-- <a href="#" class="btn btn-dashed">Download all orders</a> -->
+                                    </div>
+                                    <div>
+                                        <div class="table-responsive theme-scrollbar">
+
+<h2>Restaurant Payment Dashboard</h2>
+<form method="get" class="row g-3 mb-4">
+  <div class="col-md-3">
+    <label for="start_date" class="form-label">Start Date</label>
+    <input type="date" id="start_date" name="start_date" class="form-control"
+           value="{{ start_date|date:'Y-m-d' }}">
+  </div>
+
+  <div class="col-md-3">
+    <label for="end_date" class="form-label">End Date</label>
+    <input type="date" id="end_date" name="end_date" class="form-control"
+           value="{{ end_date|date:'Y-m-d' }}">
+  </div>
+
+  <div class="col-md-3 d-flex align-items-end">
+    <button type="submit" class="btn btn-primary w-100">Filter</button>
+  </div>
+
+  <div class="col-md-3 d-flex align-items-end">
+    <a href="{% url 'payment' %}" class="btn btn-secondary w-100">Clear Filter</a>
+  </div>
+</form>
+
+<div class="d-flex justify-content-end">
+    <a href="{% url 'export-payments-csv' %}?start_date={{ start_date }}&end_date={{ end_date }}" class="btn btn-success mb-3">
+        Export to CSV
+    </a>
+</div>
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="card bg-success text-white">
+      <div class="card-body">
+        <h4>Total Credits</h4>
+        <p>₹{{ total_credits }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card bg-danger text-white">
+      <div class="card-body">
+        <h4>Total Refunds</h4>
+        <p>₹{{ total_debits }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card bg-primary text-white">
+      <div class="card-body">
+        <h4>Net Balance</h4>
+        <p>₹{{ net_balance }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+
+<h4>Subscription Payments</h4>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Total</th>
+      <th>Offer Discount</th>
+      <th>Coupon Discount</th>
+      <th>Wallet Used</th>
+      <th>Final Total</th>
+      <th>Created At</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sub in subscriptions %}
+      <tr>
+        <td>{{ sub.user.username }}</td>
+        <td>{{ sub.start_date|date:"Y-m-d" }}</td>
+        <td>{{ sub.end_date|date:"Y-m-d" }}</td>
+        <td>₹{{ sub.item_total }}</td>
+        <td>₹{{ sub.offer_discount }}</td>
+        <td>₹{{ sub.discount }}</td>
+        <td>₹{{ sub.wallet_amount_used }}</td>
+        <td>₹{{ sub.final_total }}</td>
+        <td>{{ sub.created_at|date:"Y-m-d H:i" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="9">No subscriptions found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<h4>Recent Refunds</h4>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Category</th>
+      <th>Amount</th>
+      <th>Delivery Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for refund in refunds %}
+    <tr>
+      <td>{{ refund.user.username }}</td>
+      <td>{{refund.food_category.name}}</td>
+      <td>₹{{ refund.food_category.price }}</td>
+      <td>{{ refund.delivery_date }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="3">No refunds</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+
+
+                        <!-- Pagination Controls -->
+                                                    {% include "./pagination.html" with page_obj=orders %}
+
+                        <!-- <div class=" pagination p-4">
+                        <span class="step-links">
+                            {% if orders.has_previous %}
+                            <a href="?page=1" class="p-2">&laquo; first</a>
+                            <a href="?page={{ orders.previous_page_number }}" class="p-2">previous</a>
+                            {% endif %}
+
+                            <span class="current p-2">
+                            Page {{ orders.number }} of {{ orders.paginator.num_pages }}
+                            </span>
+
+                            {% if orders.has_next %}
+                            <a href="?page={{ orders.next_page_number }}" class="p-2">next</a>
+                            <a href="?page={{ orders.paginator.num_pages }}" class="p-2">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                        </div> -->
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- All User Table Ends-->
+
+
+            <!-- Container-fluid end -->
+
+            {%endblock%}

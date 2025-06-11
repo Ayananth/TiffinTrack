@@ -1,0 +1,174 @@
+/*=====================
+  2.1  Reset Style start
+==========================*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  cursor: pointer;
+}
+
+section,
+.section-t-space {
+  padding-top: calc(30px + (80 - 30) * ((100vw - 320px) / (1920 - 320)));
+}
+
+.section-b-space {
+  padding-bottom: calc(30px + (80 - 30) * ((100vw - 320px) / (1920 - 320)));
+}
+
+.section-md-t-space {
+  padding-top: calc(30px + (40 - 30) * ((100vw - 320px) / (1920 - 320)));
+}
+
+.section-md-b-space {
+  padding-bottom: calc(20px + (40 - 20) * ((100vw - 320px) / (1920 - 320)));
+}
+
+@media (min-width: 1540px) {
+  .container {
+    padding: 0 20px;
+    max-width: 1500px;
+  }
+}
+
+.custom-container {
+  padding: 0 calc(20px + (80 - 20) * ((100vw - 320px) / (1920 - 320)));
+}
+
+.panel-space {
+  padding-top: 85px !important;
+
+  @media (min-width: 786px) {
+    display: none;
+  }
+}
+
+.theme-color {
+  color: rgba(var(--theme-color), 1) !important;
+}
+
+.dark-text {
+  color: rgba(var(--dark-text), 1) !important;
+}
+
+.content-color {
+  color: rgba(var(--content-color), 1) !important;
+}
+
+.bg-color {
+  background-color: rgba(var(--box-bg), 1) !important;
+}
+
+.bg-theme {
+  background-color: rgba(var(--theme-color), 1) !important;
+}
+
+.white-bg {
+  background-color: rgba(var(--white), 1) !important;
+}
+
+.auth-bg {
+  background-color: rgba(var(--auth-bg), 1) !important;
+}
+
+.error-color {
+  color: rgba(var(--error-color), 1) !important;
+}
+
+.success-color {
+  color: rgba(var(--success-color), 1) !important;
+}
+
+.rate-color {
+  color: rgba(var(--rate-color), 1) !important;
+}
+
+.error-bg {
+  background-color: rgba(var(--error-color), 1) !important;
+}
+
+.secondary-bg {
+  background-color: rgba(var(--secondary-color), 1) !important;
+}
+
+.theme-border {
+  border: 1px solid rgba(var(--theme-color), 1) !important;
+}
+
+.swiper {
+  [dir="rtl"] & {
+    direction: ltr;
+  }
+}
+
+/* Works for Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Works for Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.responsive-space {
+  @media (max-width: 767px) {
+    height: calc(70px + (88 - 86) * ((100vw - 320px) / (1920 - 320)));
+  }
+}
+
+.custom-row {
+  .col {
+    width: 20%;
+    flex: none;
+
+    @media (max-width: 1578px) {
+      width: 25%;
+    }
+
+    @media (max-width: 1310px) {
+      width: 33.33%;
+    }
+
+    @media (max-width: 1040px) and (min-width: 992px) {
+      width: 50%;
+    }
+
+    @media (max-width: 695px) {
+      width: 50%;
+    }
+
+    @media (max-width: 455px) {
+      width: 100%;
+    }
+  }
+}
+
+.custom-sm-100 > * {
+  @media (max-width: 416px) {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}
+
+[type="email"],
+[type="number"],
+[type="tel"],
+[type="url"] {
+  [dir="rtl"] & {
+    direction: rtl;
+  }
+}
+
+.dir-rtl {
+  direction: rtl;
+    [dir="rtl"] & {
+      direction: rtl;
+    }
+}

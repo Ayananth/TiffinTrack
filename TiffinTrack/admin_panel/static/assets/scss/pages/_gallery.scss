@@ -1,0 +1,25 @@
+/**=====================
+     Gallery CSS Start
+==========================**/
+.profile-img-style,
+.scroll-bar-wrap {
+    img {
+        width: 100%;
+    }
+} 
+
+.grid {
+    position: relative;
+}
+
+/* clear fix */
+.grid:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+
+/**=====================
+     Gallery CSS Ends
+==========================**/

@@ -1,0 +1,40 @@
+{% extends "./base.html" %}
+{% load static %}
+{% load socialaccount %}
+{% block content %}
+
+<div class="col-xl-5 col-lg-6 me-auto">
+    <div class="log-in-box">
+        <div class="log-in-title">
+            <h3>Welcome To TiffinTrack</h3>
+            <h5>We have sent the OTP</h5> {# TODO add phone number#}
+            {{error}}
+        </div>
+
+        <div class="input-box">
+            <form method="post" action="" class="row g-3">
+                {% csrf_token %}
+                <div class="col-12">
+                    <label class="col-form-label pt-0">Enter OPT</label>
+                    <div class="form-floating theme-form-floating log-in-form">
+                        <input type="number" name="otp" placeholder="Enter otp">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="forgot-box col-6">
+                            <button type="submit" name="action" value="resend" class="btn btn-link">Resend OTP</a>
+                        </div>
+                        <div class="forgot-box col-6">
+                            <button type="submit" name="action" value="edit_phone" class="btn btn-link">Edit Phone</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-animation w-100 justify-content-center" type="submit" name="action" value="verify">Verify</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+{% endblock content%}

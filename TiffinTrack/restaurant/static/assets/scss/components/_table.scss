@@ -1,0 +1,270 @@
+/**=====================
+     Table CSS Start
+==========================**/
+.dataTables_wrapper {
+	width: calc(100% - 2px);
+
+	[dir="rtl"] & {
+		direction: rtl;
+	}
+
+	.dataTables_length,
+	.dataTables_filter,
+	.dataTables_info,
+	.dataTables_processing,
+	.dataTables_paginate {
+		margin-bottom: 20px;
+	}
+
+	.dataTables_filter {
+		label {
+			margin: 0;
+			display: flex;
+			align-items: center;
+			gap: 12px;	
+		}
+
+		input {
+			border: 1px dashed #ced4da;
+			padding: 8px 38px 8px 10px;
+			margin-left: 0px;
+
+			@include mq-max(2xs) {
+				width: 70%;
+			}
+		}
+	}
+
+	.dataTables_length {
+		label {
+			margin: 0;
+		}
+
+		select {
+			border: 1px dashed #ced4da;
+			padding: 8px 10px;
+			margin: 0 6px;
+		}
+	}
+
+	.dataTables_info {
+		margin-bottom: 0;
+		margin-top: 10px;
+		color: $content-color;
+	}
+
+	.dataTables_paginate {
+		margin-bottom: 0;
+		margin-top: 10px;
+
+		.paginate_button {
+			color: var(--theme-color) !important;
+
+			&:hover {
+				color: var(--theme-color) !important;
+				border: none;
+				background: none;
+			}
+
+			&.disabled,
+			&:active {
+				color: var(--theme-color) !important;
+				border: 1px dashed transparent;
+				background: transparent;
+				box-shadow: none;
+				cursor: not-allowed;
+				opacity: 0.5;
+			}
+
+			&.current {
+				color: $white !important;
+				background: var(--theme-color);
+				border-color: var(--theme-color);
+				z-index: 0;
+				border: none;
+
+				&:hover {
+					color: $white !important;
+					border: none;
+					background: var(--theme-color);
+				}
+			}
+		}
+	}
+}
+.table,
+table {
+	border: 1px dashed $border-color;
+	border-radius: 4px;
+	overflow: hidden;
+	padding: 8px;
+	thead{
+		background-color: $light-background;
+		tr {
+			th {
+
+				padding: 14px !important;
+				font-size: 16px;
+				border-bottom: none !important;
+				color: #0d233e;
+				font-weight: 600 !important;
+				text-transform: capitalize;
+				white-space: nowrap;
+				&:last-child {
+					text-align: center;
+				}
+				&:first-child {
+					@media (max-width: 1199px) {
+						min-width: auto;
+					}
+				}
+				&:nth-child(2) {
+					@media (max-width: 1199px) {
+						min-width: 160px;
+					}
+				}
+				&:nth-child(3) {
+					@media (max-width: 1199px) {
+						min-width: 160px;
+					}
+				}
+				&:nth-child(4) {
+					@media (max-width: 1199px) {
+						min-width: 160px;
+					}
+				}
+			}
+		}
+	}
+	tbody{
+		tr {
+			td {
+				padding: 14px !important;
+				border-bottom: 1px dashed $border-color;
+				white-space: nowrap;
+				&:last-child{
+					text-align: center;
+				}
+				&.td-check,
+				&.td-cross {
+					font-size: 20px;
+				}
+				ul {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					gap: 12px;
+					li {
+						height: 30px;
+						width: 30px;
+						border-radius: 2px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						a {
+							i {
+								font-size: 18px;
+							}
+							span {
+								font-size: 18px;
+							}
+						}
+						&:first-child{
+							a {
+								i {
+									color: $primary-color;
+								}
+								span {
+									color: $primary-color;
+								}
+							}
+						}
+						&:nth-child(2) {
+							a {
+								i {
+									color: $success-color;
+								}
+								span {
+									color: $success-color;
+								}
+							}
+						}
+						&:last-child {
+							a {
+								i {
+									color: $danger-color;
+								}
+								span {
+									color: $danger-color;
+								}
+							}
+						}
+					}
+				}
+				.rating {
+					display: flex;
+					justify-content: flex-start;
+					gap: 0;
+					li {
+						display: flex;
+					}
+				}
+			}
+			&:last-child {
+				td {
+					border-bottom: none !important;
+				}
+			}
+			&:nth-child(even) {
+				background-color: rgba($light-background, 0.6);
+			}
+		}
+	}
+}
+.product-review{
+	tbody{
+		tr {
+			td {
+				ul {
+					li {
+						background-color: transparent !important;
+						a{
+							color: $white;
+						}
+					}
+				}
+			}
+			&:nth-child(even) {
+				td{
+					ul {
+						li {
+							background-color: transparent !important;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+table.dataTable.no-footer{
+	border-bottom-style: dashed;
+	border-bottom-color: $border-color;
+}
+.category-table{
+	tbody{
+		tr {
+			td {
+				vertical-align: middle;
+				font-size: calc(13px + (15 - 13) * ((100vw - 320px) / (1920 - 320)));
+				white-space: nowrap;
+				img {
+					width: 60px;
+				}
+			}
+		}
+	}
+}
+
+/**=====================
+     Table CSS Ends
+==========================**/

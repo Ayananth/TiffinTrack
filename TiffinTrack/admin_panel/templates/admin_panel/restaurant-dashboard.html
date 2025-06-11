@@ -1,0 +1,346 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>{{restaurant.restaurant_name}}</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="nav nav-pills flex-nowrap mb-3" id="pills-tab" role="tablist">
+                                        <li class="nav-item m-0" role="presentation">
+                                            <button class="nav-link active" id="pills-home-tab"
+                                                data-bs-toggle="pill" data-bs-target="#pills-home"
+                                                type="button">Dashboard</button>
+                                        </li>
+                                        <!-- <li class="nav-item m-0" role="presentation">
+                                            <button class="nav-link" id="pills-profile-tab"
+                                                data-bs-toggle="pill" data-bs-target="#pills-profile"
+                                                type="button">Settings</button>
+                                        </li> -->
+                                        <!-- <li class="nav-item m-0" role="presentation">
+                                            <button class="nav-link" id="pills-menu-tab"
+                                                data-bs-toggle="pill" data-bs-target="#pills-menu"
+                                                type="button">Food Items</button>
+                                        </li> -->
+                                    </ul>
+                                </div>
+                                <!-- settings -->
+                                <div class="col-12">
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+
+
+
+  <div class="container py-5">
+    <h2 class="mb-4">📊 Restaurant Dashboard {{selected_date}}</h2>
+      <form method="get" class="form-inline mb-3">
+    <label for="date" class="mr-2">Select Date:</label>
+    <input type="date" id="date" name="date" class="form-control mr-2" value="{{ selected_date|date:'Y-m-d' }}">
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </form>
+
+    <table class="table table-bordered table-striped shadow">
+      <thead class="table">
+        <tr>
+          <th>Food Category</th>
+          <th>Total Orders</th>
+          <th>Cancelled Orders</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in dashboard_data %}
+          <tr>
+            <td>{{ item.category }}</td>
+            <td>{{ item.total_orders }}</td>
+            <td>{{ item.cancelled_orders }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">No orders placed today.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end of settings -->
+                                 <!-- Menu section -->
+                                <div class="col-12">
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade show" id="pills-menu" role="tabpanel">
+
+                                            <!-- Each Menu start -->
+                                            <div class="card-header-1">
+                                                <h5 class="mb-2">Food Items</h5>
+                                            </div>
+                                            <div class="input-items">
+                                                <div class="row gy-3 mb-4">
+                                                    </form>
+
+                                                    <table class="table category-table dataTable no-footer" id="table_id">
+                                                        <thead>
+                                                          <tr>
+                                                            <th>No</th>
+                                                            <th>Id</th>
+                                                            <th>Food</th>
+                                                            <th>Price</th>
+                                                            <th>Category</th>
+                                                            <th>Menu</th>
+                                                            <th>Option</th>
+                                                          </tr>
+                                                        </thead>
+                                        
+                                                        <tbody>
+
+                                                            {% if not food_items %}
+                                                            <tr>
+                                                                <td colspan="7" class="f-w-600">No Food Items</td>
+                                                            </tr>
+                                                            {% endif %}
+
+                                                          {% for food_item in food_items %}
+                                                          
+                                                          <tr>
+                                                            <td>{{ forloop.counter }}</td>
+                                                            <td>{{ food_item.id }}</td>
+
+                                                            <td class="f-w-600">{{ food_item.name }}</td>
+                                                            <td>{{food_item.food_category.price}}</td>
+                                                            <td>{{food_item.food_category.name}}</td>
+
+                                                            <td>
+                                                              <div class="user-name">
+                                                                <span>{{ food_item.menu_category }}</span>
+                                                              </div>
+                                                            </td>
+                                       
+                                                            <td>
+                                                              <ul>
+                                       
+                                                                <li>
+                                                                  <a href="{% url 'food_items-edit' food_item.id %}">
+                                                                    <i class="ri-pencil-line"></i>
+                                                                  </a>
+                                                                </li>
+
+                                                              </ul>
+                                                            </td>
+                                                          </tr>
+                                                          {% endfor %}
+                                                        </tbody>
+                                                      </table>
+                                                     <!-- end of food items tabel -->
+
+                                                </div>
+                                            </div>
+                                            <!-- Each menu end -->
+                                        </div>
+
+                                        <div class="tab-pane fade" id="pills-profile" role="tabpanel">
+                                            <div class="card-header-1">
+                                                <h5 class="mb-2">Product Related Permition</h5>
+                                            </div>
+                                            <div class="input-items">
+                                                <div class="row gy-3 mb-4">
+                                                    <div class="col-md-6">
+                                                        <div class="input-box">
+                                                            <h6>Add Product</h6>
+                                                            <div>
+                                                                <form class="radio-section">
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" checked>
+                                                                        <i></i>
+                                                                        <span>Allow</span>
+                                                                    </label>
+    
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" />
+                                                                        <i></i>
+                                                                        <span>Deny</span>
+                                                                    </label>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="input-box">
+                                                            <h6>Update Product</h6>
+                                                            <div>
+                                                                <form class="radio-section">
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" >
+                                                                        <i></i>
+                                                                        <span>Allow</span>
+                                                                    </label>
+    
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" checked/>
+                                                                        <i></i>
+                                                                        <span>Deny</span>
+                                                                    </label>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="input-box">
+                                                            <h6>Delete Product</h6>
+                                                            <div>
+                                                                <form class="radio-section">
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" >
+                                                                        <i></i>
+                                                                        <span>Allow</span>
+                                                                    </label>
+    
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" checked>
+                                                                        <i></i>
+                                                                        <span>Deny</span>
+                                                                    </label>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="input-box">
+                                                            <h6>Apply Discount</h6>
+                                                            <div>
+                                                                <form class="radio-section">
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" checked>
+                                                                        <i></i>
+                                                                        <span>Allow</span>
+                                                                    </label>
+    
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" />
+                                                                        <i></i>
+                                                                        <span>Deny</span>
+                                                                    </label>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-header-1">
+                                                <h5 class="my-2">Category Related Permition</h5>
+                                            </div>
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+                                                    <div class="col-md-6">
+                                                        <div class="input-box">
+                                                            <h6>Add Product</h6>
+                                                            <div>
+                                                                <form class="radio-section">
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" checked>
+                                                                        <i></i>
+                                                                        <span>Allow</span>
+                                                                    </label>
+    
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" />
+                                                                        <i></i>
+                                                                        <span>Deny</span>
+                                                                    </label>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="input-box">
+                                                            <h6>Update Product</h6>
+                                                            <div>
+                                                                <form class="radio-section">
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" >
+                                                                        <i></i>
+                                                                        <span>Allow</span>
+                                                                    </label>
+    
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" checked/>
+                                                                        <i></i>
+                                                                        <span>Deny</span>
+                                                                    </label>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="input-box">
+                                                            <h6>Delete Product</h6>
+                                                            <div>
+                                                                <form class="radio-section">
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" >
+                                                                        <i></i>
+                                                                        <span>Allow</span>
+                                                                    </label>
+    
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" checked>
+                                                                        <i></i>
+                                                                        <span>Deny</span>
+                                                                    </label>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="input-box">
+                                                            <h6>Apply Discount</h6>
+                                                            <div>
+                                                                <form class="radio-section">
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" checked>
+                                                                        <i></i>
+                                                                        <span>Allow</span>
+                                                                    </label>
+    
+                                                                    <label>
+                                                                        <input type="radio" name="opinion" />
+                                                                        <i></i>
+                                                                        <span>Deny</span>
+                                                                    </label>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}
+
+
+

@@ -1,0 +1,91 @@
+{% extends "./base.html" %}
+{% load static %}
+{% load socialaccount %}
+{% block content %}
+
+<div class="col-xl-5 col-lg-6 me-auto">
+    <div class="log-in-box">
+        <div class="log-in-title">
+            <h3>Welcome To TiffinTrack</h3>
+            <h5>Log In Your Account</h5>
+        </div>
+
+        <div class="input-box">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-12">
+                    <label class="col-form-label pt-0">User Name</label>
+                    <div class="form-floating theme-form-floating log-in-form">
+                        <input type="text" name="username" placeholder="Enter Username">
+                        <div class="text-danger">{{ form.username.errors }}</div>
+
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label class="col-form-label pt-0">Your Password</label>
+                    <div class="form-floating theme-form-floating log-in-form">
+                        <input type="password" name="password" placeholder="Enter Password">
+                        <div class="text-danger">{{ form.password.errors }}</div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="forgot-box">
+                        <a href="{%url 'password_reset' %}" class="forgot-password">Forgot Password?</a>
+                    </div>
+                </div>
+
+                {% if messages %}
+                <ul class="messages d-flex align-items-center" id="error-message">
+                  {% for message in messages %}
+                    <li class="d-flex align-items-center">
+                      <h4 class="text-{{ message.tags }} m-0">{{ message }}</h4>
+                      <i class="fa-solid fa-x ps-2 close-icon" style="color: #f42a2a; cursor: pointer;"></i>
+                    </li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+                
+
+                
+                <div class="col-12">
+                    <button class="btn btn-animation w-100 justify-content-center" type="submit">Log
+                        In</button>
+                    </div>
+                </form>
+            </div>
+
+        
+
+        <div class="other-log-in">
+            <h6>or</h6>
+        </div>
+
+        <div class="log-in-button">
+            <ul>
+                <li>
+                    <a href="{% provider_login_url 'google' %}" class="btn google-button w-100" target="_blank">
+                        <img src="{% static 'backend/assets/images/google.png' %}" class="blur-up lazyload"
+                            alt=""> Log In with Google
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'send_otp'%}" class="btn google-button w-100">
+                        <i class="ri-phone-fill"></i>Log In Mobile OTP
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div>
+            <h6 class="text-center mt-3">
+                Don't have account?
+                <a href="{%url 'register' %}" class="font-primary f-w-600">Create Account</a>
+            </h6>
+        </div>
+
+    </div>
+</div>
+
+{% endblock content%}

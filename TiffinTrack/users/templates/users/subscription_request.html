@@ -1,0 +1,261 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+    <!-- page head section starts -->
+    <section class="page-head-section">
+        <div class="container page-heading">
+            <h2 class="h3 mb-3 text-white text-center">Payment</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb flex-lg-nowrap justify-content-center justify-content-lg-star">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'user-home' %}"><i class="ri-home-line"></i>Home</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Payment</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+    <!-- page head section end -->
+     
+
+    <!--  account section starts -->
+    <section class="account-section section-b-space pt-0">
+        <div class="container">
+            <div class="layout-sec">
+                <div class="row g-lg-4 g-4 d-flex justify-content-center">
+                    <div class="col-lg-8">
+                        {%include './messages.html' %}
+
+                        <form method="post" id="subscription">
+                            {% csrf_token %}
+
+                        <div class="payment-section">
+                            <div class="title mb-0">
+                                <div class="loader-line"></div>
+                                <h3>Complete the order</h3>
+                                <h6>Fill the details and submit</h6>
+                            </div>
+                            <div class="accordion payment-accordion" id="accordionExample">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseOne" aria-expanded="true"
+                                            aria-controls="collapseOne">
+                                            Order Details
+                                        </button>
+                                    </h2>
+                                    <div id="collapseOne" class="accordion-collapse collapse show"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            <div class="row g-3">
+                                                <div class="col-sm-6">
+                                                    <label for="inputAddress" class="form-label">Start Date</label>
+                                                    <input type="date" value="{{ today|date:'Y-m-d' }}" name="start_date" class="form-control" id="inputAddress" required>
+            {% if form.start_date.errors %}
+                <div class="text-danger small">
+                    {{ form.start_date.errors.0 }}
+                </div>
+            {% endif %}
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label for="inputAddress" class="form-label">End Date</label>
+                                                    <input type="date" value="{{ tomorrow|date:'Y-m-d' }}" name="end_date" class="form-control" id="inputAddress" required>
+
+            {% if form.end_date.errors %}
+                <div class="text-danger small">
+                    {{ form.end_date.errors.0 }}
+                </div>
+            {% endif %}
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                            aria-expanded="false" aria-controls="collapseTwo">
+                                            Address
+                                        </button>
+                                    </h2>
+                                    <div id="collapseTwo" class="accordion-collapse collapse show"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                        <div class="address-section mt-0 p-0">
+                            <div class="title">
+                                <div class="loader-line"></div>
+                                <h3>Select Saved Address</h3>
+                                <h6>
+                                    Add or select address
+                                </h6>
+                            </div>
+                            <div class="row g-3">
+                                {%if addresses%}
+                                {% for address in addresses %}
+                                <div class="col-md-6">
+                                    <label class="address-box d-block">
+                                        <input type="radio" name="address" value="{{ address.id }}" class="me-2" required {% if address.is_default%} checked {%endif%} >
+                                        <div class="address-title">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="ri-home-4-fill icon"></i>
+                                                <h6>Home</h6>
+                                            </div>
+                                            <a href="#edit-address" class="edit-btn" data-bs-toggle="modal">Edit</a>
+                                        </div>
+                                        <div class="address-details">
+                                        <h6>{{ address.name }}</h6>
+                                        <h6>{{address.address_line}}</h6>
+                                        <p class="mb-1">{{ address.phone }}</p>
+                                        <p class="mb-1">
+                                            {% if address.landmark %}, {{ address.landmark }}{% endif %}
+                                        </p>
+                                        <p class="mb-1">{{ address.city }}, {{ address.state }} - {{ address.pincode }}</p>
+                                        </div>
+                                    </label>
+
+                                </div>
+                                {% endfor %}
+                                {%else%}
+                                No address added, please add
+                                {%endif%}
+
+            {% if form.address.errors %}
+                <div class="text-danger small">
+                    {{ form.address.errors.0 }}
+                </div>
+            {% endif %}
+
+
+                                <div class="col-md-6">
+                                    <div class="address-box new-address-box">
+                                        <!-- <a href="{% url 'address' %}" target="_blank" class="btn theme-outline rounded-2"
+                                            >Manage Address</a> -->
+                                    <a href="#address-details" class="btn new-address-btn theme-outline rounded-2 mt-0"
+                                        data-bs-toggle="modal">Add New Address</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <div class="buttons d-flex justify-content-end">
+                                        <a href="payment.html" class="btn gray-btn mt-0">CANCEL</a>
+                                        <a href="payment.html" class="btn theme-btn mt-0" onclick="event.preventDefault(); submitForm();">Payment</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- account section end -->    
+
+
+
+    <!-- add-card modal starts -->
+    <div class="modal address-details-modal fade" id="address-details" tabindex="-1" aria-labelledby="addModalAdress"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addModalAdress">
+                        Address Details
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                        <form id="address-form" method="POST" action="{% url 'add_user_address' %}">
+                            {% csrf_token %}
+                            {{ address_form.as_p }}
+                            <div id="form-errors" class="text-danger mt-2"></div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- add-card modal end -->
+
+
+
+
+
+
+
+
+<script>
+    function submitForm() {
+      const form = document.getElementById('subscription');
+      if (form.checkValidity()) {
+        form.submit();  // or use `requestSubmit()` if available
+      } else {
+        form.reportValidity();  // shows validation messages
+      }
+    }
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('address-form');
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const url = form.action;
+        const formData = new FormData(form);
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            const errorDiv = document.getElementById('form-errors');
+
+            if (data.success) {
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('address-details'));
+                modal.hide();
+                window.location.reload();
+
+
+            } else {
+                document.querySelector('#address-form').innerHTML = data.form_html;
+                document.querySelector('#address-form').addEventListener('submit', arguments.callee);
+            }
+        })
+        .catch(err => {
+            console.error("Form submission failed:", err);
+        });
+    });
+});
+</script>
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,30 @@
+/**=====================
+     View Page css Ends
+==========================**/
+.slick-prev,
+.slick-next {
+    z-index: 1;
+    opacity: 1;
+}
+
+.slick-prev {
+    left: 28px;
+}
+
+.slick-next {
+    right: 28px;
+}
+
+.cars-title {
+    font-size: calc(16px + (21 - 16) * ((100vw - 320px) / (1920 - 320)));
+}
+
+.slick-dots li {
+    @include pseudowh($width: 0, $height: 0);
+}
+
+#car-type,
+#menu-type,
+#tour-category {
+    width: 100%;
+}

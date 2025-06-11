@@ -1,1 +1,7 @@
 venv
+db.sqlite3
+__pycache__
+migrations
+.env
+logs
+prod_env

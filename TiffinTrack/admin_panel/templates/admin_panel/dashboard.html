@@ -1,0 +1,250 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xxl-3 col-xl-4 col-md-4 col-12">
+                            <h2>Report Overview</h2>
+                            <div class="card p-0">
+                                <div class="cadr-body">
+                                    
+                                    <form method="get" class="form-inline mb-3">
+                                    <label for="date" class="mr-2">Start Date:</label>
+                                    <input type="date" id="start_date" name="start_date" class="form-control mr-2" value="{{ start_date|date:'Y-m-d' }}">
+                                    <label for="date" class="mr-2">End Date:</label>
+                                    <input type="date" id="end_date" name="end_date" class="form-control mr-2" value="{{ end_date|date:'Y-m-d' }}">
+                                    <div class="d-flex gap-5 mt-3">
+                                        <button type="submit" class="btn btn-primary">Filter</button>
+                                    </div>
+                                    </form>
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xxl-9 col-xl-8 col-md-8 col-12">
+                            <div class="row">
+                                <div class="col-12">
+                                </div>
+
+
+
+
+                                <!-- overview cards -->
+                                 <!-- 1 -->
+                                <div class="col-xxl-4 col-sm-6 ">
+                                    <div class="card widgets-card">
+                                        <div class="card-body">
+                                           <div class="row align-items-center">
+                                                <div class="col-lg-5 d-flex d-lg-block justify-content-between align-items-center">
+                                                        <h5>Total Orders</h5>
+                                                        <h2>{{ total_orders }}</h2>
+                                                </div>
+                                           </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-sm-6 ">
+                                    <div class="card widgets-card">
+                                        <div class="card-body">
+                                           <div class="row align-items-center">
+                                                <div class="col-lg-5 d-flex d-lg-block justify-content-between align-items-center">
+                                                        <h5>Subscriptions</h5>
+                                                        <h2>{{ total_subscriptions }}</h2>
+                                                </div>
+                                           </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-sm-6 ">
+                                    <div class="card widgets-card">
+                                        <div class="card-body">
+                                           <div class="row align-items-center">
+                                                <div class="col-lg-5 d-flex d-lg-block justify-content-between align-items-center">
+                                                        <h5>Active Restaurants</h5>
+                                                        <h2>{{ active_restaurants }}</h2>
+                                                </div>
+                                           </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-sm-6 ">
+                                    <div class="card widgets-card">
+                                        <div class="card-body">
+                                           <div class="row align-items-center">
+                                                <div class="col-lg-12 d-flex d-lg-block justify-content-between align-items-center">
+                                                        <h5>Top Restaurant by Orders</h5>
+                                                        <h2>{{ most_ordered_restaurant }}</h2>
+                                                </div>
+                                           </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-sm-6 ">
+                                    <div class="card widgets-card">
+                                        <div class="card-body">
+                                           <div class="row align-items-center">
+                                                <div class="col-lg-12 d-flex d-lg-block justify-content-between align-items-center">
+                                                        <h5>Top Restaurant by Revenue</h5>
+                                                        <h2>{{ top_restaurant_by_revenue }}</h2>
+                                                </div>
+                                           </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-4 col-sm-6 ">
+                                    <div class="card widgets-card">
+                                        <div class="card-body">
+                                           <div class="row align-items-center">
+                                                <div class="col-lg-5 d-flex d-lg-block justify-content-between align-items-center">
+                                                        <h5>Total Revenue</h5>
+                                                        <h2>{{ total_revenue }}</h2>
+                                                </div>
+                                           </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- overview cards end -->
+
+
+                            </div>
+                        </div>
+                        <div class="col-xl-7">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Restaurants By revenue</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive theme-scrollbar">
+                                        <div>
+                                            <table class="table user-table" id="table_id">
+                                                <thead>
+                                                    <tr>
+                                                        <th><input id="checkall​" class="custom-checkbox" type="checkbox" name="text"></th>
+                                                        <th>Restaurant</th>
+                                                        <th>Revenue</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    {% for restaurant in top_restaurants %}
+                                                    <tr>
+                                                        <td>
+                                                            <input class="custom-checkbox"  type="checkbox" name="text">
+                                                        </td>
+                                                        
+                                                        <td>{{ restaurant.restaurant__restaurant_name }}</td>
+
+                                                        <td>₹{{ restaurant.revenue }}</td>
+                                                    </tr>
+                                                    {%endfor%}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Order Summary</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive theme-scrollbar d-flex justify-content-center align-items-center">
+                                        <div style="width: 300px; height: 300px;">
+                                            <canvas id="orderStatusChart" width="300" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-5">
+                            <div class="card">
+                                <div class="card-header mb-0">
+                                    <h5>Sales Figures</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="restaurantRevenueChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+<script>
+  const ctx = document.getElementById('restaurantRevenueChart').getContext('2d');
+  const restaurantRevenueChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ chart_labels|safe }},
+      datasets: [{
+        label: 'Revenue (₹)',
+        data: {{ chart_data|safe }},
+        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+        borderColor: '#ddd',
+        borderWidth: 1,
+         barThickness: 40
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: 'Top 3 Restaurants by Revenue'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return '₹' + value;
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+
+
+<script>
+  const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
+
+  new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+      labels: {{ order_status_labels|safe }},
+      datasets: [{
+        data: {{ order_status_data|safe }},
+        backgroundColor: [
+          '#f6c23e',  // Pending - yellow
+          '#1cc88a',  // Delivered - green
+          '#e74a3b'   // Cancelled - red
+        ],
+        borderColor: '#fff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      
+      plugins: {
+        legend: {
+          position: 'bottom',
+        },
+        title: {
+          display: true,
+          text: 'Order Status Summary'
+        }
+      }
+    }
+  });
+</script>
+
+<!-- Container-fluid Ends-->
+{% endblock content %}

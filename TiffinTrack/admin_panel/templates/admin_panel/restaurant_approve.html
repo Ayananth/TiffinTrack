@@ -1,0 +1,83 @@
+
+{% extends "./base.html" %}
+
+{% block content %}
+
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <h5>Restaurant Request</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xxl-9 col-xl-8 col-12">
+                        <div class="restaurant-tab">
+                            <div class="tab-content" id="v-pills-tabContent">
+                                <div class="tab-pane fade show active" id="Settings" role="tabpanel"
+                                    aria-labelledby="Settings-tab">
+                                    <div class="input-items">
+                                        <div class="row gy-3">
+                                            <div class="col-md-6">
+                                                <div class="input-box">
+                                                    <h6>Restaurant Name</h6>
+                                                    <input type="text" name="text" value="{{restaurants.restaurant_name}}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-box">
+                                                    <h6>OwnerName</h6>
+                                                    <input type="text" name="text" value="{{restaurants.restaurant_name}}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-box">
+                                                    <h6>Email</h6>
+                                                    <input type="email" name="email" value="{{restaurants.email}}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-box">
+                                                    <h6>Phone</h6>
+                                                    <input type="number" name="number" value="{{restaurants.contact_number}}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-box">
+                                                    <h6>Licence No</h6>
+                                                    <input type="text" name="text" value="{{restaurants.licence_no}}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-box">
+                                                    <h6>Address</h6>
+                                                    <input type="text" name="text" value="{{restaurants.address}}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-box">
+                                                    <h6>Requested on</h6>
+                                                    <input type="text" name="text" value="{{restaurants.created_at}}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <form method="post">
+                            {% csrf_token %}
+                            <button class="btn restaurant-button" type="submit">Approve</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Container-fluid Ends-->
+</div>
+
+
+{%endblock%}

@@ -1,0 +1,23 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="pagination p-4">
+    <span class="step-links">
+        {% with request.GET.urlencode as current_query %}
+            {% with current_query|cut:'page='|cut:'&page=' as query_without_page %}
+                {% if page_obj.has_previous %}
+                    <a href="?{{ query_without_page }}&page=1" class="p-2">&laquo; first</a>
+                    <a href="?{{ query_without_page }}&page={{ page_obj.previous_page_number }}" class="p-2">previous</a>
+                {% endif %}
+
+                <span class="current p-2">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?{{ query_without_page }}&page={{ page_obj.next_page_number }}" class="p-2">next</a>
+                    <a href="?{{ query_without_page }}&page={{ page_obj.paginator.num_pages }}" class="p-2">last &raquo;</a>
+                {% endif %}
+            {% endwith %}
+        {% endwith %}
+    </span>
+</div>
+{% endif %}

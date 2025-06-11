@@ -1,0 +1,78 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <div class="title-header option-title d-sm-flex d-block">
+                        <h5>Food Category List</h5>
+                        <div class="right-options">
+                            <ul>
+                                <li>
+                                    <a class="btn btn-dashed" href="{% url 'menu_category_add' %}">Add Category</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="table-responsive theme-scrollbar">
+                            <table class="table category-table dataTable no-footer" id="table_id">
+                                <thead>
+                                    <tr>
+                                        <th><input id="checkall" class="custom-checkbox" type="checkbox" name="text"></th>
+                                        <th>Name</th>
+                                        <th>Price/Day</th>
+                                        <th>Price/Month</th>
+                                        <th>Subscribers</th>
+                                        <th>Option</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    {% for food in food_categories %} 
+                                        <tr>
+                                            <td><input class="custom-checkbox" type="checkbox" name="text"></td>
+                                            <td>{{food.name}}</td>
+                                            <td class="td-price">{{ food.total_price}}</td>
+                                            <td class="td-price">{% widthratio food.total_price 1 30 %}</td>
+                                            <td>10</td>
+                                            <td>
+                                                <ul>
+                                                    <li>
+                                                        <a href="order-detail.html">
+                                                            <i class="ri-eye-line"></i>
+                                                        </a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="">
+
+                                                            <i class="ri-pencil-line"></i>
+                                                        </a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="" onclick="return confirm('Are you sure you want to delete this menu?');">
+                                                            
+                                                            <i class="ri-delete-bin-line"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

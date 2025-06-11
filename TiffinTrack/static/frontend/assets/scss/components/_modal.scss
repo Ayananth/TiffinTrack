@@ -1,0 +1,199 @@
+/*=====================
+  3.5  modal Style start
+==========================*/
+.address-details-modal {
+  .modal-dialog {
+    .modal-content {
+      .modal-header {
+        border-bottom: 1px solid rgba(var(--dashed-line), 1);
+
+        .modal-title {
+          font-size: 24px;
+          font-weight: 500;
+          line-height: 1;
+          color: rgba(var(--dark-text), 1);
+        }
+
+        .btn-close {
+          box-shadow: none;
+        }
+      }
+
+      .modal-body {
+        p {
+          font-weight: 400;
+          font-size: calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320)));
+          color: rgba(var(--content-color), 1);
+        }
+
+        .form-label {
+          color: rgba(var(--dark-text), 1);
+          font-weight: 500;
+        }
+
+        .form-control {
+          padding: calc(10px + (12 - 10) * ((100vw - 320px) / (1920 - 320)));
+          border: 1px solid rgba(var(--dashed-line), 1);
+            color: rgba(var(--dark-text), 0.8);
+
+          &:focus {
+            box-shadow: none;
+          }
+
+          &::placeholder {
+            color: rgba(var(--content-color), 1);
+          }
+        }
+      }
+
+      .modal-footer {
+        border-top: 1px dashed rgba(var(--dashed-line), 1);
+      }
+    }
+  }
+}
+
+.modal-open {
+  padding-right: 0 !important;
+}
+
+.location-modal {
+  .modal-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-color: rgba(var(--dashed-line), 1);
+
+    .modal-title {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(var(--dark-text), 1);
+      background-color: rgba(var(--white), 1);
+
+      i {
+        font-size: 20px;
+      }
+
+      .btn-close {
+        margin-left: auto;
+
+        &:focus {
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
+  .modal-body {
+    padding: calc(15px + (20 - 15) * ((100vw - 320px) / (1920 - 320))) 15px;
+
+    .search-section {
+      .form_search {
+        input {
+          width: 100%;
+          background-color: rgba(var(--box-bg), 1);
+          border: none;
+          padding: calc(10px + (12 - 10) * ((100vw - 320px) / (1920 - 320)));
+          line-height: 1;
+          font-size: calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320)));
+          border: 1px solid rgba(var(--dashed-line), 1);
+          border-radius: 5px;
+
+          &:focus-visible {
+            outline: none;
+          }
+        }
+      }
+    }
+
+    .current-location {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: calc(15px + (20 - 15) * ((100vw - 320px) / (1920 - 320))) 0 calc(10px + (15 - 10) * ((100vw - 320px) / (1920 - 320)));
+      border-bottom: 1px solid rgba(var(--dashed-line), 1);
+
+      .current-address {
+        display: flex;
+        gap: 10px;
+        font-size: calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320)));
+
+        .focus {
+          font-weight: 600;
+          color: rgba(var(--theme-color), 1);
+        }
+
+        h5 {
+          font-size: calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320)));
+          font-weight: 600;
+          line-height: 1;
+          color: rgba(var(--theme-color), 1);
+        }
+
+        h6 {
+          width: 100%;
+          font-size: 14px;
+          margin-top: 4px;
+          color: rgba(var(--content-color), 1);
+        }
+      }
+
+      .arrow {
+        font-size: 20px;
+        color: rgba(var(--dark-text), 1);
+      }
+    }
+
+    .recent-title {
+      font-size: calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320)));
+    }
+
+    .recent-location {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0 0;
+
+      .location-icon {
+        background-color: rgba(var(--theme-color), 1);
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 100%;
+        color: rgba(var(--white), 1);
+
+        i {
+          color: rgba(255, 255, 255, 1);
+        }
+      }
+
+      .recant-address {
+        display: flex;
+        gap: 10px;
+        font-size: calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320)));
+
+        h5 {
+          font-size: calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320)));
+          font-weight: 400;
+          line-height: 1;
+          color: rgba(var(--dark-text), 1);
+        }
+
+        h6 {
+          margin-top: 4px;
+          font-size: 14px;
+          color: rgba(var(--content-color), 1);
+        }
+      }
+
+      .modal-footer {
+        border-color: rgba(var(--dashed-line), 1);
+      }
+    }
+  }
+}

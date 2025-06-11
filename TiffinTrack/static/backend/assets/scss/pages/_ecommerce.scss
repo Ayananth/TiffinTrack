@@ -1,0 +1,200 @@
+/**=====================
+    Ecommerce CSS Start
+==========================**/
+
+/**====== Product Start ======**/
+
+.qty-box {
+    .btn {
+        background-color: transparent !important;
+        border-color: $light-gray !important;
+        padding: 8px 12px;
+
+        i {
+            color: $dark-gray;
+        }
+
+        svg {
+            width: 14px !important;
+            stroke: $dark-color;
+        }
+    }
+
+    span {
+        padding: 0 4px;
+    }
+
+    .input-group {
+        background-color: rgba($dark-color, 0.1);
+    }
+
+    input {
+        background-color: rgba($dark-color, 0.1);
+        color: $dark-color;
+        max-width: 44px;
+        padding: 0;
+        text-align: center;
+        border: none;
+        max-height: 37px;
+    }
+}
+
+.product-box {
+    border-radius: 10px;
+    overflow: hidden;
+
+    .product-details {
+        padding: 15px 25px;
+
+        p {
+            margin-bottom: 0;
+            opacity: 0.8;
+        }
+
+        h4 {
+            margin-bottom: 0;
+            margin-top: 5px;
+            font-size: 20px;
+            font-family: roboto;
+        }
+
+        h6 {
+            color: $theme-body-font-color;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        span {
+            color: $dark-gray;
+        }
+
+        .rating {
+            i {
+                font-size: 16px;
+                letter-spacing: 3px;
+                color: #ffa800;
+            }
+        }
+    }
+
+    .modal {
+        .modal-header {
+            .product-box {
+                .product-details {
+                    padding: 25px 0;
+
+                    h6 {
+                        text-transform: capitalize;
+                    }
+
+                    .product-price {
+                        font-size: 22px;
+                        margin-bottom: 10px;
+                    }
+
+                    .product-view {
+                        padding: 20px 0;
+                        border-top: 1px dotted $semi-dark;
+                        border-bottom: 1px dotted $semi-dark;
+                    }
+
+                    .product-size {
+                        margin: 20px 0;
+
+                        ul {
+                            li {
+                                display: inline-block;
+                            }
+                        }
+                    }
+
+                    .product-qnty {
+                        fieldset {
+                            margin-bottom: 20px;
+
+                            .input-group {
+                                width: 35%;
+
+                                .btn {
+                                    padding: 5px 12px;
+                                }
+
+                                .btn-primary {
+                                    background-color: $semi-dark !important;
+                                    border: 1px dashed $semi-dark !important;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .btn-close {
+                position: absolute;
+                right: 15px;
+                top: 10px;
+            }
+        }
+    }
+
+    .product-img {
+        position: relative;
+
+        .product-hover {
+            position: absolute;
+            @include pseudowh;
+            top: 0;
+            @include flex_common;
+            background-color: rgba($black, 0.3);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(0);
+            transition: all 0.3s ease;
+
+            ul {
+                li {
+                    display: inline-block;
+                    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.08);
+                    padding: 10px 12px;
+                    background-color: $white;
+                    font-size: 18px;
+                    border-radius: 10px;
+                    @include pseudowh($width: 45px, $height: 45px);
+                    margin: 0 3px;
+                    cursor: pointer;
+
+                    i {
+                        color: $semi-dark;
+                        font-size: 18px;
+                    }
+
+                    .btn {
+                        padding: 0;
+                    }
+
+                    &:hover {
+                        background-color: var(--theme-color);
+                        transition: all 0.3s ease;
+
+                        .btn,
+                        i {
+                            color: $white;
+                        }
+
+
+                    }
+                }
+            }
+        }
+    }
+
+    &:hover {
+
+        .product-hover {
+            opacity: 1;
+            border-radius: 0%;
+            transform: scale(1);
+            transition: all 0.3s ease;
+        }
+    }
+}

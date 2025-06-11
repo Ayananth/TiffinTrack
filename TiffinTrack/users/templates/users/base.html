@@ -1,0 +1,548 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TiffinTrack">
+    <meta name="keywords" content="TiffinTrack">
+    <meta name="author" content="TiffinTrack">
+    <link rel="icon" href="assets/images/logo/favicon.png" type="image/x-icon">
+    <title>TiffinTrack Web</title>
+    <link rel="apple-touch-icon" href="assets/images/logo/favicon.png">
+    <meta name="theme-color" content="#ff8d2f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="TiffinTrack">
+    <meta name="msapplication-TileImage" content="assets/images/logo/favicon.png">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!--Google font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" id="change-link" type="text/css" href="{% static 'backend/assets/css/style.css' %}">
+
+
+    <!-- bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'frontend/assets/css/vendors/bootstrap.css' %}">
+
+    <!-- swiper css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'frontend/assets/css/vendors/swiper-bundle.min.css' %}">
+
+    <!-- remixicon css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'frontend/assets/css/vendors/remixicon.css' %}">
+
+    <!-- <link rel="stylesheet" id="change-link" type="text/css" href="{% static 'backend/assets/css/style.css' %}"> -->
+
+    <!-- Theme css -->
+    <link rel="stylesheet" id="change-link" type="text/css" href="{% static 'frontend/assets/css/style.css' %}">
+    <link rel="stylesheet" id="change-link" type="text/css" href="{% static 'frontend/assets/css/customcss.css' %}">
+
+
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr1GyS1lbuAQ54o5NRV4XzVunn8v7THtA&libraries=places"
+    defer
+    ></script>
+</head>
+
+<body class="bg-color position-relative">
+    <!-- Header section start -->
+    <header>
+        <div class="container">
+            <nav class="navbar navbar-expand-lg p-0">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#offcanvasNavbar">
+                    <span class="navbar-toggler-icon">
+                        <i class="ri-menu-line"></i>
+                    </span>
+                </button>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="{% url 'user-home' %}" class="nav-link">
+                            TiffinTrack
+                         </a>
+                     </li>
+                </ul>
+
+                <a target="_blank" href="#!" data-bs-toggle="modal" data-bs-target="#location"
+                class="btn btn-sm theme-btn location-btn mt-0 ms-3 d-flex align-content-center gap-1">
+                <i class="ri-map-pin-line"></i> {{location}}
+            </a>
+
+                {% if user.is_authenticated %}
+                    <div class="nav-option order-md-2">
+                        <div class="dropdown-button">
+                            <div class="cart-button">
+                                <i class="text-white cart-bag"></i>
+                            </div>
+                        </div>
+                        <div class="profile-part dropdown-button order-md-2">
+                            <img class="img-fluid profile-pic" src="{{ user.profile.profile_pic.url }}" alt="profile"  style="object-fit: contain;">
+                            <div>
+                                <h6 class="fw-normal">{{user.username}}</h6>
+                                <h5 class="fw-medium">My Account</h5>
+                            </div>
+                            <div class="onhover-box onhover-sm">
+                                <ul class="menu-list">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'user-profile' %}">Profile</a>
+                                    </li>
+                                </ul>
+                                <div class="bottom-btn">
+                                    <a href="{% url 'logout' %}" class="theme-color fw-medium d-flex"><i
+                                            class="ri-login-box-line me-2"></i>Logout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                            <button class="navbar-toggler btn-close" id="offcanvas-close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'manage_subscription' %}">Manage Subscription</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                {% else %}
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                        <button class="navbar-toggler btn-close" id="offcanvas-close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav justify-content-end flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login'%}">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'register'%}">Sign Up</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'restaurant-register'%}">Register Restaurant</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                {%endif%}
+
+
+            </nav>
+        </div>
+    </header>
+    <!-- Header Section end -->
+
+    <!-- Content here -->
+     {% block content%}
+     {% endblock%}
+    <!-- Content end -->
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- footer section starts -->
+    <footer class="footer-section section-t-space">
+        <div class="container">
+            <div class="main-footer">
+                <div class="row g-3">
+                    <div class="col-xl-4 col-lg-12">
+                        <div class="footer-logo-part">
+                            <img class="img-fluid logo" src="assets/images/svg/logo.svg" alt="logo">
+                            <p>
+                                Welcome to our online order website! Here, you can browse our
+                                wide selection of products and place orders from the comfort
+                                of your own home.
+                            </p>
+                            <div class="social-media-part">
+                                <ul class="social-icon">
+                                    <li>
+                                        <a href="https://www.facebook.com/login/">
+                                            <i class="ri-facebook-fill icon"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://twitter.com/i/flow/login">
+                                            <i class="ri-twitter-fill icon"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.linkedin.com/login/">
+                                            <i class="ri-linkedin-fill icon"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.instagram.com/accounts/login/">
+                                            <i class="ri-instagram-fill icon"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.youtube.com/">
+                                            <i class="ri-youtube-fill icon"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8">
+                        <div class="row g-3">
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-12">
+                                <div>
+                                    <h5 class="footer-title">Company</h5>
+                                    <ul class="content">
+                                        <li>
+                                            <a class="nav-links" href="about.html">
+                                                <h6>About us</h6>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="nav-links" href="contact.html">
+                                                <h6>Contact us</h6>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="nav-links" href="offer.html">
+                                                <h6>Offer</h6>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="nav-links" href="faq.html">
+                                                <h6>FAQs</h6>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-12">
+                                <div>
+                                    <h5 class="footer-title">Restaurant</h5>
+                                    <ul class="content">
+                                        <li>
+                                            <a class="nav-links" href="{% url 'restaurant-register' %}">
+                                                <h6>Register Restaurant</h6>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-footer-part">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h6>@ Copyright 2024 TiffinTrack. All rights Reserved.</h6>
+                    <img class="img-fluid cards" src="assets/images/icons/footer-card.png" alt="card">
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- footer section end -->
+
+    <!-- mobile fix menu start -->
+    <div class="mobile-menu d-md-none d-block mobile-cart">
+        <ul>
+            <li class="active">
+                <a href="index.html" class="menu-box">
+                    <i class="ri-home-4-line"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="wishlist.html" class="menu-box">
+                    <i class="ri-heart-3-line"></i>
+                    <span>Wishlist</span>
+                </a>
+            </li>
+            <li>
+                <a href="checkout.html" class="menu-box">
+                    <i class="ri-shopping-cart-2-line"></i>
+                    <span>Cart</span>
+                </a>
+            </li>
+            <li>
+                <a href="index.html" class="menu-box">
+                    <i class="ri-user-line"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- mobile fix menu end -->
+
+    <!-- theme btn start -->
+    <!-- theme btn end -->
+
+    <!-- tap to top start -->
+    <button class="scroll scroll-to-top">
+        <i class="ri-arrow-up-s-line arrow"></i>
+    </button>
+    <!-- tap to top end -->
+
+
+    <!-- location offcanvas start -->
+    <div class="modal fade location-modal" id="location" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <h5 class="fw-semibold">Select a Location</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="search-section">
+                        <form class="form_search" method="post" action="{%url 'update-location' %}" role="form" id="location-update-form">
+                            {%csrf_token%}
+                            <input type="text" name="address" id="searchInput" placeholder="{{location}}" value="{{location}}" autocomplete="off" />
+                            <input type="hidden" name="latitude" id="latitude"> 
+                            <input type="hidden" name="longitude" id="longitude">
+                            <!-- set the value of lat and long from backend for the default -->
+                        </form>
+                    </div>
+                    <div class="recent-location">
+                        <div class="recant-address">
+                            <div>
+                                <div id="suggestions"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#" onclick="getLocation(event)" class="current-location">
+                        <div class="current-address">
+                            <i class="ri-focus-3-line focus"></i>
+                            <div>
+                                <h5>Use current-location</h5>
+                            </div>
+                        </div>
+                        <i class="ri-arrow-right-s-line arrow"></i>
+                    </a>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn gray-btn" data-bs-dismiss="modal">Close</a>
+                    <a href="#" id="update-location" class="btn theme-btn mt-0" data-bs-dismiss="modal">Save</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- location offcanvas end -->
+
+    <!-- responsive space -->
+    <div class="responsive-space"></div>
+    <!-- responsive space -->
+
+    <!-- bootstrap js -->
+    <script src="{% static 'frontend/assets/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- footer accordion js -->
+    <script src="{% static 'frontend/assets/js/footer-accordion.js' %}"></script>
+
+    <!-- loader js -->
+    <script src="{% static 'frontend/assets/js/loader.js' %}"></script>
+
+    <!-- swiper js -->
+    <script src="{% static 'frontend/assets/js/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'frontend/assets/js/custom-swiper.js' %}"></script>
+
+    <!-- script js -->
+    <script src="{% static 'frontend/assets/js/script.js' %}"></script>
+
+    <script>
+        let e = document.getElementById("error-message")
+        console.log(e);
+        if(e){
+            setTimeout(() => {
+               e.remove() 
+            }, 5000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+    const closeIcons = document.querySelectorAll('.close-icon');
+    closeIcons.forEach(function (icon) {
+      icon.addEventListener('click', function () {
+        const errorMessage = document.getElementById('error-message');
+        if (errorMessage) {
+          errorMessage.remove();
+            }
+        });
+        });
+    });
+
+        
+    </script>
+
+<script>
+    function initAutocomplete() {
+      const input = document.getElementById("autocomplete");
+      const autocomplete = new google.maps.places.Autocomplete(input);
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry || !place.geometry.location) {
+          alert("No details available for input: '" + place.name + "'");
+          return;
+        }
+
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+
+        document.getElementById("lat").textContent = lat;
+        document.getElementById("lng").textContent = lng;
+      });
+    }
+
+    // Wait for the Google Maps script to load and then initialize autocomplete
+    window.initAutocomplete = initAutocomplete;
+  </script>
+
+  <!-- This triggers initAutocomplete after the script loads -->
+  <script>
+    window.addEventListener("load", () => {
+      if (typeof google !== "undefined") {
+        initAutocomplete();
+      }
+    });
+  </script>
+
+<script>
+    const searchInput = document.getElementById("searchInput");
+    const suggestionsBox = document.getElementById("suggestions");
+    let debounceTimeout;
+
+    searchInput.addEventListener("input", () => {
+      clearTimeout(debounceTimeout);
+      const query = searchInput.value.trim();
+      if (query.length < 3) {
+        suggestionsBox.innerHTML = "";
+        return;
+      }
+
+      debounceTimeout = setTimeout(() => {
+        fetchSuggestions(query);
+      }, 300);
+    });
+
+    async function fetchSuggestions(query) {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        suggestionsBox.innerHTML = "";
+        data.forEach(place => {
+          const div = document.createElement("div");
+          div.className = "suggestion-item";
+          div.textContent = place.display_name;
+          div.onclick = () => {
+            searchInput.value = place.display_name;
+            suggestionsBox.innerHTML = "";
+            showLocationDetails(place);
+          };
+          suggestionsBox.appendChild(div);
+        });
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      }
+    }
+
+    function showLocationDetails(place) {
+      document.getElementById("latitude").value = place.lat;
+      document.getElementById("longitude").value = place.lon;
+      document.getElementById("address").textContent = place.display_name;
+    }
+
+    // Optional: hide suggestions if clicking outside
+    document.addEventListener("click", (e) => {
+      if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        suggestionsBox.innerHTML = "";
+      }
+    });
+  </script>
+
+<!-- current location -->
+
+<script>
+    function getLocation(event) {
+        console.log("Get current location");
+        
+      const locationDisplay = document.getElementById("searchInput");
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            document.getElementById("latitude").value = latitude;
+            document.getElementById("longitude").value = longitude;
+
+            // Call Nominatim Reverse Geocoding API
+            const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+
+            fetch(url, {
+              headers: {
+                'User-Agent': 'location-app-demo' // Nominatim requires a user-agent header
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              const address = data.display_name;
+              console.log(address);
+              locationDisplay.value = `${address}`;
+            })
+            .catch(error => {
+              console.error('Error fetching location name:', error);
+              locationDisplay.value = "Unable to fetch location name.";
+            });
+
+          },
+          (error) => {
+            locationDisplay.value = "Error getting location.";
+          },
+          {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0
+  }
+        );
+      } else {
+        locationDisplay.value = "Geolocation is not supported by this browser.";
+      }
+    }
+  </script>
+
+<!-- set the location data -->
+<script>
+    document.getElementById("update-location").addEventListener("click", function(e){
+        console.log("submiting location form");
+        e.preventDefault();
+        document.getElementById("location-update-form").submit();
+    });
+</script>
+
+
+
+</body>
+
+</html>

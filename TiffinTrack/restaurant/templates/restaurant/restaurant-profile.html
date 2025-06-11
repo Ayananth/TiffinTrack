@@ -1,0 +1,237 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                            <h5>Restaurant Profile</h5>
+
+                            <div class="restaurant-image-container">
+                                {% if restaurant_obj.restaurant_image %}
+                                    <img src="{{ restaurant_obj.restaurant_image.url }}" alt="Restaurant Image" style="width: 300px; height: 200px; object-fit: cover; border-radius: 8px;">
+                                {% else %}
+                                    <p>No image available.</p>
+                                {% endif %}
+                            </div>
+
+
+
+                            {% if restaurant %}
+                            <h5 class="text-danger">Your request is under review, you can edit the request here</h5>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="nav nav-pills flex-nowrap mb-3" id="pills-tab" role="tablist">
+                                        <li class="nav-item m-0" role="presentation">
+                                            <button class="nav-link {%if not page %}active{%endif%}" id="pills-home-tab"
+                                                data-bs-toggle="pill" data-bs-target="#pills-home"
+                                                type="button">Profile</button> 
+                                        </li>
+                                        <li class="nav-item m-0" role="presentation">
+                                            <button class="nav-link {%if page %}active{%endif%}" id="pills-images-tab"
+                                                data-bs-toggle="pill" data-bs-target="#pills-images"
+                                                type="button">Photos</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- settings -->
+                                <div class="col-12">
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade {%if not page%} show active{%endif%}" id="pills-home" role="tabpanel">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+
+
+                                                    <form method="post" enctype="multipart/form-data">
+                                                        <div class="row gy-3">
+                                                            {% csrf_token %}
+    
+                                                                {% for field in form %}
+                                                                <div class="col-md-6 gy-3">
+                                                                    <div class="input-box">
+                                                                        <h6>{{ field.label }}</h6>
+                                                                        <span>{{ field }}</span>
+                                                                        {% if field.name == 'point' %}
+                                                                            <div id="suggestions">
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if field.errors %}
+                                                                        <div class="text-danger">
+                                                                            {% for error in field.errors %}
+                                                                                <div>{{ error }}</div>
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                    {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                            <div class="col-12">
+                                                                <button type="submit" class="btn restaurant-button">Save</a>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade {%if page%} show active{%endif%}" id="pills-images" role="tabpanel">
+                                            <div class="input-items">
+
+                                                <div class="row g-3">
+
+                                                <!-- Loop through existing images -->
+                                                {% for img in restaurant_obj.images.all %}
+                                                    <div class="col-md-3">
+                                                    <div class="card position-relative shadow-sm">
+                                                        <img src="{{ img.image.url }}" class="card-img-top" alt="Restaurant Image">
+
+                                                        <!-- Delete Icon -->
+                                                        <a href="{% url 'delete-restaurant-image' img.id %}" class="position-absolute top-0 end-0 m-0 text-danger" style="text-decoration: none;" title="Delete">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                        </a>
+                                                    </div>
+                                                    </div>
+                                                {% endfor %}
+
+                                                <!-- Card to Add New Photo -->
+                                                <div class="col-md-3">
+                                                    <form method="post" enctype="multipart/form-data" action="{% url 'add-restaurant-image' restaurant_obj.id %}">
+                                                    {% csrf_token %}
+                                                    <label for="new_image_upload" style="cursor:pointer;">
+                                                        <div class="card d-flex align-items-center justify-content-center border-dashed" style="height: 200px;">
+                                                        <div class="text-muted text-center">
+                                                            <i class="bi bi-plus-circle fs-2"></i><br>
+                                                            <span>Add Photo</span>
+                                                        </div>
+                                                        </div>
+                                                    </label>
+                                                    <input type="file" name="image" id="new_image_upload" class="d-none" onchange="this.form.submit()">
+                                                    </form>
+                                                </div>
+
+                                                </div>
+
+
+
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- end of settings -->
+                                 <!-- Menu section -->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("id_point");
+  const value = input.value.trim();
+
+  const match = value.match(/^SRID=\d+;POINT\s*\(\s*([0-9\.\-]+)\s+([0-9\.\-]+)\s*\)$/);
+  if (match) {
+    const lon = match[1];
+    const lat = match[2];
+    input.value = `${lon},${lat}`; // Overwrite value for user clarity
+    // Optional: store in hidden lat/lon inputs or display on a map
+    console.log("Extracted from backend WKT:", lat, lon);
+  }
+});
+
+</script>
+<script>
+    const searchInput = document.getElementById("id_point");
+    const suggestionsBox = document.getElementById("suggestions");
+    let debounceTimeout;
+
+    searchInput.addEventListener("input", () => {
+      clearTimeout(debounceTimeout);
+      const query = searchInput.value.trim();
+      if (query.length < 3) {
+        suggestionsBox.innerHTML = "";
+        return;
+      }
+
+      debounceTimeout = setTimeout(() => {
+        fetchSuggestions(query);
+      }, 300);
+    });
+
+    async function fetchSuggestions(query) {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        suggestionsBox.innerHTML = "";
+        data.forEach(place => {
+          const div = document.createElement("div");
+          div.className = "suggestion-item";
+          div.textContent = place.display_name;
+          div.onclick = () => {
+            searchInput.value = place.display_name;
+            suggestionsBox.innerHTML = "";
+            showLocationDetails(place);
+          };
+          suggestionsBox.appendChild(div);
+        });
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      }
+    }
+
+    function showLocationDetails(place) {
+      lat = place.lat
+      lon = place.lon
+      searchInput.value = `${lon},${lat}`;
+      console.log("Check");
+      
+      console.log(searchInput.value);
+      
+      document.getElementById("address").textContent = place.display_name;
+    }
+
+    // Optional: hide suggestions if clicking outside
+    document.addEventListener("click", (e) => {
+      if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        suggestionsBox.innerHTML = "";
+      }
+    });
+  </script>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {   
+    document.querySelectorAll('a[href^="/media/uploads/"]').forEach(function (link) {
+        const fileName = link.textContent.replace('uploads/', '');
+        link.textContent = fileName;
+    });
+});
+</script>
+<script>
+  if (window.location.search.length > 0) {
+    window.history.replaceState(null, '', window.location.pathname);
+  }
+</script>
+
+
+{%endblock%}

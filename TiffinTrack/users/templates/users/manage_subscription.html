@@ -1,0 +1,178 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+<!-- page head section starts -->
+     {% include "./head.html" %}
+    <!-- page head section end -->
+
+    <!-- profile section starts -->
+    <section class="profile-section section-b-space">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-lg-3">
+                        {% include "./profile-sidebar.html" %}
+                </div>
+                <div class="col-lg-9">
+                    <div class="my-order-content">
+                        {% include "./messages.html" %}
+                        <div class="title">
+                            <div class="loader-line"></div>
+                            <h3>Subscription</h3>
+                        </div>
+                        <ul class="order-box-list">
+
+                            <li>
+                                <div class="order-box">
+                                    <div class="order-box-content">
+
+                                        {%if subscription%}
+
+
+
+                                        <div class="brand-icon align-self-start">
+                                            <img class="img-fluid icon" src="{{subscription.restaurant.restaurant_image.url }}"
+                                                alt="brand3">
+                                        </div>
+                                        <div class="order-details">
+                                            <div class="d-flex align-items-center justify-content-between w-100">
+                                                <h5 class="brand-name dark-text fw-medium">
+                                                    {{subscription.restaurant.restaurant_name}}
+                                                </h5>
+                                                <div class="right">
+                                                    <h6 class="fw-medium content-color text-end">
+                                                        {% if subscription.is_active %}
+                                                        <h6 class="order-deliver-label text-success">active</h6>
+                                                        {%endif%}
+                                                    </h6>
+                                                    <h6 class="fw-medium content-color text-end">
+                                                        {% if subscription.is_active %}
+                                                        <h6 class="order-deliver-label text-primary"><a href="{% url 'invoice_pdf' subscription.id%}" target="_blank">Invoice</a></h6>
+                                                        {%endif%}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <table class="fw-medium dark-text">
+                                                <tr class="">
+                                                    <td> Subscription Id</td>
+                                                    <td>{{subscription.id}}</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td> Menu</td>
+                                                    <td>{{subscription.menu_category}}</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td> Start Date</td>
+                                                    <td>{{subscription.start_date|date}}</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td> End Date</td>
+                                                    <td>{{subscription.end_date|date}}</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td> Total Number of Days</td>
+                                                    <td>{{subscription.num_days}}</td>
+                                                </tr>
+
+                                                {% for category,values in delivery_data.items %}
+
+
+
+                                                <tr class="">
+                                                    <td>{{category.name}} - Delivered</td>
+                                                    <td>{{values.delivered}}</td>
+                                                </tr>  
+                                                <tr class="">
+                                                    <td>{{category.name}} - Cancelled</td>
+                                                    <td>{{values.cancelled}}</td>
+                                                </tr>  
+                                                <tr class="">
+                                                    <td>{{category.name}} - Pending</td>
+                                                    <td>{{values.pending}}</td>
+                                                </tr>  
+
+                                                {%endfor%}
+
+                                            </table>
+
+
+
+                                        </div>
+                                        {%else%}
+                                        You dont have any active subscription
+                                        {%endif%}
+                                    </div>
+                                    {%if subscription%}
+                                    <div class="d-flex align-items-center justify-content-between mt-sm-3 mt-2">
+                                        <h6 class="fw-medium dark-text">
+                                            <span class="fw-normal content-color">Total Amount Paid :</span>
+                                            Rs. {{subscription.final_total}}
+                                        </h6>
+                                        <a href="#order" class="btn theme-outline details-btn"
+                                            data-bs-toggle="modal">Cancel</a>
+                                    </div>
+                                    {% endif%}
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- profile section end -->
+
+    <!-- order details modal starts -->
+    <div class="modal order-details-modal fade" id="order" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-medium" id="exampleModalToggleLabel">
+                        Cancellation details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="order-details-box">
+                        <div class="order-icon">
+                            <img class="img-fluid icon" src="{{subscription.restaurant.restaurant_image.url }}" alt="brand3">
+                        </div>
+                        <div class="order-content">
+                            <h5 class="brand-name dark-text fw-medium">{{subscription.restaurant.restaurant_name}}</h5>
+                            {% if subscription.is_active %}
+                            <h6 class="order-deliver-label">active</h6>
+                            {%endif%}
+                        </div>
+                    </div>
+                    <ul class="order-list">
+                        <li>
+                            <div class="order-content-box">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h6>Refund Amount</h6>
+                                    <h6>{{refund}}</h6>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="total-amount">
+                        <form method="post" action="{% url 'manage_subscription'%}">
+                            {%csrf_token%}
+                            <input type="hidden" name="subscription_id" id="subscription_id" value="{{subscription.id}}">
+                            <input type="submit" class="btn theme-outline details-btn" value="Cancel">
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- order details modal end -->
+
+
+
+
+
+
+
+
+{%endblock%}

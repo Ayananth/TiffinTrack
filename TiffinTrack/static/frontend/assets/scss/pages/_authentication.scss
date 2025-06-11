@@ -1,0 +1,33 @@
+/*=============================
+  5.2  Authentication style start
+===============================*/
+.otp-box {
+  margin-top: 20px;
+}
+
+.submit-btn {
+  margin-top: calc(15px + (22 - 15) * ((100vw - 320px) / (1920 - 320)));
+  margin-right: auto;
+  font-size: calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320)));
+  font-weight: 500;
+  padding: calc(10px + (15 - 10) * ((100vw - 320px) / (1920 - 320)))
+    calc(25px + (30 - 25) * ((100vw - 320px) / (1920 - 320)));
+
+  [dir="rtl"] & {
+    margin-left: auto;
+    margin-right: unset;
+  }
+}
+
+.login-hero-section {
+  .login-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+}
+
+.login-hero-right {
+  height: 100%;
+}

@@ -1,0 +1,145 @@
+
+{% extends "./base.html" %}
+
+{% block content %}
+
+<!-- Container-fluid starts-->
+                <!-- All User Table Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    {% include "./messages.html" %}
+                                    <div class="title-header option-title">
+                                        <h5>Order List</h5>
+                                        <!-- <a href="#" class="btn btn-dashed">Download all orders</a> -->
+                                    </div>
+                                    <div>
+                                        <div class="table-responsive theme-scrollbar">
+
+                                           <div class="filters">
+                                            <form method="get" class="row g-3 align-items-center mb-3">
+                                                <div class="col-auto">
+                                                    <label for="user" class="form-label">User</label>
+                                                    <input type="text" class="form-control" name="user" value="{{ request.GET.user }}">
+                                                </div>
+                                                <div class="col-auto">
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select name="status" class="form-select">
+                                                        <option value="">All</option>
+                                                        <option value="PENDING" {% if request.GET.status == "PENDING" %}selected{% endif %}>PENDING</option>
+                                                        <option value="DELIVERED" {% if request.GET.status == "DELIVERED" %}selected{% endif %}>DELIVERED</option>
+                                                        <option value="CANCELLED" {% if request.GET.status == "CANCELLED" %}selected{% endif %}>CANCELLED</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <label for="delivery_date" class="form-label">Delivery Date</label>
+                                                    <input type="date" class="form-control" name="delivery_date" value="{{ request.GET.delivery_date }}">
+                                                </div>
+                                                <div class="col-auto mt-4 d-flex">
+                                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                                    <a href="?" class="btn btn-secondary">Reset</a>
+                                                </div>
+                                            </form>
+
+                                            </div>
+ 
+                                            <div class="sorting d-flex justify-content-end">
+                                                <p class="p-2">Sort By</p>
+                                                <p class="p-2"><a class="text-info" href="?sort=delivery_date&dir={% if sort == 'delivery_date' and dir == 'asc' %}desc{% else %}asc{% endif %}">Delivery Date</a></p>
+                                                <p class="p-2"><a class="text-info" href="?sort=status&dir={% if sort == 'status' and dir == 'asc' %}desc{% else %}asc{% endif %}">Status</a></p>
+                                            </div>
+                                            <table class="table category-table dataTable no-footer" id="table_id">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Order Id</th>
+                                                        <th>User</th>
+                                                        <th>Date</th>
+                                                        <th>Category</th>
+                                                        <td>Address</td>
+                                                        <th>Delivery Status</th>
+                                                        <th>Amount</th>
+                                                        <th class="text-center">Option</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    {%for order in orders%}
+                                                    <tr data-bs-toggle="offcanvas">
+                                                        <td>{{order.id}}</td>
+                                                        <td>{{order.user}}</td>
+
+                                                        <td>{{order.delivery_date}}</td>
+
+                                                        <td>{{order.food_category.name}}</td>
+
+                                                        <td>{{order.address}}</td>
+
+                                                        <td class="order-success">
+                                                                <span class="{% if order.status == 'PENDING' %}font-warning
+                                                                {% elif order.status == 'CANCELLED' %}font-danger
+                                                                {% elif order.status == 'DELIVERED' %}font-success
+                                                                {% else %}text-muted{% endif %} f-w-500">
+                                                                {{order.status}}</span>
+                                                        </td>
+
+                                                        <td>{{order.food_category.price}}</td>
+
+                                                        <td>
+                                                            {% if order.status == 'PENDING'%}
+                                                                <a class=""
+                                                                    href="{% url 'restaurant-cancel_order' order.id%}">
+                                                                    Cancel
+                                                                </a>, 
+                                                                <a href="{% url 'restaurant-deliver-order' order.id %}">
+                                                                    Mark Delivered
+                                                                </a>
+ 
+                                                            {% elif order.status == 'DELIVERED'%}
+                                                                <a href="" class="font-success">Already Delivered</a>
+
+                                                            {%endif%}
+                                                        </td>
+                                                    </tr>
+                                                    {%endfor%}
+
+                                                    
+                                                </tbody>
+                                            </table>
+                        <!-- Pagination Controls -->
+                                                    {% include "./pagination.html" with page_obj=orders %}
+
+                        <!-- <div class=" pagination p-4">
+                        <span class="step-links">
+                            {% if orders.has_previous %}
+                            <a href="?page=1" class="p-2">&laquo; first</a>
+                            <a href="?page={{ orders.previous_page_number }}" class="p-2">previous</a>
+                            {% endif %}
+
+                            <span class="current p-2">
+                            Page {{ orders.number }} of {{ orders.paginator.num_pages }}
+                            </span>
+
+                            {% if orders.has_next %}
+                            <a href="?page={{ orders.next_page_number }}" class="p-2">next</a>
+                            <a href="?page={{ orders.paginator.num_pages }}" class="p-2">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                        </div> -->
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- All User Table Ends-->
+
+
+            <!-- Container-fluid end -->
+
+            {%endblock%}

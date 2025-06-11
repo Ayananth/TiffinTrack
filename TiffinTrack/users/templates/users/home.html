@@ -1,0 +1,174 @@
+
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+{% load custom_tags %}
+
+    <!-- home section start -->
+    <section id="home" class="home-wrapper section-b-space overflow-hidden">
+        <div class="background-effect">
+            <div class="main-circle">
+                <div class="main-circle circle-1">
+                    <div class="main-circle circle-2"></div>
+                </div>
+            </div>
+        </div>
+        <div class="container text-center position-relative mb-5">
+            <img class="img-fluid logo" src="{% static 'frontend/assets/images/logo/Tiffin.png'%}" alt="logo" style="width: auto; height: 200px;">
+            <h2>Find Your Monthly Food Partner </h2>
+            <div class="search-section">
+                <form class="auth-form search-head" method="get">
+                    <div class="form-group">
+                        <div class="form-input mb-0">
+                            <input type="search" name="restaurant_name" class="form-control search" id="inputusername"
+                                placeholder="Search for Restaurant" value="{{ request.GET.restaurant_name }}">
+                            <i class="ri-search-line search-icon"></i>
+                        </div>
+                    </div>
+                    
+                </form>
+                <a class="btn theme-btn mt-0" href="#" role="button" onclick="document.querySelector('.search-head').submit(); return false;">Search</a>
+            </div>
+        </div>
+    </section>
+    <!-- home section end -->
+
+    <!-- Featured Restaurants section starts -->
+    <section class="restaurant-list section-b-space ratio3_2">
+        <div class="container">
+            <div class="err d-flex justify-content-center">
+                {%include './messages.html' %}
+            </div>
+            <div class="title restaurant-title w-border pb-0">
+                <h2>Featured Restaurants</h2>
+                <div class="loader-line"></div>
+                <!-- sorting -->
+                <ul class="nav nav-pills restaurant-tab tab-style2 w-100 border-0 m-0" id="Tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pill-delivery-tab" data-bs-toggle="pill"
+                            data-bs-target="#delivery-tab">
+                            Nearest
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pill-rating-tab" data-bs-toggle="pill"
+                            data-bs-target="#rating-tab">
+                            Rating
+                        </button>
+                    </li>
+                </ul>
+                <!-- sorting end -->
+            </div>
+            <div class="tab-content restaurant-content" id="TabContent">
+                <div class="tab-pane fade show active" id="delivery-tab">
+                    <div class="row g-lg-4 g-3">
+
+                        {% if not restaurants %}
+
+                            <div class="empty-cart-image">
+                                <div>
+                                    <img class="img-fluid img" src="{% static 'frontend/assets/images/empty-cart.svg' %}" alt="empty-cart">
+                                    <h2>No restaurants</h2>
+                                    <h5>We will add soon</h5>
+                                </div>
+                            </div>
+                        {%endif%}
+
+
+
+
+                        {% for restaurant in restaurants %}                     
+                            <div class="col-xl-3 col-lg-4 col-sm-6">
+                                <div class="vertical-product-box">
+                                    <div class="vertical-product-box-img">
+                                        <a href="{% url 'restaurant-details' restaurant.id %}">
+                                            {% if restaurant.restaurant_image %}
+                                                <img class="product-img-top w-100 bg-img" src="{{restaurant.restaurant_image.url}}"
+                                                    alt="vp1">
+                                            {% else %}
+                                                <img class="product-img-top w-100 bg-img" src="{% static 'images/placeholder.png' %}"
+                                                    alt="placeholder">
+                                            {% endif %}
+                                            <img class="product-img-top w-100 bg-img" src="{{restaurant.restaurant_image.url}}"
+                                                alt="vp1">
+                                        </a>
+
+
+
+
+                                {% with restaurant_offers|get_item:restaurant.id as offers %}
+                                {% if offers %}
+                                        <div class="offers">
+                                            {% for offer in offers %}
+                                            <h6>{{offer.name}}</h6>
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <h4>{{ offer.discount_percent|floatformat:0  }}% OFF</h4>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    {%endif%}
+                                {% endwith %}
+
+
+
+                                    </div>
+                                    <div class="vertical-product-body">
+                                        <div class="d-flex align-items-center justify-content-between mt-sm-3 mt-2">
+                                            <a href="{% url 'restaurant-details' restaurant.id %}">
+                                                <h4 class="vertical-product-title">{{restaurant.restaurant_name}}</h4>
+                                            </a>
+                                            <h6 class="rating-star">
+                                                <span class="star"><i class="ri-star-s-fill"></i></span>{{ restaurant.avg_rating|default:"No ratings yet" }}
+                                            </h6>
+                                        </div>
+                                        <h5 class="product-items">
+                                            {{restaurant.address}}
+                                        </h5>
+                                        <div
+                                            class="location-distance d-flex align-items-center justify-content-between pt-sm-3 pt-2">
+                                            <h5 class="place">{{restaurant.description}}</h5>
+
+
+                                            <ul class="distance">
+                                                <li><i class="ri-map-pin-fill icon"></i>{{restaurant.distance|km}}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {%endfor%}
+                            <!-- Pagination Controls -->
+                            <div class="pagination p-4">
+                                <span class="step-links">
+                                    {% if orders.has_previous %}
+                                        <a href="?page=1" class="p-2">&laquo; first</a>
+                                        <a href="?page={{ orders.previous_page_number }}" class="p-2">previous</a>
+                                    {% endif %}
+    
+                                    {% if orders.paginator.num_pages > 1 %}
+                                        <span class="current p-2">
+                                            Page {{ orders.number }} of {{ orders.paginator.num_pages }}
+                                        </span>
+                                    {% endif %}
+    
+                                    {% if orders.has_next %}
+                                        <a href="?page={{ orders.next_page_number }}" class="p-2">next</a>
+                                        <a href="?page={{ orders.paginator.num_pages }}" class="p-2">last &raquo;</a>
+                                    {% endif %}
+                                </span>
+                            </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- featured Restaurants section end -->
+
+
+
+
+
+
+{% endblock content %}

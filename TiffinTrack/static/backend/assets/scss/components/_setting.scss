@@ -1,0 +1,359 @@
+.setting-main-box {
+    background-color: rgba($light-background , 0.6);
+    border-radius: 4px;
+    padding: 20px;
+    @media (max-width: 1199px) {
+        display: flex;
+        flex-wrap: unset;
+        position: relative;
+        top: 0;
+        flex-direction: unset!important;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding-bottom: 9px;
+        overflow: auto;
+        border-right: none;
+        padding-right: 0;
+    }
+
+    &.nav-pills {
+        border-bottom: none;
+    }
+
+    li {
+        width: 100%;
+        margin: 0 0 8px;
+        border-radius: 4px;
+        @media (max-width: 1199px) {
+            display: inline-block;
+            width: max-content;
+            margin: 0;
+        }
+
+        .nav-link {
+            width: 100%;
+            border: none;
+            background-color: transparent;
+            text-align: left;
+            font-weight: 500;
+            font-size: calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320)));
+            color: $theme-body-font-color;
+            border-radius: 4px;
+            padding: 10px 16px;
+            @media (max-width: 1199px) {
+                width: max-content;
+            }
+
+            i {
+                vertical-align: 0px;
+                margin-right: 6px;
+            }
+
+            &.active {
+                background: $gradient-fill;
+                color: $white !important;
+                border-color: transparent;
+            }
+        }
+    }
+    &.driver-main-box {
+        border: none;
+        padding-right: 0;
+        margin-bottom: 12px;
+        padding: 0;
+        background-color: transparent;
+        li {
+            width: unset !important;
+        }
+    }
+}
+
+.setting-box {
+    .general-details {
+        h5 {
+            font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+            font-weight: 600;
+            color: $theme-font-color;
+            width: 220px;
+        }
+
+        span {
+            font-style: italic;
+            margin-top: 6px;
+            font-size: 13px;
+        }
+
+        input {
+            width: 80%;
+            font-size: 16px;
+            @media (max-width: 767px) {
+                margin-bottom: 10px;
+                width: 100%;
+            }
+        }
+
+        select {
+            width: 80%;
+            font-size: 16px;
+            @media (max-width: 767px) {
+                margin-bottom: 10px;
+                width: 100%;
+
+            }
+        }
+
+        .input-group {
+            width: 80%;
+            flex-wrap: nowrap;
+            @media (max-width: 767px) {
+                margin-bottom: 10px;
+                width: 100%;
+
+            }
+
+            span {
+                padding: 10px 16px;
+                border: 1px dashed $border-color;
+                border-radius: 4px;
+                background-color: $light-background;
+                margin-top: 0;
+                font-size: 16px;
+                @media (max-width: 767px) {
+                    height: 46px;
+                }
+            }
+
+            input {
+                padding: 10px 16px;
+                border: 1px dashed $border-color;
+                border-radius: 4px;
+                background-color: rgba($light-background , 0.6);
+            }
+        }
+
+        .image-select-list {
+            background-color: rgba($light-background, 0.5);
+            border: 1px dashed $border-color;
+            width: 40%;
+            padding: 20px;
+            border-radius: 4px;
+            @media (max-width: 1400px) {
+                width: 60%;
+            }
+            @media (max-width: 767px) {
+                width: 100%;
+            }
+
+            p {
+                cursor: pointer;
+                text-align: center;
+
+                i {
+                    vertical-align: -4px;
+                    font-size: 20px;
+                }
+            }
+        }
+
+    }
+
+}
+
+.save-button {
+    float: right;
+    background: $gradient-fill;
+    color: $white;
+    font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+    margin-top: 20px;
+
+    &:hover {
+        color: $white;
+    }
+}
+
+.activation {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 25px;
+
+    li {
+        width: 80%;
+        border-radius: 4px;
+        @media (max-width: 1400px) {
+            width: 100%;
+        }
+
+        p {
+            font-style: italic;
+            font-size: 13px;
+            padding-left: 64px;
+
+            i {
+                vertical-align: -2px;
+            }
+            @media (max-width: 480px) {
+                padding-left: 0;
+            }
+        }
+    }
+}
+
+.icon-state {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    @media (max-width: 480px) {
+        display: block;
+    }
+    .form-check-label {
+        font-size: calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320)));
+        color: $theme-font-color;
+        font-weight: 600;
+        font-family: $poppins-sans;
+        margin-bottom: 0;
+    }
+}
+
+.wallet-box {
+    h5 {
+        font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+        font-weight: 600;
+        color: $theme-font-color;
+        width: 220px;
+    }
+
+    .input-group {
+        margin-top: 10px;
+
+        span {
+            padding: 10px 16px;
+            border: 1px dashed $border-color;
+            border-radius: 4px;
+            background-color: $light-background;
+            margin-top: 0;
+            font-size: 16px;
+        }
+
+        input {
+            padding: 10px 16px;
+            border: 1px dashed $border-color;
+            border-radius: 4px;
+            background-color: rgba($light-background , 0.6);
+        }
+    }
+
+    span {
+        font-style: italic;
+        margin-top: 6px;
+        font-size: 13px;
+    }
+}
+
+.delivery-box {
+    .delivery-item {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-top: 20px;
+        @media (max-width: 767px) {
+            display: block;
+        }
+
+        h5 {
+            font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+            font-weight: 600;
+            color: $theme-font-color;
+            width: 220px;
+            @media (max-width: 767px) {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+        }
+
+        .delivery-box {
+            width: 100%;
+        }
+    }
+}
+
+.payment-methods-tab {
+    width: 80%;
+
+    @media (max-width: 991px) {
+        width: 100%;
+    }
+
+    .nav {
+        border-radius: 4px;
+        border-bottom: 1px dashed $border-color;
+        margin-bottom: 30px;
+        padding-bottom: 12px;
+
+        .nav-link {
+            border: none;
+            text-align: left;
+            background-color: rgba($light-background , 1);
+            margin-right: 10px;
+            border-radius: 4px;
+            @media (max-width: 767px) {
+                margin-bottom: 6px;
+            }
+
+            &:last-child {
+                margin-right: 0;
+            }
+
+            i {
+                margin-right: 4px;
+                vertical-align: bottom;
+            }
+
+            &.active {
+                background: $gradient-fill;
+                color: $white;
+                border: none;
+                border-radius: 4px;
+            }
+
+            &:hover {
+                border: none;
+            }
+        }
+    }
+}
+
+.payment-methods-items {
+    >div {
+        margin-bottom: 20px;
+    }
+
+    h5 {
+        font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+        font-weight: 600;
+        color: $theme-font-color;
+    }
+}
+
+.analytics-box{
+    >div {
+        margin-bottom: 40px;
+        border-radius: 4px;
+        h6 {
+            padding: 8px 16px 8px 0;
+            font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+            font-weight: 600;
+            color: $theme-font-color;
+            margin-bottom: 16px;
+        }
+    }
+}
+
+.latitude-box{
+    background-color: $white;
+    border: 1px dashed $border-color;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+}

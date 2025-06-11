@@ -1,0 +1,126 @@
+/*========================
+  2.2  Typography Style start
+==========================*/
+body {
+  position: relative;
+  font-family: "Poppins", sans-serif;
+  background-blend-mode: screen;
+  background: rgba(var(--white), 1) !important;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    scrollbar-width: none;
+    scrollbar-color: #000000;
+    width: 0px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: rgba(var(--box-bg), 1);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #000000;
+    border-radius: 0px;
+    border: 3px solid rgba(var(--theme-color), 1);
+  }
+
+  &.noice-background {
+    background: url("../images/noice.jpg") !important;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f1eee9;
+      opacity: 0.8;
+      z-index: -1;
+    }
+  }
+}
+
+.space-family {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: calc(25px + (80 - 25) * ((100vw - 320px) / (1920 - 320)));
+  margin-bottom: 0;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: calc(20px + (30 - 20) * ((100vw - 320px) / (1920 - 320)));
+  margin-bottom: 0;
+}
+
+h3 {
+  font-weight: 500;
+  font-size: calc(18px + (24 - 18) * ((100vw - 320px) / (1920 - 320)));
+  margin-bottom: 0;
+}
+
+h4 {
+  font-weight: 400;
+  font-size: calc(16px + (22 - 16) * ((100vw - 320px) / (1920 - 320)));
+  margin-bottom: 0;
+}
+
+h5 {
+  font-weight: 400;
+  font-size: calc(15px + (20 - 15) * ((100vw - 320px) / (1920 - 320)));
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+h6 {
+  font-weight: 400;
+  font-size: calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320)));
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+p {
+  font-size: calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320)));
+  margin-bottom: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+ul {
+  padding: 0;
+  margin-bottom: 0;
+}
+
+li {
+  list-style: none;
+  display: inline-block;
+  font-size: 14px;
+}
+
+.scroll-bar {
+  & {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(var(--theme), 1);
+  }
+
+  /* Chrome, Edge, and Safari */
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(var(--theme), 0.3);
+    border-radius: 20px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--theme), 1);
+    border-radius: 10px;
+  }
+}

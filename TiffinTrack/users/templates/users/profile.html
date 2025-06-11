@@ -1,0 +1,238 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+    <!-- page head section starts -->
+     {% include "./profile-head.html" %}
+    <!-- page head section end -->
+
+    <!-- profile section starts -->
+    <section class="profile-section section-b-space">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-lg-3">
+                    {% include "./profile-sidebar.html" %}
+                </div>
+                <div class="col-lg-9">
+                    <div class="change-profile-content">
+                        {% if messages %}
+                        <ul class="messages d-flex align-items-center" id="error-message">
+                          {% for message in messages %}
+                            <li class="d-flex align-items-center">
+                              <h4 class="text-{{ message.tags }} m-0">{{ message }}</h4>
+                              <i class="fa-solid fa-x ps-2 close-icon" style="color: #f42a2a; cursor: pointer;"></i>
+                            </li>
+                          {% endfor %}
+                          <div id="js-error-message" class="messages d-flex align-items-center">
+                        </ul>
+                        {% endif %}
+                        <div class="title">
+                            <div class="loader-line"></div>
+                            <h3>Change Profile</h3>
+                        </div>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'update-profile-pic' %}">
+                            {% csrf_token %}
+                            <ul class="profile-details-list">
+                                <li>
+                                    <div class="profile-content">
+                                        <div class="d-flex align-items-center gap-sm-2 gap-1">
+                                            <i class="ri-file-image-line"></i>
+                                            <span>Profile Image :</span>
+                                        </div>
+                                        <label id="current_profile" for="profile_pic">{{request.user.profile.profile_pic}}</label>
+                                        <h6><input type="file" name="profile_pic" id="profile_pic"></h6>
+                                    </div>
+                                    <button type="submit" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</button>
+                                </li>
+                            </ul>
+                        </form>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'change-user-name' %}">
+                            {% csrf_token %}
+                            <ul class="profile-details-list">
+                                <li>
+                                    <div class="profile-content">
+                                        <div class="d-flex align-items-center gap-sm-2 gap-1">
+                                            <i class="ri-user-3-fill"></i>
+                                            <span>User Name :</span>
+                                        </div>
+                                        <h6><input type="text" name="username" placeholder="Enter username" value="{{user.username}}"></h6>
+                                    </div>
+                                    <button type="submit" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</button>
+                                </li>
+                            </ul>
+                        </form>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'request_email_change' %}">
+                            {% csrf_token %}
+                            <ul class="profile-details-list">
+                                <li>
+                                    <div class="profile-content">
+                                        <div class="d-flex align-items-center gap-sm-2 gap-1">
+                                            <i class="ri-mail-line"></i>
+                                            <span>Email :</span>
+                                        </div>
+                                        <h6><input type="text" name="new_email" placeholder="Enter username" value="{{user.email}}"></h6>
+                                    </div>
+                                    <button type="submit" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</button>
+                                </li>
+                            </ul>
+                        </form>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'update-phone' %}">
+                            {% csrf_token %}
+                            <ul class="profile-details-list">
+                                <li>
+                                    <div class="profile-content">
+                                        <div class="d-flex align-items-center gap-sm-2 gap-1">
+                                            <i class="ri-phone-line"></i>
+                                            <span>Phone :</span>
+                                        </div>
+                                        <h6><input type="text" name="phone" placeholder="Enter Phone Number" value="{% if user.phone %} {{user.phone}} {%endif%}"></h6>
+                                    </div>
+                                    <button type="submit" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</button>
+                                </li>
+                            </ul>
+                        </form>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'update-profile-pic' %}">
+                            {% csrf_token %}
+                            <ul class="profile-details-list">
+                                <li>
+                                    <div class="profile-content">
+                                        <div class="d-flex align-items-center gap-sm-2 gap-1">
+                                            <i class="ri-lock-2-fill"></i>
+                                            <span>Password :</span>
+                                        </div>
+                                        <h6>********</h6>
+                                    </div>
+                                    <a href="#password" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</a>
+                                </li>
+                                </li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- profile section end -->
+
+    <!-- edit email modal starts -->
+    <div class="modal profile-modal fade" id="email" aria-hidden="true" aria-labelledby="exampleModalToggleEmail"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="exampleModalToggleEmail">Email</h1>
+                </div>
+                <form method="post" action="{%url 'request_email_change' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputEmail" class="form-label">New Email</label>
+                        <input name="new_email" type="email" class="form-control" 
+                            placeholder="Enter your new email">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn theme-btn" data-bs-dismiss="modal">Save</a>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- edit email modal end -->
+
+    <!-- edit password number modal starts -->
+    <div class="modal profile-modal fade" id="password" aria-hidden="true" aria-labelledby="exampleModalTogglePass"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="exampleModalTogglePass">Password</h1>
+                </div>
+
+                <form method="post" action="{% url 'request_password_change'%}">
+                {% csrf_token %}
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputcurrentPassword" class="form-label">
+                            Current Password</label>
+                        <input type="password" class="form-control" name="current_password"
+                            placeholder="Enter your current password">
+                    </div>
+                    <div class="form-group mt-2">
+                        <label for="inputnewPassword" class="form-label">
+                            New Password</label>
+                        <input type="password" class="form-control" name="new_password"
+                            placeholder="Enter your new password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn theme-btn" data-bs-dismiss="modal">Save</a>
+
+                </div>
+                    {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+                    {% if message %}<p style="color:green;">{{ message }}</p>{% endif %}
+
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+    <!-- edit password number modal end -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const forms = document.querySelectorAll("form");
+
+    forms.forEach(form => {
+        const inputs = form.querySelectorAll("input[name]");
+
+        // Save the original values
+        inputs.forEach(input => {
+            input.setAttribute("data-original", input.value);
+        });
+
+        form.addEventListener("submit", function (e) {
+            let hasChanged = false;
+
+            inputs.forEach(input => {
+                const original = input.getAttribute("data-original") || "";
+                const current = input.value || "";
+
+                // For file inputs, check if a file is selected
+                if (input.type === "file") {
+                    if (input.files.length > 0) {
+                        hasChanged = true;
+                    }
+                } else {
+                    if (original.trim() !== current.trim()) {
+                        hasChanged = true;
+                    }
+                }
+            });
+
+            if (!hasChanged) {
+                e.preventDefault();
+              
+            }
+        });
+    });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const link = document.getElementById('current_profile');
+    if (link) {
+        const fileName = link.textContent.replace('uploads/', '');
+        link.textContent = fileName;
+    }
+});
+</script>
+
+
+
+
+{% endblock content %}

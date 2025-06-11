@@ -1,0 +1,72 @@
+
+{% extends "./base.html" %}
+
+{% block content %}
+
+<!-- Container-fluid starts-->
+            <div class="page-body">
+                <!-- All User Table Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>Restaurant Requests</h5>
+                                    </div>
+
+                                    <div class="table-responsive theme-scrollbar table-product">
+                                        <table class="table category-table dataTable no-footer" id="table_id">
+                                            <thead>
+                                                <tr>
+                                                    <th>No.</th>
+                                                    <th>Resaurant Name</th>
+                                                    <th>Requested On</th>
+                                                    <th>Option</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                {% for restaurant in restaurants %}
+                                                    <tr>
+                                                        <td class="f-w-600">{{restaurant.id}}</td>
+                                                        <td>
+                                                            <div class="user-name">
+                                                                <span>{{restaurant.restaurant_name}}</span>
+                                                            </div>
+                                                        </td>
+
+                                                        <td class="f-w-600">{{restaurant.created_at}}</td>
+
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="{%url 'restaurant_approve' restaurant.id%}">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="{% url 'delete-restaurant' restaurant.id %}">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- All User Table Ends-->
+
+
+            </div>
+            <!-- Container-fluid end -->
+
+            {%endblock%}

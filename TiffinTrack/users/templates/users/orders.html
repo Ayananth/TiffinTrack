@@ -1,0 +1,176 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- page head section starts -->
+     {% include "./profile-head.html" %}
+    <!-- page head section end -->
+
+    <!-- profile section starts -->
+    <section class="profile-section section-b-space">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-lg-3">
+                        {% include "./profile-sidebar.html" %}
+                </div>
+                <div class="col-lg-9">
+                    <div class="my-order-content">
+                        {% include "./messages.html" %}
+                        <div class="title">
+                            <div class="loader-line"></div>
+                            <h3>My Order</h3>
+                        </div>
+                        <p>Wallet Balance: {{wallet_balance}}</p>
+
+                                           <div class="filters">
+                                            <form method="get" class="row g-3 align-items-center mb-3">
+                                                <div class="col-auto">
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select name="status" class="form-select">
+                                                        <option value="">All</option>
+                                                        <option value="PENDING" {% if request.GET.status == "PENDING" %}selected{% endif %} selected>PENDING</option>
+                                                        <option value="DELIVERED" {% if request.GET.status == "DELIVERED" %}selected{% endif %}>DELIVERED</option>
+                                                        <option value="CANCELLED" {% if request.GET.status == "CANCELLED" %}selected{% endif %}>CANCELLED</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <label for="delivery_date" class="form-label">Delivery Date</label>
+                                                    <input type="date" class="form-control" name="delivery_date" value="{{ request.GET.delivery_date }}">
+                                                </div>
+
+                                               <div class="col-auto mt-4">
+                                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                                    <a href="?" class="btn btn-secondary">Reset</a>
+                                                </div>
+                                            </form>
+
+                                            </div>
+
+
+
+
+                        <div class="sorting d-flex justify-content-end">
+                            <p class="p-2">Sort By</p>
+                            <p class="p-2"><a href="?sort=delivery_date&dir={% if sort == 'delivery_date' and dir == 'asc' %}desc{% else %}asc{% endif %}">Delivery Date</a></p>
+                            <p class="p-2"><a href="?sort=status&dir={% if sort == 'status' and dir == 'asc' %}desc{% else %}asc{% endif %}">Status</a></p>
+                        </div>
+<table>
+    <thead>
+        <tr>
+            <th>Restaurant</th>
+            <th>Delivery Date</th>
+            <th>Order ID</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Cancellation Time</th>
+            <th>Total Amount</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>
+                <img src="{{ order.restaurant.restaurant_image.url }}" alt="Restaurant Logo" width="30">
+                {{ order.restaurant.restaurant_name }}
+            </td>
+            <td>{{ order.delivery_date }}</td>
+            <td>{{ order.id }}</td>
+            <td>{{ order.food_category.name }}</td>
+            <td>{{ order.status }}</td>
+            <td>{{ order.food_category.cancellation_time }}</td>
+            <td>Rs. {{ order.food_category.price }}</td>
+            <td>
+                {% if order.status == 'PENDING' %}
+                <a href="#cancel_order" data-bs-toggle="modal" data-orderid="{{ order.id }}">Cancel</a>
+                {% else %}
+                <span>{{ order.status }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8">No orders found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+                        <!-- Pagination Controls -->
+                        {% include "./paginator.html" %}
+
+
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- profile section end -->
+
+
+    <!-- logout modal starts -->
+    <div class="modal address-details-modal fade" id="cancel_order" tabindex="-1" aria-labelledby="login-out"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="login-out">Cancel Order</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Choose one option</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="refund" class="btn gray-btn me-2 mt-0" data-bs-dismiss="modal">Refund to Wallet</a>
+                    <a href="#" id="extend" class="btn gray-btn me-2 mt-0" data-bs-dismiss="modal">Extend subscription</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- logout modal end -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const myModal = document.getElementById('cancel_order');
+
+    if (myModal) {
+      myModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Button that triggered the modal
+        const orderId = button.getAttribute('data-orderid');
+
+        const refund = document.getElementById("refund");
+        const extend = document.getElementById("extend");
+
+        if (refund) {
+          // Remove previous listeners if any
+          refund.replaceWith(refund.cloneNode(true));
+          const newRefund = document.getElementById("refund");
+
+          newRefund.addEventListener('click', function () {
+            console.log("User asked for refund");
+            window.location.href = `cancel/${orderId}`;  // Use correct URL format
+          });
+        }
+
+        if (extend) {
+          extend.replaceWith(extend.cloneNode(true));
+          const newExtend = document.getElementById("extend");
+
+          newExtend.addEventListener('click', function () {
+            console.log("User asked for extension");
+            window.location.href = `extend/${orderId}`;  // Use correct URL format
+
+          });
+        }
+      });
+    }
+  });
+</script>
+
+{%endblock%}

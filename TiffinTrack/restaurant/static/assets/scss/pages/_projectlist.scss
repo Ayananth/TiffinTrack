@@ -1,0 +1,24 @@
+/**=====================
+     Project List CSS Start
+==========================**/
+.tab-content {
+	.row {
+		>div.col-xl-4 {
+
+			$show-numbers: true;
+
+			@if $show-numbers {
+				@for $i from 1 through 15 {
+					&:nth-child(#{$i}) {
+						animation-fill-mode: both;
+						animation: fadeIncustom .5s linear #{$i}00000ms;
+					}
+				}
+			}
+		}
+	}
+}
+
+/**=====================
+     Project List CSS End
+==========================**/
