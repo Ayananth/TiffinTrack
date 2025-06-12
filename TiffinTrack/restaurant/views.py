@@ -296,23 +296,47 @@ def cancel_order(request, order_id):
         messages.error(request,"Server error")
     finally:
         return redirect('restaurant-orders')
-    
-@login_required(login_url='admin-login')
+
+@login_required
 def deliver_order(request, order_id):
     try:
         order = get_object_or_404(Orders, id=order_id)
+        # Prevent marking as delivered before the delivery date
         if order.delivery_date > timezone.now().date():
             messages.error(request, "Cannot mark as delivered before delivery date.")
             return redirect('restaurant-orders')
+        # Mark current order as delivered
         order.status = "DELIVERED"
         order.save()
+        subscription = order.subscription_id
+        if subscription:
+            logger.info(f"Checking subscription #{subscription.id} for deactivation")
+            # Check if subscription period has ended
+            logger.info(f"{subscription.extended_end_date.date()=}")
+            logger.info(f"{timezone.now().date()=}")
+
+            if subscription.extended_end_date.date() <= timezone.now().date():
+                has_pending_orders = Orders.objects.filter(
+                    subscription_id=subscription,
+                    status='PENDING'
+                ).exists()
+                logger.info(f"{has_pending_orders=}")
+
+                if not has_pending_orders:
+                    subscription.is_active = False
+                    subscription.save()
+                    logger.info(f"Deactivated subscription #{subscription.id}")
+            else:
+                logger.info("Subscription not ended")
+
         messages.success(request, f"Order Delivered")
+
     except Exception as e:
         logger.error(f"{e=}")
-        messages.error(request,"Server error")
+        messages.error(request, "Server error")
+
     finally:
         return redirect('restaurant-orders')
-
 
 
 
