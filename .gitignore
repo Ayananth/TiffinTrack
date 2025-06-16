@@ -5,3 +5,7 @@ migrations
 .env
 logs
 prod_env
+staticfiles
+django.log
+uploads
+env
