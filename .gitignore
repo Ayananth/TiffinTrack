@@ -5,3 +5,4 @@ migrations
 .env
 logs
 prod_env
+staticfiles
