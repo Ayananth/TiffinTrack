@@ -31,7 +31,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", False)
 
-ALLOWED_HOSTS = os.environ('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+
 
 
 SITE_ID = 1
