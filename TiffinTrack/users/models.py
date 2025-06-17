@@ -140,9 +140,22 @@ class Orders(models.Model):
 
 class RestaurantReport(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE)  # assuming you have a Restaurant model
+    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Report by {self.user} on {self.restaurant}"
+    
+class OrderReport(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE)
+    order = models.ForeignKey(Orders, on_delete=models.CASCADE)
+    message = models.TextField(blank=True, null=True)
+    image = models.ImageField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_resolved = models.BooleanField(default=False)
+    resolve_message = models.CharField(blank=True)
+
+    def __str__(self):
+        return f"{self.user} on {self.restaurant}, order {self.order}"

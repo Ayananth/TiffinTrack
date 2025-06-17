@@ -48,7 +48,7 @@ logger = logging.getLogger('myapp')
 
 
 
-from .models import Address, Orders, Wallet
+from .models import Address, Orders, Wallet, OrderReport
 from .forms import AddressForm, SubscriptionForm, RestaurantReportForm
 from django.utils import timezone
 from collections import defaultdict
@@ -958,5 +958,38 @@ def report_restaurant(request, restaurant_id):
             report.save()
             messages.success(request, 'Your report has been submitted.')
     return redirect('restaurant-details', pk=restaurant.id)
-    
+
+
+
+@login_required
+def report_order(request):
+    if request.method == 'POST':
+        title = request.POST.get('issue')
+        image = request.FILES.get('img')
+        order_id = request.POST.get('order_id')
+
+        if not title:
+            return JsonResponse({'error': 'description required.'}, status=400)
+        try:
+            order = Orders.objects.get(id=order_id)
+        except Orders.DoesNotExist:
+            return JsonResponse({'error': 'invalid order.'}, status=400)
+        
+        if not order.status == "DELIVERED":
+            return JsonResponse({'error': 'Order is not delivered.'}, status=400)
+
+        report = OrderReport.objects.create(
+            user = request.user,
+            restaurant = order.restaurant,
+            order = order,
+            message = title,
+            image = image
+        )
+        return JsonResponse({
+            'message': 'Reported the issue',
+        })
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
 

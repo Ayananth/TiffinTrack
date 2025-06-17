@@ -510,7 +510,7 @@
                     <div class="row g-3">
 
                         <div class="col-md-6">
-                        <form id="review-form" method="POST" action="{% url 'report-restaurant' restaurant.id %}?next=review">
+                        <form id="report-form" method="POST" action="{% url 'report-restaurant' restaurant.id %}?next=review">
                             {% csrf_token %}
                             {{ report_form.as_p }}
                             <div id="form-errors" class="text-danger mt-2"></div>
