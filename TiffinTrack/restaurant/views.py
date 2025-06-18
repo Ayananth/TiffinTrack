@@ -315,19 +315,6 @@ def deliver_order(request, order_id):
             logger.info(f"{subscription.extended_end_date.date()=}")
             logger.info(f"{timezone.now().date()=}")
 
-            if subscription.extended_end_date.date() <= timezone.now().date():
-                has_pending_orders = Orders.objects.filter(
-                    subscription_id=subscription,
-                    status='PENDING'
-                ).exists()
-                logger.info(f"{has_pending_orders=}")
-
-                if not has_pending_orders:
-                    subscription.is_active = False
-                    subscription.save()
-                    logger.info(f"Deactivated subscription #{subscription.id}")
-            else:
-                logger.info("Subscription not ended")
 
         messages.success(request, f"Order Delivered")
 

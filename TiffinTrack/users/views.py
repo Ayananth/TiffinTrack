@@ -629,10 +629,18 @@ def cancel_order(request, order_id):
     try:
         order = get_object_or_404(Orders, id=order_id, user=request.user)
         now = timezone.now()
-        cancellation_datetime = datetime.combine(now.date(), order.food_category.cancellation_time)
-        cancellation_datetime = timezone.make_aware(cancellation_datetime, timezone.get_current_timezone())
+        cancellation_time = order.food_category.cancellation_time
 
-        if now > cancellation_datetime:
+        # Make sure the time is naive
+        if cancellation_time.tzinfo is not None:
+            cancellation_time = cancellation_time.replace(tzinfo=None)
+
+        cancellation_datetime_naive = datetime.combine(order.delivery_date, cancellation_time)
+        cancellation_datetime = timezone.make_aware(cancellation_datetime_naive, timezone.get_current_timezone())
+
+
+
+        if now >= cancellation_datetime:
             messages.error(request, "Late for order cancellation")
             return redirect('orders')
         if order.cancel():
@@ -651,10 +659,16 @@ def extend_subscription(request, order_id):
     try:
         order = get_object_or_404(Orders, id=order_id, user=request.user)
         now = timezone.now()
-        cancellation_datetime = datetime.combine(order.delivery_date, order.food_category.cancellation_time)
-        cancellation_datetime = timezone.make_aware(cancellation_datetime, timezone.get_current_timezone())
+        cancellation_time = order.food_category.cancellation_time
 
-        if now > cancellation_datetime:
+        # Make sure the time is naive
+        if cancellation_time.tzinfo is not None:
+            cancellation_time = cancellation_time.replace(tzinfo=None)
+
+        cancellation_datetime_naive = datetime.combine(order.delivery_date, cancellation_time)
+        cancellation_datetime = timezone.make_aware(cancellation_datetime_naive, timezone.get_current_timezone())
+
+        if now >= cancellation_datetime:
             messages.error(request, "Late for order cancellation")
             return redirect('orders')
         
