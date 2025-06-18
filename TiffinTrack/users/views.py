@@ -38,6 +38,10 @@ from django.http import HttpResponse
 from weasyprint import HTML
 import tempfile
 
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
 import logging
 logger = logging.getLogger('myapp') 
 
@@ -869,12 +873,15 @@ def refer(request):
     user = request.user
     referral, created = Referral.objects.get_or_create(user=user)
     pending = UserProfile.objects.filter(referral_code_used=referral.code, referral_bonus_used=False).count()
+    domain = os.environ.get("DOMAIN_URL", "https://ayananth.xyz/")
+
 
 
     context = {
         'title': 'Refer and Earn',
         'referral': referral,
-        'pending': pending
+        'pending': pending,
+        'domain':domain
     }
 
 
