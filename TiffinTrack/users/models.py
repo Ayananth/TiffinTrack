@@ -147,7 +147,17 @@ class RestaurantReport(models.Model):
     def __str__(self):
         return f"Report by {self.user} on {self.restaurant}"
     
+    
 class OrderReport(models.Model):
+
+    STATUS_CHOICES = [
+        ('REFUNDED', 'Refunded'),
+        ('REJECTED', 'Rejected'),
+        ('PENDING', 'Pending'),
+    ]
+
+
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE)
     order = models.ForeignKey(Orders, on_delete=models.CASCADE)
@@ -156,6 +166,7 @@ class OrderReport(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
     resolve_message = models.CharField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
 
     def __str__(self):
         return f"{self.user} on {self.restaurant}, order {self.order}"

@@ -977,6 +977,11 @@ def report_order(request):
         
         if not order.status == "DELIVERED":
             return JsonResponse({'error': 'Order is not delivered.'}, status=400)
+        
+        if OrderReport.objects.filter(order=order).exists():
+            return JsonResponse({'error': 'Already reported. '}, status=400)
+
+
 
         report = OrderReport.objects.create(
             user = request.user,
