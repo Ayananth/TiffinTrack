@@ -8,6 +8,9 @@ from django.conf import settings
 from accounts.models import CustomUser
 from django.urls import reverse
 from coupons.models import Referral
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 
 
@@ -24,6 +27,7 @@ def send_email_on_new_restaurant(sender, instance, created, **kwargs):
     if created:
         admin_emails = list(CustomUser.objects.filter(is_superuser=True).values_list('email', flat=True))
         url = reverse('restaurants')
+        domain = os.environ.get("DOMAIN_URL", "https://ayananth.xyz/")
         send_mail(
             subject='TiffinTrack-New Restaurant Registration',
             message=f'''
@@ -34,7 +38,7 @@ def send_email_on_new_restaurant(sender, instance, created, **kwargs):
             Phone: {instance.contact_number}
             Location: {instance.location_name}
             Approved: {instance.is_approved}
-            View here: http://localhost:8000{url}
+            View here: {domain}{url}
                     ''',
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=admin_emails,
