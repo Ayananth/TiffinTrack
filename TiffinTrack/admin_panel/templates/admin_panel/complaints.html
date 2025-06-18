@@ -1,0 +1,108 @@
+
+{% extends "./base.html" %}
+
+{% block content %}
+
+<!-- Container-fluid starts-->
+                <!-- All User Table Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    {% include "./messages.html" %}
+                                    <div class="title-header option-title">
+                                        <h5>Reports</h5>
+                                        <!-- <a href="#" class="btn btn-dashed">Download all coupons</a> -->
+                                    </div>
+                                    <div>
+
+                                        <div class="title-header option-title">
+                                            
+                                        </div>
+                                        <div class="table-responsive theme-scrollbar">
+                                            
+                                            
+
+
+                                            <table class="table category-table dataTable no-footer" id="table_id">
+                                                <thead>
+                                                    <tr>
+                                                        <th>User</th>
+                                                        <th>Restaurant</th>
+                                                        <th>Order Id</th>
+                                                        <th>Message</th>
+                                                        <th>Created At</th>
+                                                        <th>Status</th>
+                                                        <th class="text-center">Option</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    {%for report  in reports%}
+                                                    <tr data-bs-toggle="offcanvas">
+                                                        <td>{{report.user}}</td>
+
+                                                        <td> {{report.restaurant}}</td>
+
+                                                        <td>{{report.id}}</td>
+                                                        
+                                                        <td>{{report.message}}</td>
+
+                                                        <td>{{report.created_at|date}}</td>
+
+                                                        {%if report.is_resolved%}
+
+                                                        <td class="status-close"><span>Resolved</span></td>
+
+                                                        {%else%}
+                                                        <td class="status-danger"><span>Pending</span></td>
+                                                        {%endif%}
+
+ 
+                                                        <td>
+                                                            <ul>
+       
+                                                                <li>
+                                                                <a href="{% url 'admin-report-order-detail' report.id %}">
+                                                                    <i class="ri-eye-line"></i>
+                                                                </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>           
+                                                    </tr>
+
+                                                    {%empty%}
+
+                                                    <tr>
+                                                        <td colspan="5">No reports</td>
+                                                    </tr>
+
+
+
+                                                    {%endfor%}
+
+
+
+                                                    
+                                                </tbody>
+                                            </table>
+                        <!-- Pagination Controls -->
+                                                                                        {% include "./pagination.html" with page_obj=reports %}
+
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- All User Table Ends-->
+
+
+            <!-- Container-fluid end -->
+
+            {%endblock%}

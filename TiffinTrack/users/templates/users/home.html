@@ -43,20 +43,22 @@
                 <h2>Featured Restaurants</h2>
                 <div class="loader-line"></div>
                 <!-- sorting -->
-                <ul class="nav nav-pills restaurant-tab tab-style2 w-100 border-0 m-0" id="Tab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="pill-delivery-tab" data-bs-toggle="pill"
-                            data-bs-target="#delivery-tab">
-                            Nearest
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pill-rating-tab" data-bs-toggle="pill"
-                            data-bs-target="#rating-tab">
-                            Rating
-                        </button>
-                    </li>
-                </ul>
+            <ul class="nav nav-pills restaurant-tab tab-style2 w-100 border-0 m-0" id="Tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a href="?{% if request.GET.restaurant_name %}restaurant_name={{ request.GET.restaurant_name }}&{% endif %}sort=" 
+                    class="nav-link {% if not request.GET.sort %}active{% endif %}" 
+                    id="pill-delivery-tab">
+                        Nearest
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a href="?{% if request.GET.restaurant_name %}restaurant_name={{ request.GET.restaurant_name }}&{% endif %}sort=rating" 
+                    class="nav-link {% if request.GET.sort == 'rating' %}active{% endif %}" 
+                    id="pill-rating-tab">
+                        Rating
+                    </a>
+                </li>
+            </ul>
                 <!-- sorting end -->
             </div>
             <div class="tab-content restaurant-content" id="TabContent">
@@ -139,22 +141,23 @@
                             
                             {%endfor%}
                             <!-- Pagination Controls -->
-                            <div class="pagination p-4">
+
+                            <div class="pagination p-4 d-flex justify-content-center">
                                 <span class="step-links">
-                                    {% if orders.has_previous %}
+                                    {% if restaurants.has_previous %}
                                         <a href="?page=1" class="p-2">&laquo; first</a>
-                                        <a href="?page={{ orders.previous_page_number }}" class="p-2">previous</a>
+                                        <a href="?page={{ restaurants.previous_page_number }}" class="p-2">previous</a>
                                     {% endif %}
     
-                                    {% if orders.paginator.num_pages > 1 %}
+                                    {% if restaurants.paginator.num_pages > 1 %}
                                         <span class="current p-2">
-                                            Page {{ orders.number }} of {{ orders.paginator.num_pages }}
+                                            Page {{ restaurants.number }} of {{ restaurants.paginator.num_pages }}
                                         </span>
                                     {% endif %}
     
-                                    {% if orders.has_next %}
-                                        <a href="?page={{ orders.next_page_number }}" class="p-2">next</a>
-                                        <a href="?page={{ orders.paginator.num_pages }}" class="p-2">last &raquo;</a>
+                                    {% if restaurants.has_next %}
+                                        <a href="?page={{ restaurants.next_page_number }}" class="p-2">next</a>
+                                        <a href="?page={{ restaurants.paginator.num_pages }}" class="p-2">last &raquo;</a>
                                     {% endif %}
                                 </span>
                             </div>

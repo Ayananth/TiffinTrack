@@ -39,6 +39,13 @@ urlpatterns = [
     path('report/restaurant/<int:restaurant_id>/', views.report_restaurant, name='report-restaurant'),
 
 
+    path('report/order', views.report_order, name='report-order'),
+
+
+
+
+
+
 
 
 ]

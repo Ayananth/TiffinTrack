@@ -58,6 +58,13 @@ urlpatterns = [
     path('report/delete/<int:id>/', views.delete_report, name='admin-report-delete'),
 
 
+    path('order-reports/', views.report_order, name='admin-report-order'),
+    path('order-reports/<int:id>/', views.report_detail, name='admin-report-order-detail'),
+    path('order-reports/refund/<int:id>/', views.refund_report, name='admin-report-order-refund'),
+    path('order-reports/reject', views.reject_report, name='admin-report-order-reject'),
+
+
+
 
 
 

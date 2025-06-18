@@ -31,7 +31,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", False)
 
-ALLOWED_HOSTS = os.environ('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+
 
 
 SITE_ID = 1
@@ -73,7 +74,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'accounts.middleware.BlockedUserLogoutMiddleware',
-    # 'accounts.middleware.LoginRedirectMessageMiddleware',
+    'accounts.middleware.CheckSubscriptionMiddleware',
 ]
 
 
