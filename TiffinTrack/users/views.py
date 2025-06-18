@@ -100,6 +100,13 @@ def home(request):
         distance__lte=D(km=20)
     ).order_by('distance')
 
+    sort_by = request.GET.get('sort')
+
+    if sort_by == 'rating':
+        restaurants = restaurants.order_by('avg_rating', 'distance')
+    else:
+        restaurants = restaurants.order_by('distance')
+
     paginator = Paginator(restaurants, 12)  # Show 10 transactions per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
