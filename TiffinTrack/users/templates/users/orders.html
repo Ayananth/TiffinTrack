@@ -86,7 +86,25 @@
                 <a href="#cancel_order" data-bs-toggle="modal" data-orderid="{{ order.id }}">Cancel</a>
                 {% elif order.status == 'DELIVERED' %}
                 <span>DELIVERED, </span>
+
+                {%if order.report.message%}
+                <div class="fs-6 text-muted text-wrap text-break" style="max-width: 250px;">
+
+                    Reported issue: {{order.report.message}}
+                    Status: {{order.report.status}}
+                    Response: {{order.report.resolve_message}}
+                </div>
+
+                {%else%}
                 <a href="#report_order" data-bs-toggle="modal" data-orderid="{{ order.id }}">Report</a>
+
+
+
+
+                {%endif%}
+
+
+
                 {% else %}
                 <span>{{ order.status }}</span>
                 {% endif %}

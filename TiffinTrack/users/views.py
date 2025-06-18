@@ -624,6 +624,15 @@ def orders(request):
     wallet = getattr(request.user, 'wallet', None)
     wallet_balance = wallet.balance if wallet else 0
 
+    order_ids = [order.id for order in page_obj]
+    order_reports = OrderReport.objects.filter(user=user, order_id__in=order_ids)
+    reports_dict = {report.order_id: report for report in order_reports}
+
+    # Attach report to each order (optional, can be done in template too)
+    for order in page_obj:
+        order.report = reports_dict.get(order.id)
+
+
 
     context = {'orders': page_obj,
                'title':"Orders",
