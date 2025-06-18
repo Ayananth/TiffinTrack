@@ -48,7 +48,7 @@ logger = logging.getLogger('myapp')
 
 
 
-from .models import Address, Orders, Wallet
+from .models import Address, Orders, Wallet, OrderReport
 from .forms import AddressForm, SubscriptionForm, RestaurantReportForm
 from django.utils import timezone
 from collections import defaultdict
@@ -99,6 +99,13 @@ def home(request):
     ).filter(
         distance__lte=D(km=20)
     ).order_by('distance')
+
+    sort_by = request.GET.get('sort')
+
+    if sort_by == 'rating':
+        restaurants = restaurants.order_by('avg_rating', 'distance')
+    else:
+        restaurants = restaurants.order_by('distance')
 
     paginator = Paginator(restaurants, 12)  # Show 10 transactions per page
     page_number = request.GET.get('page')
@@ -629,10 +636,18 @@ def cancel_order(request, order_id):
     try:
         order = get_object_or_404(Orders, id=order_id, user=request.user)
         now = timezone.now()
-        cancellation_datetime = datetime.combine(now.date(), order.food_category.cancellation_time)
-        cancellation_datetime = timezone.make_aware(cancellation_datetime, timezone.get_current_timezone())
+        cancellation_time = order.food_category.cancellation_time
 
-        if now > cancellation_datetime:
+        # Make sure the time is naive
+        if cancellation_time.tzinfo is not None:
+            cancellation_time = cancellation_time.replace(tzinfo=None)
+
+        cancellation_datetime_naive = datetime.combine(order.delivery_date, cancellation_time)
+        cancellation_datetime = timezone.make_aware(cancellation_datetime_naive, timezone.get_current_timezone())
+
+
+
+        if now >= cancellation_datetime:
             messages.error(request, "Late for order cancellation")
             return redirect('orders')
         if order.cancel():
@@ -651,10 +666,16 @@ def extend_subscription(request, order_id):
     try:
         order = get_object_or_404(Orders, id=order_id, user=request.user)
         now = timezone.now()
-        cancellation_datetime = datetime.combine(order.delivery_date, order.food_category.cancellation_time)
-        cancellation_datetime = timezone.make_aware(cancellation_datetime, timezone.get_current_timezone())
+        cancellation_time = order.food_category.cancellation_time
 
-        if now > cancellation_datetime:
+        # Make sure the time is naive
+        if cancellation_time.tzinfo is not None:
+            cancellation_time = cancellation_time.replace(tzinfo=None)
+
+        cancellation_datetime_naive = datetime.combine(order.delivery_date, cancellation_time)
+        cancellation_datetime = timezone.make_aware(cancellation_datetime_naive, timezone.get_current_timezone())
+
+        if now >= cancellation_datetime:
             messages.error(request, "Late for order cancellation")
             return redirect('orders')
         
@@ -958,5 +979,43 @@ def report_restaurant(request, restaurant_id):
             report.save()
             messages.success(request, 'Your report has been submitted.')
     return redirect('restaurant-details', pk=restaurant.id)
-    
+
+
+
+@login_required
+def report_order(request):
+    if request.method == 'POST':
+        title = request.POST.get('issue')
+        image = request.FILES.get('img')
+        order_id = request.POST.get('order_id')
+
+        if not title:
+            return JsonResponse({'error': 'description required.'}, status=400)
+        try:
+            order = Orders.objects.get(id=order_id)
+        except Orders.DoesNotExist:
+            return JsonResponse({'error': 'invalid order.'}, status=400)
+        
+        if not order.status == "DELIVERED":
+            return JsonResponse({'error': 'Order is not delivered.'}, status=400)
+        
+        if OrderReport.objects.filter(order=order).exists():
+            return JsonResponse({'error': 'Already reported. '}, status=400)
+
+
+
+        report = OrderReport.objects.create(
+            user = request.user,
+            restaurant = order.restaurant,
+            order = order,
+            message = title,
+            image = image
+        )
+        return JsonResponse({
+            'message': 'Reported the issue',
+        })
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
 

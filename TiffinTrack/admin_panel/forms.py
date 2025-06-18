@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory
 from django.db.models import DateField, DateTimeField
 from django.contrib.gis.geos import Point
+from users.models import OrderReport
 
 
 class AdminUserRegisterForm(UserCreationForm):
@@ -14,7 +15,7 @@ class AdminUserRegisterForm(UserCreationForm):
 
 
 
-    def clean(self):
+    def clean(self):    
         cleaned_data = super().clean()
         if cleaned_data.get("password1") != cleaned_data.get("password2"):
             raise forms.ValidationError("Passwords do not match.")
@@ -75,3 +76,7 @@ class MenuManageForm(forms.ModelForm):
 
 
 
+class ComplaintsForm(forms.ModelForm):
+    class Meta:
+        model = OrderReport
+        fields = '__all__'

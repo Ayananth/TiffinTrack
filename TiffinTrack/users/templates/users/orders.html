@@ -16,6 +16,7 @@
                 <div class="col-lg-9">
                     <div class="my-order-content">
                         {% include "./messages.html" %}
+                        <div class="message text-success" id="msg"></div>
                         <div class="title">
                             <div class="loader-line"></div>
                             <h3>My Order</h3>
@@ -144,13 +145,16 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="login-out">Cancel Order</h1>
+                    <h1 class="modal-title fs-5" id="login-out">Report Issue</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Write your issue</p>
-                        <form id="review-form" method="POST" action="#">
+                        <div class="message text-danger" id="msg_modal"></div>
+                        <form id="review-form" method="POST" action="#" enctype="multipart/form-data">
                             {% csrf_token %}
+                            <label for="img"><p>Select image (optional ):</p></label>
+                            <input type="file" id="img" name="img" accept="image/*">
+                            <label for="issue"><p>Write your issue</p></label>
                             <textarea name="issue" id="issue"></textarea>
                             <div id="form-errors" class="text-danger mt-2"></div>
                             <input type="hidden" name="restaurant_id" value="{{restaurant.id}}">
@@ -200,6 +204,89 @@
       });
     }
   });
+  
 </script>
+
+
+<script>
+
+    let currentOrderId = null;
+    const reportModal = document.getElementById('report_order');
+    reportModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        currentOrderId = button.getAttribute('data-orderid');
+    });
+
+document.getElementById('review-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const button = event.relatedTarget;
+
+    console.log(currentOrderId);
+    
+
+    if (currentOrderId) {
+        formData.append('order_id', currentOrderId);
+    }
+
+
+
+    const csrftoken = getCookie('csrftoken');  // If CSRF is enabled
+
+    try {
+        const response = await fetch("{% url 'report-order' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            form.reset();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('report_order'));
+            modal.hide();
+
+            const msgBox = document.getElementById('msg');
+            msgBox.innerText = "Issue reported successfully";
+
+            // Hide the message after 3 seconds (3000 ms)
+            setTimeout(() => {
+                msgBox.innerText = "";
+            }, 3000);
+
+             
+        } else {
+            document.getElementById('form-errors').innerText = data.error || "Something went wrong.";
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('form-errors').innerText = "Network error occurred.";
+    }
+});
+
+// Helper to get CSRF token from cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
 
 {%endblock%}

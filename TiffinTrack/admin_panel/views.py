@@ -3,12 +3,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm, FoodItemManageForm, MenuManageForm, FoodCategoryManageForm
+from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm, FoodItemManageForm, MenuManageForm, FoodCategoryManageForm, ComplaintsForm
 from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
 from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory, Subscriptions
 from django.core.paginator import Paginator
-from users.models import Orders, RestaurantReport
+from users.models import Orders, RestaurantReport, OrderReport, Wallet
 from django.utils.timezone import now
 from django.utils.timezone import localtime
 from datetime import datetime
@@ -642,3 +642,85 @@ def delete_report(request, id):
     messages.success(request, "report deleted successfully.")
     return redirect('admin-report-restaurant')
 
+
+
+
+@login_required(login_url='admin-login')
+def report_order(request):
+    user = request.user
+    restaurant = request.GET.get('restaurant')
+    user = request.GET.get('user')
+    status = request.GET.get('status')
+    created = request.GET.get('created')
+    reports = OrderReport.objects.all().order_by('is_resolved')
+    paginator = Paginator(reports, 10)  # Show 5 orders per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {'reports': page_obj,
+                }
+    return render(request, './admin_panel/complaints.html', context)
+
+
+def report_detail(request, id):
+    try:
+        report = OrderReport.objects.get(id=id)
+    except OrderReport.DoesNotExist:
+        return render(request, './admin_panel/complaints.html')
+    
+    if request.method == 'POST':
+        form = ComplaintsForm(request.POST, instance=report)
+        if form.is_valid():
+            form.save()
+            return redirect('admin-coupons')  # replace with your list view
+    else:
+        form = ComplaintsForm(instance=report)
+
+    context = {
+        'report': report
+    }
+    return render(request, './admin_panel/complaint_detail.html', context)
+
+
+
+
+
+
+@login_required
+def refund_report(request, id):
+    logger.info("Refund request received")
+    try:
+        report = get_object_or_404(OrderReport, id=id)
+    except OrderReport.DoesNotExist:
+        return redirect('admin-report-order')
+    
+    try:
+        refund_amount = report.order.food_category.price
+        wallet, _ = Wallet.objects.get_or_create(user=report.user)
+        wallet.credit(report.order.food_category.price, description=f"Refund for order #{report.id}")
+        report.status = 'REFUNDED'
+        report.is_resolved = True
+        report.resolve_message = f"Refunded ₹{refund_amount}"
+        report.save()
+        return redirect('admin-report-order-detail', id=id)
+    except Exception as e:
+        logger.error(e)
+        return redirect('admin-report-order')
+
+@login_required
+def reject_report(request):
+    print("Reject request received")
+    id = request.POST.get("id")
+    msg = request.POST.get("reason")
+
+    print(id)
+    if not id:
+        return redirect('admin-report-order')
+    try:
+        report = get_object_or_404(OrderReport, id=id)
+    except OrderReport.DoesNotExist:
+        return redirect('admin-report-order')
+    report.status = 'REJECTED'
+    report.is_resolved = True
+    report.resolve_message = f"{msg}"
+    report.save()
+    return redirect('admin-report-order-detail', id=id)

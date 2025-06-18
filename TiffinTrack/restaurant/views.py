@@ -24,6 +24,13 @@ from .forms import FoodItemManageForm, MenuManageForm, FoodCategoryManageForm, O
 import logging
 logger = logging.getLogger('myapp') 
 
+def redirect_with_get_params(request, url_name):
+    base_url = reverse(url_name)
+    query_string = request.META.get('QUERY_STRING', '')
+    if query_string:
+        return redirect(f"{base_url}?{query_string}")
+    return redirect(base_url)
+
 
 
 @login_required(login_url='login')
@@ -248,6 +255,8 @@ def users(request):
 
 @login_required(login_url='admin-login')
 def orders(request):
+    print(request.GET)
+
     user = request.user
     restaurant = get_object_or_404(RestaurantProfile, user=request.user)
     sort_by = request.GET.get('sort', 'delivery_date')  # default: delivery_date
@@ -295,16 +304,19 @@ def cancel_order(request, order_id):
         logger.error(f"{e=}")
         messages.error(request,"Server error")
     finally:
-        return redirect('restaurant-orders')
+        return redirect_with_get_params(request, 'restaurant-orders')
+
 
 @login_required
 def deliver_order(request, order_id):
+    print(request.GET)
     try:
         order = get_object_or_404(Orders, id=order_id)
         # Prevent marking as delivered before the delivery date
         if order.delivery_date > timezone.now().date():
             messages.error(request, "Cannot mark as delivered before delivery date.")
-            return redirect('restaurant-orders')
+            return redirect_with_get_params(request, 'restaurant-orders')
+
         # Mark current order as delivered
         order.status = "DELIVERED"
         order.save()
@@ -315,19 +327,6 @@ def deliver_order(request, order_id):
             logger.info(f"{subscription.extended_end_date.date()=}")
             logger.info(f"{timezone.now().date()=}")
 
-            if subscription.extended_end_date.date() <= timezone.now().date():
-                has_pending_orders = Orders.objects.filter(
-                    subscription_id=subscription,
-                    status='PENDING'
-                ).exists()
-                logger.info(f"{has_pending_orders=}")
-
-                if not has_pending_orders:
-                    subscription.is_active = False
-                    subscription.save()
-                    logger.info(f"Deactivated subscription #{subscription.id}")
-            else:
-                logger.info("Subscription not ended")
 
         messages.success(request, f"Order Delivered")
 
@@ -336,7 +335,7 @@ def deliver_order(request, order_id):
         messages.error(request, "Server error")
 
     finally:
-        return redirect('restaurant-orders')
+        return redirect_with_get_params(request, 'restaurant-orders')
 
 
 

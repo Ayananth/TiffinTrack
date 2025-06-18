@@ -25,7 +25,7 @@ class SubscriptionForm(forms.ModelForm):
                 self.add_error('start_date', "Start date cannot be in the past.")
 
         if start and end:
-            if start >= end:
+            if start > end:
                 self.add_error('end_date', "End date must be after start date.")
 
 

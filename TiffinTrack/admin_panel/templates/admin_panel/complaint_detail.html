@@ -1,0 +1,244 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="nav nav-pills flex-nowrap mb-3" id="pills-tab" role="tablist">
+                                        <li class="nav-item m-0" role="presentation">
+                                            <button class="nav-link active" id="pills-home-tab"
+                                                data-bs-toggle="pill" data-bs-target="#pills-home"
+                                                type="button">Complaint details</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- settings -->
+                                <div class="col-12">
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+
+
+
+                                                            <div class="col-lg-8">
+                                                                <!-- customer details -->
+                                                                <div class="card order-details-card mb-4">
+                                                                    <div class="card-header  text-white">
+                                                                        <h5 class="mb-0"><i class="fas fa-user me-2"></i>Customer Information</h5>
+                                                                    </div>
+                                                                    <div class="card-body">
+                                                                        <div class="row">
+                                                                            <div class="col-md-6">
+                                                                                <p><strong>Name:</strong> {{report.user.username}}</p>
+                                                                                {%if report.user.email%}
+                                                                                <p><strong>Email:</strong> {{report.user.email}}</p>
+                                                                                {%endif%}
+                                                                                {%if report.user.phone%}
+                                                                                <p><strong>Phone:</strong> {{report.user.phone}}</p>
+                                                                                {%endif%}
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <p><strong>Customer ID:</strong> {{report.user.id}}</p>
+                                                                                <!-- <p><strong>Previous Orders:</strong> 47</p> -->
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- Order Details -->
+                                                                <div class="card order-details-card mb-4">
+                                                                    <div class="card-header  text-white">
+                                                                        <h5 class="mb-0"><i class="fas fa-shopping-bag me-2"></i>Order Details</h5>
+                                                                    </div>
+                                                                    <div class="card-body">
+                                                                        <div class="row mb-3">
+                                                                            <div class="col-md-6">
+                                                                                <p><strong>Order ID:</strong>#{{report.order.id}}</p>
+                                                                                <p><strong>Order Date:</strong> {{report.order.delivery_date|date}}</p>
+                                                                                <p><strong>Restaurant:</strong> {{report.restaurant.restaurant_name}}</p>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <p><strong>Total Amount:</strong> {{report.order.food_category.price}}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        
+
+                                                                    </div>
+                                                                </div>
+                                                                <!-- complaint details -->
+                                                                <div class="card order-details-card mb-4">
+                                                                    <div class="card-header  text-white">
+                                                                        <h5 class="mb-0"><i class="fas fa-comment-alt me-2"></i>Complaint Details</h5>
+                                                                    </div>
+                                                                    <div class="card-body">
+                                                                        <div class="row">
+                                                                            <div class="complaint-text col-md-6">
+                                                                                <!-- <h6 class="text-danger mb-3">Issue: Food Quality & Late Delivery</h6> -->
+                                                                                <p class="mb-3"><strong>Customer's Complaint:</strong><br>
+                                                                                "{{report.message}}"</p>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                             {% if report.image %}
+                                                                                <img src="{{ report.image.url }}" alt="Issue image" class="img-fluid rounded shadow-sm"/>
+                                                                            {% else %}
+                                                                                <p>No image provided</p>
+                                                                            {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <!-- Right Column - Actions -->
+                                                            <div class="col-lg-4">
+                                                                <!-- Quick Actions -->
+                                                                <div class="card order-details-card mb-4">
+                                                                    <div class="card-header  text-dark">
+                                                                        <h5 class="mb-0"><i class="fas fa-tools me-2"></i> Actions</h5>
+                                                                    </div>
+                                                                    <div class="card-body">
+                                                                        <div class="d-grid gap-2">
+
+
+                                                                            {% if report.status == "PENDING" %}
+
+                                                                            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="javascript:void(0)">
+                                                                            Refund </a>
+
+
+                                                                            <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reject" href="javascript:void(0)">
+                                                                            Reject </a>
+
+
+                                                                            {% elif report.status == "REFUNDED" %}
+                                                                            <button class="btn btn-success">
+                                                                                 {{report.resolve_message}}
+                                                                            </button>
+
+
+                                                                            {% elif report.status == "REJECTED" %}
+                                                                            <button class="btn btn-danger">
+                                                                                REJECTED
+                                                                            </button>
+                                                                            {%if report.resolve_message%}
+                                                                                Reason: {{report.resolve_message}}
+                                                                            {%endif%}
+
+                                                                            {%endif%}
+                                                                            
+
+                                                                            <!-- <div class="mb-3">
+                                                                                <label class="form-label">Notes:</label>
+                                                                                <textarea class="form-control" rows="3" placeholder="Enter reason for refund..."></textarea>
+                                                                            </div> -->
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+
+
+
+
+
+
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end of settings -->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+    <!--refund Modal Start -->
+    <div class="modal theme-modal fade" id="staticBackdrop" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Refund</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Are you sure you want to refund {{report.order.food_category.price}} to {{report.user.username}}'s Wallet ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
+                    aria-label="Close">No</button>
+                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a href="{% url 'admin-report-order-refund' report.id %}">Yes</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--refund Modal End -->
+
+    <!-- reject -->
+
+    <!--Confirmation Modal Start -->
+    <div class="modal theme-modal fade" id="reject" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Reject</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form action="{% url 'admin-report-order-reject' %}" method="POST">
+                    {% csrf_token %}
+
+                <div class="modal-body">
+                    <p class="mb-0">Are you sure you want to reject ?</p>
+                    <textarea name="reason" id="reason" placeholder="Reason"></textarea>
+                    <input type="hidden" value="{{report.id}}" name="id">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
+                    aria-label="Close">No</button>
+                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close">Yes</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End -->
+
+
+
+
+
+
+
+
+
+
+
+
+{%endblock%}

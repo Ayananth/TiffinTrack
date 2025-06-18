@@ -89,10 +89,10 @@
                                                         <td>
                                                             {% if order.status == 'PENDING'%}
                                                                 <a class=""
-                                                                    href="{% url 'restaurant-cancel_order' order.id%}">
+                                                                    href="{% url 'restaurant-cancel_order' order.id%}?{{ request.GET.urlencode }}">
                                                                     Cancel
                                                                 </a>, 
-                                                                <a href="{% url 'restaurant-deliver-order' order.id %}">
+                                                                <a href="{% url 'restaurant-deliver-order' order.id %}?{{ request.GET.urlencode }}">
                                                                     Mark Delivered
                                                                 </a>
  

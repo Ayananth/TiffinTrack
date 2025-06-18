@@ -33,7 +33,6 @@ DEBUG = os.environ.get("DEBUG", False)
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
-
 SITE_ID = 1
 # Application definition
 
@@ -73,7 +72,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'accounts.middleware.BlockedUserLogoutMiddleware',
-    # 'accounts.middleware.LoginRedirectMessageMiddleware',
+    'accounts.middleware.CheckSubscriptionMiddleware',
 ]
 
 
