@@ -52,31 +52,30 @@
     </table>
 
     <!-- Pagination controls -->
-    <nav>
-        <ul class="pagination">
-            {% if transactions.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ transactions.previous_page_number }}">Previous</a>
-            </li>
-            {% else %}
-            <li class="page-item disabled"><span class="page-link">Previous</span></li>
-            {% endif %}
 
-            {% for page_num in transactions.paginator.page_range %}
-            <li class="page-item {% if transactions.number == page_num %}active{% endif %}">
-                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-            </li>
-            {% endfor %}
+<div class="pagination p-4">
+    <span class="step-links">
+        {% with request.GET.urlencode as current_query %}
+            {% with current_query|cut:'page='|cut:'&page=' as query_without_page %}
+                {% if transactions.has_previous %}
+                    <a href="?{{ query_without_page }}&page=1" class="p-2">&laquo; first</a>
+                    <a href="?{{ query_without_page }}&page={{ transactions.previous_page_number }}" class="p-2">previous</a>
+                {% endif %}
 
-            {% if transactions.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ transactions.next_page_number }}">Next</a>
-            </li>
-            {% else %}
-            <li class="page-item disabled"><span class="page-link">Next</span></li>
-            {% endif %}
-        </ul>
-    </nav>
+                <span class="current p-2">
+                    Page {{ transactions.number }} of {{ transactions.paginator.num_pages }}
+                </span>
+
+                {% if transactions.has_next %}
+                    <a href="?{{ query_without_page }}&page={{ transactions.next_page_number }}" class="p-2">next</a>
+                    <a href="?{{ query_without_page }}&page={{ transactions.paginator.num_pages }}" class="p-2">last &raquo;</a>
+                {% endif %}
+            {% endwith %}
+        {% endwith %}
+    </span>
+</div>
+
+
 
     {% else %}
         <p>No wallet transactions yet.</p>
