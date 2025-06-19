@@ -148,6 +148,8 @@
 
           <h6>Cancellation Information: </h6>
 
+          {{restaurant.restaurant_name}}
+
           <div class="cancel-info ps-4 py-2">
             {%for category,value in menu.start_end_time.items%}
             {%if value.cancellation_time %}
