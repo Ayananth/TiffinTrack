@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -23,7 +23,12 @@ logger = logging.getLogger('myapp')
 
 
 
-
+def redirect_with_get_params(request, url_name):
+    base_url = reverse(url_name)
+    query_string = request.META.get('QUERY_STRING', '')
+    if query_string:
+        return redirect(f"{base_url}?{query_string}")
+    return redirect(base_url)
 
 def admin_login(request):
     if request.user.is_authenticated and request.user.is_superuser:
@@ -529,6 +534,10 @@ def cancel_order(request, order_id):
 def deliver_order(request, order_id):
     try:
         order = get_object_or_404(Orders, id=order_id)
+        if order.delivery_date > timezone.now().date():
+            messages.error(request, "Cannot mark as delivered before delivery date.")
+            return redirect_with_get_params(request, 'admin-orders')
+
         order.status = "DELIVERED"
         order.save()
         messages.success(request, f"Order Delivered")
