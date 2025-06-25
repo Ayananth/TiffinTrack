@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
 from accounts.utils import get_location_from_point
+from cloudinary_storage.storage import MediaCloudinaryStorage
 
 
 
@@ -73,7 +74,9 @@ class UserProfile(models.Model):
                                 related_name='profile')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    profile_pic = models.ImageField(upload_to='uploads/', default='uploads/default.png')
+    profile_pic = models.ImageField(storage=MediaCloudinaryStorage(),
+                                    upload_to='tiffintrack/prod/profile_pics/',
+                                    null=True)
     location_name = models.CharField(max_length=255, default="thrissur")
     point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
     referral_code_used = models.CharField(max_length=10, blank=True, null=True)
@@ -105,7 +108,9 @@ class RestaurantProfile(models.Model):
     is_active = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    restaurant_image = models.ImageField(upload_to='uploads/', null=True)
+    restaurant_image = models.ImageField(storage=MediaCloudinaryStorage(),
+                                    upload_to='tiffintrack/prod/restaurant_pics/',
+                                    null=True)
     point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
     address = models.TextField(max_length=255, blank=True, null=True)
     location_name = models.TextField(blank=True, null=True, max_length=255)
@@ -128,7 +133,9 @@ class RestaurantProfile(models.Model):
 
 class RestaurantImage(models.Model):
     restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='uploads/restaurant_images/')
+    image = models.ImageField(storage=MediaCloudinaryStorage(),
+                                    upload_to='tiffintrack/prod/restaurant_pics/',
+                                    null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
