@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener('DOMContentLoaded', function () {
     const link = document.getElementById('current_profile');
     if (link) {
-        const fileName = link.textContent.replace('uploads/', '');
+        const fileName = link.textContent.replace('tiffintrack/prod/profile_pics/', '');
         link.textContent = fileName;
     }
 });
