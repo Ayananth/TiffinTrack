@@ -9,3 +9,4 @@ staticfiles
 django.log
 uploads
 env
+TiffinTrack/media/uploads/
