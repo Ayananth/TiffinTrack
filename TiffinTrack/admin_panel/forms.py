@@ -54,6 +54,9 @@ class FoodItemManageForm(forms.ModelForm):
     class Meta:
         model = FoodItem
         fields = '__all__'
+        widgets = {
+            'days': forms.CheckboxSelectMultiple,
+        }
 
 class FoodCategoryManageForm(forms.ModelForm):
     class Meta:

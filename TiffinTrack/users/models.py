@@ -165,7 +165,7 @@ class OrderReport(models.Model):
     order = models.ForeignKey(Orders, on_delete=models.CASCADE)
     message = models.TextField(blank=True, null=True)
     image = models.ImageField(storage=MediaCloudinaryStorage(),
-                                    upload_to='tiffintrack/prod/complaints/')
+                                    upload_to='tiffintrack/prod/complaints/', null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
     resolve_message = models.CharField(blank=True)

@@ -366,29 +366,24 @@ def food_add_or_update(request, pk=None):
     if request.user.user_type != 'restaurant':
         messages.error(request, "Not restaurant user")
         return redirect('login')
-    if pk:
-        food_obj = get_object_or_404(FoodItem, pk=pk)
-    else:
-        food_obj = None
 
+    food_obj = get_object_or_404(FoodItem, pk=pk) if pk else None
     restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
-
 
     if request.method == "POST":
         form = FoodItemManageForm(request.POST, request.FILES, instance=food_obj, restaurant=restaurant_obj)
         if form.is_valid():
-            restaurant_form = form.save(commit=False)
-            restaurant_form.restaurant = restaurant_obj
-            restaurant_form.save()
-            messages.success(request, f"Food  {'Updated' if pk else 'Created'} ")
-            return redirect('restaurant-food_items')
+            food_item = form.save(commit=False)
+            food_item.restaurant = restaurant_obj
+            food_item.save()
+            form.save_m2m()  # Save ManyToMany (available_days)
+            messages.success(request, f"Food {'Updated' if pk else 'Created'}")
+            return redirect('restaurant-food_items-edit', pk)
         else:
             messages.error(request, "Invalid inputs.")
             logger.error(form.errors)
     else:
         form = FoodItemManageForm(instance=food_obj, restaurant=restaurant_obj)
-
-
 
     return render(request, './restaurant/add-food.html', {'form': form})
 

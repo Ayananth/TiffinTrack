@@ -225,8 +225,7 @@ def restaurant_details(request, pk):
             is_active=True
         )
 
-        # Initialize weekly menu with empty lists for each category per day
-        weekly_menu = defaultdict(lambda: {fc.name: [] for fc in food_categories})
+
 
         # Get available food items in this menu category
         food_items = FoodItem.objects.filter(menu_category=menu_category, is_available=True)
@@ -243,13 +242,39 @@ def restaurant_details(request, pk):
                 'cancellation_time': food_cat.cancellation_time,
             }
 
-        # Populate weekly_menu with food item names
+
+
+        weekly_menu = {day: {fc.name: [] for fc in food_categories} for day in days_order}
+
+        # Populate weekly menu
         for item in food_items:
-            if item.food_category and item.day:
-                day = item.day
+            if item.food_category:
                 category_name = item.food_category.name
-                if category_name in weekly_menu[day]:  # Prevent KeyError
-                    weekly_menu[day][category_name].append(item.name)
+                for day_obj in item.days.all():
+                    day_name = day_obj.name
+                    if day_name in weekly_menu and category_name in weekly_menu[day_name]:
+                        weekly_menu[day_name][category_name].append(item.name)
+
+
+        # Pre-initialize weekly menu for all days as empty dictionaries
+        weekly_menu = {day: {} for day in days_order}
+
+        # Populate only categories that have food items per day
+        for item in food_items:
+            if item.food_category:
+                category_name = item.food_category.name
+                for day_obj in item.days.all():
+                    day_name = day_obj.name
+                    if day_name in weekly_menu:
+                        if category_name not in weekly_menu[day_name]:
+                            weekly_menu[day_name][category_name] = []
+                        weekly_menu[day_name][category_name].append(item.name)
+
+
+
+
+
+
 
         # Sort weekly_menu by day order
         sorted_menu = {day: weekly_menu.get(day, {}) for day in days_order}
@@ -278,6 +303,9 @@ def restaurant_details(request, pk):
     images = RestaurantImage.objects.filter(restaurant=restaurant)
 
 
+
+
+
     context = {
         'restaurant': restaurant,
         'rating': avg_rating,
@@ -291,6 +319,8 @@ def restaurant_details(request, pk):
         'report_form': report_form
     }
 
+
+    print(f"{context=}")
 
     return render(request, 'users/restaurant_detail.html', context)
 

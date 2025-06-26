@@ -33,6 +33,9 @@ class FoodItemManageForm(forms.ModelForm):
     class Meta:
         model = FoodItem
         exclude = ['restaurant']
+        widgets = {
+            'days': forms.CheckboxSelectMultiple,
+        }
 
     def __init__(self, *args, **kwargs):
         restaurant = kwargs.pop('restaurant', None)

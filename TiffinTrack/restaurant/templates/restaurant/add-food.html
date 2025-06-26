@@ -1,6 +1,61 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block content %}
+
+<style>
+.dropdown-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.dropdown-btn {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    width: 100%;
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    padding: 10px;
+}
+
+.dropdown-container.active .dropdown-content {
+    display: block;
+}
+
+/* Checkbox Alignment Fix */
+.dropdown-content label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 8px;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.5;
+    width: 100%;
+}
+
+.dropdown-content input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+</style>
+
+
+
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -34,20 +89,45 @@
                                                             {% csrf_token %}
     
                                                                 {% for field in form %}
-                                                                <div class="col-md-6 gy-3">
-                                                                    <div class="input-box">
-                                                                        <h6>{{ field.label }}</h6>
-                                                                        <span>{{ field }}</span>
-                                                                        {% if field.errors %}
-                                                                        <div class="text-danger">
-                                                                            {% for error in field.errors %}
-                                                                                <div>{{ error }}</div>
-                                                                            {% endfor %}
+
+                                                                    {% if field.name == "days" %}
+                                                                        <div class="col-md-6 gy-3">
+                                                                            <div class="input-box">
+                                                                                <h6>{{ field.label }}</h6>
+                                                                                
+                                                                                <!-- Dropdown for available_days -->
+                                                                                <div class="dropdown-container" id="daysDropdown">
+                                                                                    <div class="dropdown-btn">Select Available Days</div>
+                                                                                    <div class="dropdown-content">
+                                                                                        {{ field }}
+                                                                                    </div>
+                                                                                </div>
+                                                                                
+                                                                                {% if field.errors %}
+                                                                                    <div class="text-danger">
+                                                                                        {% for error in field.errors %}
+                                                                                            <div>{{ error }}</div>
+                                                                                        {% endfor %}
+                                                                                    </div>
+                                                                                {% endif %}
+                                                                            </div>
                                                                         </div>
-                                                                    {% endif %}
-                                                                    </div>
-                                                                </div>
-                                                            {% endfor %}
+                                                                    {% else %}
+                                                                        <div class="col-md-6 gy-3">
+                                                                            <div class="input-box">
+                                                                                <h6>{{ field.label }}</h6>
+                                                                                <span>{{ field }}</span>
+                                                                                {% if field.errors %}
+                                                                                <div class="text-danger">
+                                                                                    {% for error in field.errors %}
+                                                                                        <div>{{ error }}</div>
+                                                                                    {% endfor %}
+                                                                                </div>
+                                                                            {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                    {%endif%}
+                                                                {% endfor %}
                                                             <div class="col-12">
                                                                 <button type="submit" class="btn restaurant-button">Save</a>
                                                             </div>
@@ -69,4 +149,27 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dropdown = document.getElementById('daysDropdown');
+    const dropdownBtn = dropdown.querySelector('.dropdown-btn');
+    const dropdownContent = dropdown.querySelector('.dropdown-content');
+
+    dropdownBtn.addEventListener('click', function (e) {
+        dropdown.classList.toggle('active');
+        e.stopPropagation();
+    });
+
+    // Prevent clicks inside dropdown-content from closing the dropdown
+    dropdownContent.addEventListener('click', function (e) {
+        e.stopPropagation();
+    });
+
+    document.addEventListener('click', function () {
+        dropdown.classList.remove('active');
+    });
+});
+</script>
+
 {%endblock%}
