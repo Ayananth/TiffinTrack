@@ -9,6 +9,9 @@
             <h3>Welcome To TiffinTrack</h3>
             <h5>We have sent the OTP</h5> {# TODO add phone number#}
             {{error}}
+        {% for message in messages %}
+        <div class="alert alert-{{message.tags}}" id="error-message">{{message}}</div>
+        {% endfor %}
         </div>
 
         <div class="input-box">
@@ -26,7 +29,7 @@
                             <button type="submit" name="action" value="resend" class="btn btn-link">Resend OTP</a>
                         </div>
                         <div class="forgot-box col-6">
-                            <button type="submit" name="action" value="edit_phone" class="btn btn-link">Edit Phone</a>
+                            <button type="submit" name="action" value="edit_phone" class="btn btn-link">Edit</a>
                         </div>
                     </div>
                 </div>

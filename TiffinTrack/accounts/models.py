@@ -30,6 +30,15 @@ class CustomUser(AbstractUser):
     email_change_token = models.CharField(max_length=64, null=True, blank=True)
     email_change_expiry = models.DateTimeField(null=True, blank=True)
 
+    email_verified = models.BooleanField(default=False)
+    otp = models.CharField(max_length=6, blank=True, null=True)
+    otp_created_at = models.DateTimeField(blank=True, null=True)
+
+    def generate_otp(self):
+        self.otp = str(random.randint(100000, 999999))
+        self.otp_created_at = timezone.now()
+        self.save()
+
 
     def __str__(self):
         return self.username

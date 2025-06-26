@@ -9,6 +9,7 @@ from accounts.models import CustomUser
 from datetime import timedelta
 from .forms import UserRegisterForm
 from .utils import send_otp_sms, verify_otp_sms
+import os
 
 import secrets
 from django.core.mail import send_mail
@@ -51,9 +52,41 @@ def accounts_logout(request):
     request.session.flush() 
     return redirect('user-home')
 
-def accounts_sign_up(request):
+def accounts_sign_up(request,id=None):
+
+    if request.method != 'POST':
+
+        if id:
+            try:
+                user = CustomUser.objects.get(id=id)
+                form = UserRegisterForm(instance=user) 
+                return render(request, './accounts/sign-up.html', {'form': form})
+            except CustomUser.DoesNotExist:
+                form = UserRegisterForm() 
+                return render(request, './accounts/sign-up.html', {'form': form})
+            
+
     username = request.POST.get("username")
     password = request.POST.get("password")
+
+    try:
+        user = CustomUser.objects.get(username=username)
+        user.generate_otp()
+        send_mail(
+            subject='TiffinTrack Email Verification',
+            message=f'Your OTP is: {user.otp}',
+            from_email= os.environ.get('EMAIL_HOST_USER'),
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+        return redirect('verify_otp', user_id = user.id)
+
+    except CustomUser.DoesNotExist:
+        pass
+
+
+
+
     referral = request.GET.get('ref')
     if referral:
         request.session['referral_code'] = referral
@@ -62,13 +95,22 @@ def accounts_sign_up(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST) 
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            user.is_active = False  # Deactivate until email verified
+            user.save()
+            user.generate_otp()
+            send_mail(
+                subject='TiffinTrack Email Verification',
+                message=f'Your OTP is: {user.otp}',
+                from_email= os.environ.get('EMAIL_HOST_USER'),
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
             username = form.cleaned_data.get('username')
-            messages.success(request, f"Account created for {username}! Try login")
-            return redirect('login')
+            return redirect('verify_otp', user_id=user.id)
         else:
+            messages.error(request, "Form not valid")
 
-            messages.error(request, "Form not valid")   
     else:
         form = UserRegisterForm()
     context = {  
@@ -78,53 +120,112 @@ def accounts_sign_up(request):
 
 
 
-def send_otp(request):
+# def send_otp(request):
 
 
-    if request.session.get('otp_sent'):
-        return redirect('verify_otp')
+#     if request.session.get('otp_sent'):
+#         return redirect('verify_otp')
 
-    phone = request.session.get('phone') or request.POST.get('phone')
+#     phone = request.session.get('phone') or request.POST.get('phone')
 
-    if request.method == 'POST' or phone:
-        if not phone or not phone.isdigit() or len(phone) != 10:
-            messages.error(request, "Invalid phone number")
-            return render(request, "./accounts/send_otp.html")
+#     if request.method == 'POST' or phone:
+#         if not phone or not phone.isdigit() or len(phone) != 10:
+#             messages.error(request, "Invalid phone number")
+#             return render(request, "./accounts/send_otp.html")
 
-        status = send_otp_sms()
-        if status == "failed":
-            messages.error(request, "Please try again!")
-            return render(request, "./accounts/send_otp.html")
+#         status = send_otp_sms()
+#         if status == "failed":
+#             messages.error(request, "Please try again!")
+#             return render(request, "./accounts/send_otp.html")
 
-        request.session['phone'] = phone
-        request.session['otp_sent'] = True
-        request.session['otp_sent_time'] = timezone.now().isoformat()
+#         request.session['phone'] = phone
+#         request.session['otp_sent'] = True
+#         request.session['otp_sent_time'] = timezone.now().isoformat()
 
-        return redirect('verify_otp')
+#         return redirect('verify_otp')
 
-    return render(request, "./accounts/send_otp.html")
+#     return render(request, "./accounts/send_otp.html")
 
 
-def verify_otp(request):
+def verify_otp(request, user_id):
+    user = CustomUser.objects.get(id=user_id)
+
+    if user.email_verified:
+        return redirect('login')
+    
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        action = request.POST.get("action")
+
+        if action == "resend":
+            request.session.pop('otp_sent', None)
+            request.session.pop('otp_sent_time', None)
+            return redirect('resend_otp', user_id=user.id)
+        elif action == "edit_phone":
+            request.session.pop('otp_sent', None)
+            request.session.pop('otp_sent_time', None)
+            request.session.pop('phone', None)
+            return redirect('register', id=user.id)
+        
+        if user.otp == entered_otp and timezone.now() <= user.otp_created_at + timedelta(minutes=10):
+            user.email_verified = True
+            user.is_active = True
+            user.otp = None
+            user.save()
+            
+            messages.success(request, "Email verified successfully! You can now log in.")
+            return redirect('login')
+        else:
+            messages.error(request, "Invalid or expired OTP.")
+    
+    return render(request, './accounts/verify_otp.html', {'user': user})
+
+
+
+def resend_otp(request,user_id):
+    try:
+        user = CustomUser.objects.get(id=user_id)
+    except CustomUser.DoesNotExist:
+        messages.error("Something went wrong, Please try again")
+        return redirect('register')
+    
+    user.generate_otp()
+    send_mail(
+        subject='TiffinTrack Email Verification',
+        message=f'Your OTP is: {user.otp}',
+        from_email= os.environ.get('EMAIL_HOST_USER'),
+        recipient_list=[user.email],
+        fail_silently=False,
+    )
+    messages.success(request, f"OTP SENT")
+    return redirect('verify_otp', user_id=user.id)
+    
+
+
+
+
+
+
+def verify_otp_sms(request):
 
     phone = request.session.get('phone')
     otp_sent = request.session.get('otp_sent')
     sent_time_str = request.session.get('otp_sent_time')
 
     # Check if required session keys exist
-    if not phone or not otp_sent or not sent_time_str:
-        messages.error(request, "Session expired. Please request OTP again.")
-        return redirect('send_otp')
+    # if not phone or not otp_sent or not sent_time_str:
+    #     messages.error(request, "Session expired. Please request OTP again.")
+    #     return redirect('send_otp')
 
     # Parse ISO time and calculate expiry
-    sent_time = timezone.datetime.fromisoformat(sent_time_str)
+    # sent_time = timezone.datetime.fromisoformat(sent_time_str)
     now = timezone.now()
-    if now - sent_time > timedelta(seconds=OTP_EXPIRY_SECONDS):
-        # Clear expired session keys
-        request.session.pop('otp_sent', None)
-        request.session.pop('otp_sent_time', None)
-        request.session.pop('phone', None)
-        return render(request, "./accounts/verify_otp.html", {"error": "OTP expired. Please request again."})
+    # if now - sent_time > timedelta(seconds=OTP_EXPIRY_SECONDS):
+    #     # Clear expired session keys
+    #     request.session.pop('otp_sent', None)
+    #     request.session.pop('otp_sent_time', None)
+    #     request.session.pop('phone', None)
+    #     return render(request, "./accounts/verify_otp.html", {"error": "OTP expired. Please request again."})
 
     if request.method == "POST":
         entered_otp = request.POST.get("otp")
