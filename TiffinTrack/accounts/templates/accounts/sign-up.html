@@ -21,7 +21,7 @@
                 <div class="col-12">
                     <label class="col-form-label pt-0">Your Name</label>
                     <div class="form-floating theme-form-floating log-in-form">
-                        <input type="text" name="username" placeholder="Enter Name">
+                        <input type="text" name="username" placeholder="Enter Name" value="{{ form.username.value|default:'' }}">
                         <div class="text-danger">{{ form.username.errors }}</div>
                     </div>
                 </div>
@@ -29,7 +29,7 @@
                 <div class="col-12">
                     <label class="col-form-label pt-0">Your Email</label>
                     <div class="form-floating theme-form-floating log-in-form">
-                        <input type="email" name="email" placeholder="Enter Email">
+                        <input type="email" name="email" placeholder="Enter Email" value="{{ form.email.value|default:'' }}">
                     </div>
                     <div class="text-danger">{{ form.email.errors }}</div>
 
@@ -38,7 +38,7 @@
                 <div class="col-12">
                     <label class="col-form-label pt-0">Your Password</label>
                     <div class="form-floating theme-form-floating log-in-form">
-                        <input type="password" name="password1" id="password1" placeholder="Enter Password">
+                        <input type="password" name="password1" id="password1" placeholder="Enter Password" value="{{ form.password1.value|default:'' }}">
                     </div>
                     <div class="text-danger">{{ form.password1.errors }}</div>
 
@@ -47,23 +47,13 @@
                 <div class="col-12">
                     <label class="col-form-label pt-0">Confirm Password</label>
                     <div class="form-floating theme-form-floating log-in-form">
-                        <input type="password" name="password2" id="password2" placeholder="Enter Password">
+                        <input type="password" name="password2" id="password2" placeholder="Enter Password" value="{{ form.password2.value|default:'' }}">
                         <div class="text-danger">{{ form.password2.errors }}</div>
 
                     </div>
                 </div>
 
-                <div class="col-12">
-                    <div class="forgot-box">
-                        <div class="form-check ps-0 m-0 remember-box">
-                            <input class="custom-checkbox p-0" type="checkbox" name="text" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Agree with
-                                <span class="font-primary f-w-50">Privacy Policy</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
+
 
                 <div class="col-12">
                     <button class="btn btn-animation w-100 justify-content-center" type="submit">Create Account</button>
@@ -82,7 +72,7 @@
                         <img src="{% static 'backend/assets/images/google.png' %}" class="blur-up lazyload"
                             alt=""> Log In with Google
                     </a>
-                </li>
+                </li>   
             </ul>
         </div>
 

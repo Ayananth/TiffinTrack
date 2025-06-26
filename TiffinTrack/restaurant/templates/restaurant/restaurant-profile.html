@@ -219,18 +219,25 @@
 
 
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {   
-    document.querySelectorAll('a[href^="/media/uploads/"]').forEach(function (link) {
-        const fileName = link.textContent.replace('uploads/', '');
-        link.textContent = fileName;
-    });
-});
-</script>
+
 <script>
   if (window.location.search.length > 0) {
     window.history.replaceState(null, '', window.location.pathname);
   }
+</script>
+
+
+<script>
+const link = document.querySelector('.input-box span a');
+
+if (link) {
+    const fullPath = link.textContent.trim();
+    const parts = fullPath.split('/');
+    const fileName = parts[parts.length - 1]; // Get only the last part
+
+    link.textContent = fileName; // Replace displayed text
+}
+
 </script>
 
 

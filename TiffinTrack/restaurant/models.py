@@ -64,19 +64,14 @@ class FoodCategory(models.Model):
         ordering = ['name']
 
 
+class Day(models.Model):
+    name = models.CharField(max_length=10, unique=True)
+    def __str__(self):
+        return self.name
+
+
+
 class FoodItem(models.Model):
-
-    DAY_CHOICES = [
-        ('Monday', 'Monday'),
-        ('Tuesday', 'Tuesday'),
-        ('Wednesday', 'Wednesday'),
-        ('Thursday', 'Thursday'),
-        ('Friday', 'Friday'),
-        ('Saturday', 'Saturday'),
-        ('Sunday', 'Sunday'),
-    ]
-
-
 
     restaurant = models.ForeignKey(
         RestaurantProfile,
@@ -104,7 +99,7 @@ class FoodItem(models.Model):
         related_name='food_items'
     )
 
-    day = models.CharField(max_length=10, choices=DAY_CHOICES, null=True, blank=True)
+    days = models.ManyToManyField(Day, blank=True, related_name='food_items')
 
     def __str__(self):
         food_cat = self.food_category.name if self.food_category else "No FoodCat"

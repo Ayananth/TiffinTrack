@@ -9,18 +9,6 @@
                     <div class="card">
                         <div class="card-header">
                             <h5>Restaurant Registration</h5>
-
-                            {% if restaurant %}
-                            <h5>Your request is under review, you can edit the request here</h5>
-
-                            {% if restaurant.admin_comments %}
-                            
-                            <h5 class="text-info">Message from Admin: {{restaurant.admin_comments}}</h5>
-                            <h6>Edit your request to get approved</h6>
-                            {% endif %}
-
-                            {% endif %}
-
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -48,7 +36,11 @@
                                                                 {% for field in form %}
                                                                 <div class="col-md-6 gy-3">
                                                                     <div class="input-box">
+                                                                        {% if field.name == 'point' %}
+                                                                        <h6>Location</h6>
+                                                                        {%else%}
                                                                         <h6>{{ field.label }}</h6>
+                                                                        {% endif %}
                                                                         <span>{{ field }}</span>
                                                                         {% if field.name == 'point' %}
                                                                             <div id="suggestions">

@@ -6,6 +6,8 @@ from django.contrib.gis.geos import Point
 from restaurant.models import FoodCategory, FoodItem, RestaurantProfile, Subscriptions
 import logging
 logger = logging.getLogger('myapp') 
+from cloudinary_storage.storage import MediaCloudinaryStorage
+
 
 class Wallet(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wallet')
@@ -162,7 +164,8 @@ class OrderReport(models.Model):
     restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE)
     order = models.ForeignKey(Orders, on_delete=models.CASCADE)
     message = models.TextField(blank=True, null=True)
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField(storage=MediaCloudinaryStorage(),
+                                    upload_to='tiffintrack/prod/complaints/', null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
     resolve_message = models.CharField(blank=True)
