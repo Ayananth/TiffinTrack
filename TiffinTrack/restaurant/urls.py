@@ -5,6 +5,8 @@ urlpatterns = [
     # path('login/',views.restaurant_login, name='restaurant-login'),
     path('logout/',views.restaurant_logout, name='restaurant-logout'),
     path('register/',views.restaurant_register, name='restaurant-register'),
+    path('register/<str:editing>/',views.restaurant_register, name='restaurant-register'),
+
     path('restaurant-profile/',views.profile, name='restaurant-profile'),
     path('home/',views.home, name='restaurant-home'),
 
