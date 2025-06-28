@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
+import csv
+from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -733,3 +735,62 @@ def reject_report(request):
     report.resolve_message = f"{msg}"
     report.save()
     return redirect('admin-report-order-detail', id=id)
+
+
+def export_dashboard_insights(request):
+    today = date.today()
+    start_of_month = today.replace(day=1)
+
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else start_of_month
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else today
+    except ValueError:
+        start_date, end_date = start_of_month, today
+
+    orders = Orders.objects.filter(delivery_date__range=(start_date, end_date))
+    total_orders = orders.count()
+    total_revenue = orders.filter(status='DELIVERED').aggregate(revenue=Sum('food_category__price'))['revenue'] or 0
+    total_subscriptions = Subscriptions.objects.filter(created_at__date__range=(start_date, end_date)).count()
+    active_restaurants = RestaurantProfile.objects.filter(received_orders__delivery_date__range=(start_date, end_date)).distinct().count()
+
+    most_ordered = orders.values('restaurant__restaurant_name').annotate(count=Count('id')).order_by('-count').first()
+    most_ordered_restaurant = most_ordered['restaurant__restaurant_name'] if most_ordered else "N/A"
+
+    top_restaurants = orders.filter(status='DELIVERED').values(
+        'restaurant__restaurant_name'
+    ).annotate(
+        revenue=Sum('food_category__price')
+    ).order_by('-revenue')[:3]
+
+    pending_orders = Orders.objects.filter(status='PENDING').count()
+    delivered_orders = Orders.objects.filter(status='DELIVERED').count()
+    cancelled_orders = Orders.objects.filter(status='CANCELLED').count()
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="dashboard_insights_{timezone.now().strftime("%Y-%m-%d")}.csv"'
+
+    writer = csv.writer(response)
+
+    writer.writerow(['=== Dashboard Insights ==='])
+    writer.writerow(['Start Date', start_date])
+    writer.writerow(['End Date', end_date])
+    writer.writerow([])
+    writer.writerow(['Total Orders', total_orders])
+    writer.writerow(['Total Revenue (₹)', total_revenue])
+    writer.writerow(['Total Subscriptions', total_subscriptions])
+    writer.writerow(['Active Restaurants', active_restaurants])
+    writer.writerow(['Most Ordered Restaurant', most_ordered_restaurant])
+    writer.writerow(['Pending Orders', pending_orders])
+    writer.writerow(['Delivered Orders', delivered_orders])
+    writer.writerow(['Cancelled Orders', cancelled_orders])
+    writer.writerow([])
+
+    writer.writerow(['Top 3 Restaurants by Revenue'])
+    writer.writerow(['Restaurant Name', 'Revenue (₹)'])
+    for item in top_restaurants:
+        writer.writerow([item['restaurant__restaurant_name'], item['revenue']])
+
+    return response
