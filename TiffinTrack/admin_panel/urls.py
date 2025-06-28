@@ -63,6 +63,9 @@ urlpatterns = [
     path('order-reports/refund/<int:id>/', views.refund_report, name='admin-report-order-refund'),
     path('order-reports/reject', views.reject_report, name='admin-report-order-reject'),
 
+    path('admin/export-dashboard-report/', views.export_dashboard_insights, name='export-dashboard-report'),
+
+
 
 
 

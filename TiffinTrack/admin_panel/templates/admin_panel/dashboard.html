@@ -158,6 +158,25 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="download">
+                                <form method="get" action="{% url 'export-dashboard-report' %}">
+    <input type="hidden" name="start_date" value="{{ start_date }}">
+    <input type="hidden" name="end_date" value="{{ end_date }}">
+    <button type="submit" class="btn btn-primary">Download Report (CSV)</button>
+</form>
+
+                            </div>
+                            
+
+
+
+
+
+
+
+
+
                         </div>
                         <div class="col-xl-5">
                             <div class="card">
