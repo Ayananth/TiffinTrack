@@ -83,7 +83,25 @@
                             </div>
                         </div>
                         <div class="profile-part dropdown-button order-md-2">
-                            <img class="img-fluid profile-pic" src="{{ user.profile.profile_pic.url }}" alt="profile"  style="object-fit: contain;">
+
+                            
+
+{% if user.profile.profile_pic %}
+    <img class="img-fluid profile-pic"
+         src="{{ user.profile.profile_pic.url }}"
+         alt="profile"
+         style="object-fit: contain;">
+{% else %}
+    <img class="img-fluid profile-pic"
+         src="https://res.cloudinary.com/dycb8cbf8/image/upload/profile-pic_1_vxxfss.png"
+         alt="profile"
+         style="object-fit: contain;">
+{% endif %}
+
+
+
+
+
                             <div>
                                 <h6 class="fw-normal">{{user.username}}</h6>
                                 <h5 class="fw-medium">My Account</h5>

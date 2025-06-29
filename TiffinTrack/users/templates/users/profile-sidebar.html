@@ -1,7 +1,22 @@
                     <div class="profile-sidebar sticky-top">
                         <div class="profile-cover">
                             <!-- <img class="img-fluid profile-pic" src="assets/images/icons/p5.png" alt="profile"> -->
-                            <img class="img-fluid profile-pic" src="{{ user.profile.profile_pic.url }}" alt="" style="object-fit: contain;">
+
+{% if user.profile.profile_pic %}
+    <img class="img-fluid profile-pic"
+         src="{{ user.profile.profile_pic.url }}"
+         alt="profile"
+         style="object-fit: contain;">
+{% else %}
+    <img class="img-fluid profile-pic"
+         src="https://res.cloudinary.com/dycb8cbf8/image/upload/profile-pic_1_vxxfss.png"
+         alt="profile"
+         style="object-fit: contain;">
+{% endif %}
+
+
+
+
                         </div>
                         <div class="profile-name">
                             <h5 class="user-name">{{user.username}}</h5>
