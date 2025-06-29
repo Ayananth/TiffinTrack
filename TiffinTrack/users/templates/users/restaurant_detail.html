@@ -380,8 +380,24 @@
                                             <div class="review-box">
                                                 <div class="review-head">
                                                     <div class="review-image">
-                                                        <img class="img-fluid img" src="{{review_item.user.profile.profile_pic.url}}"
-                                                            alt="p1">
+
+
+                                                            
+
+
+
+{% if user.profile.profile_pic %}
+    <img class="img-fluid img"
+         src="{{ review_item.user.profile.profile_pic.url }}"
+         alt="profile">
+{% else %}
+    <img class="img-fluid img"
+         src="https://res.cloudinary.com/dycb8cbf8/image/upload/profile-pic_1_vxxfss.png"
+         alt="profile">
+{% endif %}
+
+
+
                                                     </div>
                                                     <div
                                                         class="d-flex align-sm-items-center justify-content-between w-100">
