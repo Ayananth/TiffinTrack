@@ -149,6 +149,9 @@ DATABASES = {
     },
 }
 
+GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH', None)
+GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH', None)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
