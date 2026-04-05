@@ -109,7 +109,10 @@ def restaurant_register(request, editing=None):
         restaurant = None
 
 
-    print(f"{restaurant.admin_comments=}")
+    logger.info(
+        "restaurant.admin_comments=%s",
+        restaurant.admin_comments if restaurant else None,
+    )
 
     if restaurant and editing is None:
         return render(request, './restaurant/registration_success.html', {'restaurant_registration': True, 'restaurant':restaurant})  
