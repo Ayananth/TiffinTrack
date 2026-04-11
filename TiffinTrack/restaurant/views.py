@@ -399,7 +399,7 @@ def food_add_or_update(request, pk=None):
             food_item.save()
             form.save_m2m()  # Save ManyToMany (available_days)
             messages.success(request, f"Food {'Updated' if pk else 'Created'}")
-            return redirect('restaurant-food_items-edit', pk)
+            return redirect('restaurant-food_items-edit', food_item.pk)
         else:
             messages.error(request, "Invalid inputs.")
             logger.error(form.errors)
