@@ -64,8 +64,13 @@ class FoodItemManageForm(forms.ModelForm):
         )
 
         if restaurant:
-            self.fields['menu_category'].queryset = MenuCategory.objects.filter(restaurant=restaurant)
             self.fields['food_category'].queryset = FoodCategory.objects.filter(restaurant=restaurant)
+            self.fields['food_category'].label_from_instance = lambda obj: (
+                f"{obj.name}_{obj.menu_category.name}" if obj.menu_category else f"{obj.name}_No Menu"
+            )
+
+        # Menu category is derived from selected food category in the view.
+        self.fields.pop('menu_category', None)
 
 
 

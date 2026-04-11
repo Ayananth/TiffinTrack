@@ -396,6 +396,9 @@ def food_add_or_update(request, pk=None):
         if form.is_valid():
             food_item = form.save(commit=False)
             food_item.restaurant = restaurant_obj
+            food_item.menu_category = (
+                food_item.food_category.menu_category if food_item.food_category else None
+            )
             food_item.save()
             form.save_m2m()  # Save ManyToMany (available_days)
             messages.success(request, f"Food {'Updated' if pk else 'Created'}")
