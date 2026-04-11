@@ -17,7 +17,12 @@ load_dotenv()
 
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
-    if created and instance.user_type == 'normal':
+    if (
+        created
+        and instance.user_type == 'normal'
+        and not instance.is_superuser
+        and not instance.is_staff
+    ):
         UserProfile.objects.create(user=instance)
         Wallet.objects.get_or_create(user=instance)    
         Referral.objects.get_or_create(user=instance)
