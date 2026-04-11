@@ -125,7 +125,7 @@ def restaurant_register(request, editing=None):
             restaurant = form.save(commit=False)
             restaurant.user_type = 'restaurant'
             restaurant.user = request.user
-            restaurant.is_approved = False
+            restaurant.is_approved = True
             if editing:
                 new_comment = "Request edited"
                 if new_comment:
@@ -164,7 +164,7 @@ def profile(request):
             restaurant = form.save(commit=False)
             restaurant.user_type = 'restaurant'
             restaurant.user = request.user
-            restaurant.is_approved = False
+            restaurant.is_approved = True
             restaurant.save()
             messages.success(request, "Restaurant profile updated.")
             return redirect('restaurant-profile')
