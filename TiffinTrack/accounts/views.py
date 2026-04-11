@@ -36,15 +36,21 @@ OTP_EXPIRY_SECONDS = 600  # 5 minutes
 def accounts_login(request):
 
     if request.method == "POST":
-        username = request.POST.get("username")
+        email = request.POST.get("email", "").strip().lower()
         password = request.POST.get("password")
-        user = authenticate(request, username=username, password=password)
+
+        user = None
+        if email and password:
+            existing_user = CustomUser.objects.filter(email__iexact=email).first()
+            if existing_user:
+                user = authenticate(request, username=existing_user.username, password=password)
+
         if user is not None:
             login(request, user)
             return redirect(login_redirect_view(request))
         else:
             logger.warning("Invalid credentials")
-            messages.error(request, "Invalid username or password")
+            messages.error(request, "Invalid email or password")
     return render(request, './accounts/login.html')
 
 def accounts_logout(request):

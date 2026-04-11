@@ -14,10 +14,10 @@
             <form method="post" class="row g-3">
                 {% csrf_token %}
                 <div class="col-12">
-                    <label class="col-form-label pt-0">User Name</label>
+                    <label class="col-form-label pt-0">Email Address</label>
                     <div class="form-floating theme-form-floating log-in-form">
-                        <input type="text" name="username" placeholder="Enter Username">
-                        <div class="text-danger">{{ form.username.errors }}</div>
+                        <input type="email" name="email" placeholder="Enter Email">
+                        <div class="text-danger">{{ form.email.errors }}</div>
 
                     </div>
                 </div>
