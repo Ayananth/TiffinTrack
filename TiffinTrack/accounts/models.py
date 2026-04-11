@@ -45,7 +45,7 @@ class CustomUser(AbstractUser):
     
     @property
     def is_normal_user(self):
-        return self.user_type == 'normal'
+        return self.user_type == 'normal' and not self.is_superuser and not self.is_staff
 
     @property
     def is_restaurant_user(self):
@@ -53,7 +53,7 @@ class CustomUser(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.user_type == 'admin'
+        return self.user_type == 'admin' or self.is_superuser or self.is_staff
 
 class PhoneOTP(models.Model):
     phone = models.CharField(max_length=15, unique=True)

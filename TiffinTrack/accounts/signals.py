@@ -18,14 +18,16 @@ load_dotenv()
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
     if (
-        created
-        and instance.user_type == 'normal'
+        instance.user_type == 'normal'
         and not instance.is_superuser
         and not instance.is_staff
     ):
-        UserProfile.objects.create(user=instance)
-        Wallet.objects.get_or_create(user=instance)    
+        UserProfile.objects.get_or_create(user=instance)
+        Wallet.objects.get_or_create(user=instance)
         Referral.objects.get_or_create(user=instance)
+    else:
+        # If a user is staff/superuser/non-normal, ensure no normal-user profile exists.
+        UserProfile.objects.filter(user=instance).delete()
 
 @receiver(post_save, sender=RestaurantProfile)
 def send_email_on_new_restaurant(sender, instance, created, **kwargs):

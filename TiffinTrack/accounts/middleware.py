@@ -1,8 +1,9 @@
 from django.shortcuts import redirect
-from django.urls import resolve
+from django.urls import resolve, Resolver404
 from django.contrib.auth import logout
 from django.contrib import messages
 from restaurant.models import Subscriptions
+from .utils import login_redirect_view
 
 
 class RedirectAuthenticatedUserMiddleware:
@@ -15,10 +16,23 @@ class RedirectAuthenticatedUserMiddleware:
 
         if request.path.startswith('/admin/') or request.path.startswith('/static/'):
             return self.get_response(request)
+
         if request.user.is_authenticated:
-            current_view_name = resolve(request.path_info).url_name            
+            try:
+                current_view = resolve(request.path_info)
+                current_view_name = current_view.url_name
+            except Resolver404:
+                return self.get_response(request)
+
             if current_view_name in self.protected_views:
-                return redirect('user-home')
+                return redirect(login_redirect_view(request))
+
+            # Prevent admin/staff/restaurant users from accessing normal-user routes.
+            if (
+                current_view.func.__module__.startswith('users.views')
+                and not request.user.is_normal_user
+            ):
+                return redirect(login_redirect_view(request))
         response = self.get_response(request)
         return response
 
