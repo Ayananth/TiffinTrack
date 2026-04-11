@@ -19,7 +19,7 @@ from decimal import Decimal
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D  # D for Distance
 from django.contrib.gis.db.models.functions import Distance
-from accounts.utils import get_location_from_point
+from accounts.utils import get_location_from_point, login_redirect_view
 from django.core.paginator import Paginator
 from datetime import timedelta
 from datetime import datetime
@@ -65,18 +65,22 @@ from coupons.models import Referral
 @login_required(login_url='login')
 def home(request):
     user = request.user
+    if not user.is_normal_user:
+        return redirect(login_redirect_view(request))
+
+    profile, _ = UserProfile.objects.get_or_create(user=user)
     restaurant_name = request.GET.get('restaurant_name')
-    reference_point = user.profile.point
+    reference_point = profile.point
 
     referral = request.session.get('referral_code')
     if referral:
         try:
             referral_obj = Referral.objects.get(code=referral)
-            if referral_obj.user != user and not user.profile.referral_code_used and not referral_obj.referred_users.filter(id=user.id).exists():
+            if referral_obj.user != user and not profile.referral_code_used and not referral_obj.referred_users.filter(id=user.id).exists():
                 referral_obj.referred_users.add(user)
                 referral_obj.save()
-                user.profile.referral_code_used = referral
-                user.profile.save()
+                profile.referral_code_used = referral
+                profile.save()
         except Referral.DoesNotExist:
             pass
         del request.session['referral_code']
@@ -1062,6 +1066,5 @@ def report_order(request):
         })
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
-
 
 

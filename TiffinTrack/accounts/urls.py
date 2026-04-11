@@ -5,9 +5,12 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('login/',views.accounts_login, name='login'),
+    path('restaurant/login/',views.restaurant_login, name='restaurant-login'),
     path('logout/',views.accounts_logout, name='logout'),
     path('signup/',views.accounts_sign_up, name='register'),
     path('signup/<int:id>/',views.accounts_sign_up, name='register'),
+    path('restaurant/signup/',views.restaurant_sign_up, name='restaurant-register-auth'),
+    path('restaurant/signup/<int:id>/',views.restaurant_sign_up, name='restaurant-register-auth'),
     path('', include('allauth.urls')),
     # path('send_otp/', views.send_otp, name='send_otp'),
     path('verify_otp/<int:user_id>/', views.verify_otp, name='verify_otp'),

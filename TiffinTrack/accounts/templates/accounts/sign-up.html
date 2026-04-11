@@ -7,8 +7,8 @@
 <div class="col-xl-5 col-lg-6 me-auto">
     <div class="log-in-box">
         <div class="log-in-title">
-            <h3>Create your account</h3>
-            <h5>Enter your personal details to create account</h5>
+            <h3>{{ signup_heading|default:"Create your account" }}</h3>
+            <h5>{{ signup_subheading|default:"Enter your personal details to create account" }}</h5>
         </div>
 
         {% for message in messages %}
@@ -79,7 +79,7 @@
         <div>
             <h6 class="text-center mt-3">
                 Already have account?
-                <a href="{% url 'login' %}" class="font-primary f-w-600">Login</a>
+                <a href="{% url login_url_name %}" class="font-primary f-w-600">{{ login_label|default:"Login" }}</a>
             </h6>
         </div>
     </div>

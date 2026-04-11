@@ -10,10 +10,14 @@ logger = logging.getLogger('myapp')
 
 
 def login_redirect_view(request):
+    from accounts.models import RestaurantProfile
     user = request.user
     if user.is_normal_user:
         return reverse('user-home')
     elif user.is_restaurant_user:
+        restaurant_profile = RestaurantProfile.objects.filter(user=user).first()
+        if not restaurant_profile or not restaurant_profile.is_active:
+            return reverse('restaurant-register')
         return reverse('restaurant-home')
     elif user.is_admin:
         return reverse('admin-home')
@@ -80,4 +84,3 @@ def get_location_from_point(longitude, latitude):
     except Exception as e:
         logger.error(f"Error from get_location_from_point, {e}")
         return ""
-
