@@ -83,7 +83,7 @@
                             <div class="col-xl-3 col-lg-4 col-sm-6">
                                 <div class="vertical-product-box">
                                     <div class="vertical-product-box-img">
-                                        <a href="{% url 'restaurant-details' restaurant.id %}">
+                                        <a href="{% url 'restaurant-details' restaurant.slug %}">
                                             {% if restaurant.restaurant_image %}
                                                 <img class="product-img-top w-100 bg-img" src="{{restaurant.restaurant_image.url}}"
                                                     alt="vp1">
@@ -116,7 +116,7 @@
                                     </div>
                                     <div class="vertical-product-body">
                                         <div class="d-flex align-items-center justify-content-between mt-sm-3 mt-2">
-                                            <a href="{% url 'restaurant-details' restaurant.id %}">
+                                            <a href="{% url 'restaurant-details' restaurant.slug %}">
                                                 <h4 class="vertical-product-title">{{restaurant.restaurant_name}}</h4>
                                             </a>
                                             <h6 class="rating-star">

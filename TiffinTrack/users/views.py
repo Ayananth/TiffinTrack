@@ -204,8 +204,8 @@ def manage_user_address(request, id=None):
 
 from collections import defaultdict
 @login_required(login_url='login')
-def restaurant_details(request, pk):
-    restaurant = get_object_or_404(RestaurantProfile, pk=pk)
+def restaurant_details(request, slug):
+    restaurant = get_object_or_404(RestaurantProfile, slug=slug)
 
     next = request.GET.get('next')
 
@@ -793,8 +793,7 @@ def post_review(request):
 
     restaurant = get_object_or_404(RestaurantProfile, id=restaurant_id)
 
-    restaurant_id = restaurant.id
-    redirect_url = reverse('restaurant-details', kwargs={'pk': restaurant_id})
+    redirect_url = reverse('restaurant-details', kwargs={'slug': restaurant.slug})
     query_string = urlencode({'next': 'review'})
     
 
@@ -814,7 +813,7 @@ def post_review(request):
             else:
                 messages.success(request, "Your review has been submitted successfully.")
 
-            # return redirect('restaurant-details', pk=restaurant.id)
+            # return redirect('restaurant-details', slug=restaurant.slug)
             return redirect(f'{redirect_url}?{query_string}')
         else:
             messages.error(request, "Please correct the errors in the form.")
@@ -830,8 +829,7 @@ def delete_review(request, review_id):
         messages.error(request, "You are not allowed to delete this review.")
         return redirect('restaurant-detail', id=review.restaurant.id)
 
-    restaurant_id = review.restaurant.id
-    redirect_url = reverse('restaurant-details', kwargs={'pk': restaurant_id})
+    redirect_url = reverse('restaurant-details', kwargs={'slug': review.restaurant.slug})
     query_string = urlencode({'next': 'review'})
     review.delete()
     messages.success(request, "Your review has been deleted.")
@@ -1028,7 +1026,7 @@ def report_restaurant(request, restaurant_id):
             report.restaurant = restaurant
             report.save()
             messages.success(request, 'Your report has been submitted.')
-    return redirect('restaurant-details', pk=restaurant.id)
+    return redirect('restaurant-details', slug=restaurant.slug)
 
 
 
@@ -1066,5 +1064,3 @@ def report_order(request):
         })
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
-
-
