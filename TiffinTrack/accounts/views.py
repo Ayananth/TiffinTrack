@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .utils import login_redirect_view
+from .utils import login_redirect_view, send_otp_sms, verify_otp_sms, send_templated_email
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -8,11 +8,9 @@ from django.utils import timezone
 from accounts.models import CustomUser
 from datetime import timedelta
 from .forms import UserRegisterForm
-from .utils import send_otp_sms, verify_otp_sms
 import os
 
 import secrets
-from django.core.mail import send_mail
 from django.conf import settings
 
 
@@ -125,11 +123,17 @@ def _handle_signup(request, id=None, user_type='normal', is_restaurant=False):
     try:
         user = CustomUser.objects.get(username=username, user_type=user_type)
         user.generate_otp()
-        send_mail(
-            subject='TiffinTrack Email Verification',
-            message=f'Your OTP is: {user.otp}',
-            from_email= os.environ.get('EMAIL_HOST_USER'),
+        send_templated_email(
+            subject="TiffinTrack Email Verification",
             recipient_list=[user.email],
+            heading="Email Verification OTP",
+            intro="Use the OTP below to verify your account.",
+            details={
+                "OTP": user.otp,
+                "Valid For": "10 minutes",
+            },
+            preheader="Your verification code from TiffinTrack.",
+            from_email=os.environ.get("EMAIL_HOST_USER"),
             fail_silently=False,
         )
         return redirect('verify_otp', user_id = user.id)
@@ -153,11 +157,17 @@ def _handle_signup(request, id=None, user_type='normal', is_restaurant=False):
             user.is_active = False  # Deactivate until email verified
             user.save()
             user.generate_otp()
-            send_mail(
-                subject='TiffinTrack Email Verification',
-                message=f'Your OTP is: {user.otp}',
-                from_email= os.environ.get('EMAIL_HOST_USER'),
+            send_templated_email(
+                subject="TiffinTrack Email Verification",
                 recipient_list=[user.email],
+                heading="Email Verification OTP",
+                intro="Use the OTP below to verify your account.",
+                details={
+                    "OTP": user.otp,
+                    "Valid For": "10 minutes",
+                },
+                preheader="Your verification code from TiffinTrack.",
+                from_email=os.environ.get("EMAIL_HOST_USER"),
                 fail_silently=False,
             )
             username = form.cleaned_data.get('username')
@@ -257,11 +267,17 @@ def resend_otp(request,user_id):
         return redirect('login')
     
     user.generate_otp()
-    send_mail(
-        subject='TiffinTrack Email Verification',
-        message=f'Your OTP is: {user.otp}',
-        from_email= os.environ.get('EMAIL_HOST_USER'),
+    send_templated_email(
+        subject="TiffinTrack Email Verification",
         recipient_list=[user.email],
+        heading="Email Verification OTP",
+        intro="Here is your new OTP for email verification.",
+        details={
+            "OTP": user.otp,
+            "Valid For": "10 minutes",
+        },
+        preheader="Your new verification code from TiffinTrack.",
+        from_email=os.environ.get("EMAIL_HOST_USER"),
         fail_silently=False,
     )
     messages.success(request, f"OTP SENT")
@@ -369,12 +385,21 @@ def request_email_change(request):
         )
         logger.info("sending mail")
         try:
-            send_mail(
-                "TiffinTrack-Email Confirmation",
-                f"Click here to confirm the email: {confirm_url}",
-                settings.DEFAULT_FROM_EMAIL,
-                [new_email],
-                fail_silently=False  # Force errors to show
+            send_templated_email(
+                subject="TiffinTrack - Email Confirmation",
+                recipient_list=[new_email],
+                heading="Confirm Your New Email Address",
+                intro="Please confirm your new email address using the button below.",
+                details={
+                    "Requested By": request.user.username,
+                    "New Email": new_email,
+                    "Link Validity": "24 hours",
+                },
+                action_text="Confirm Email",
+                action_url=confirm_url,
+                preheader="Secure confirmation for your TiffinTrack email change request.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                fail_silently=False,
             )
         except Exception as e:
             logger.error(f"Email sending failed: {e}")
@@ -436,11 +461,19 @@ def request_password_change(request):
         confirm_url = request.build_absolute_uri(
             reverse("confirm_password_change", args=[token])
         )
-        send_mail(
-            subject="TiffinTrack-Confirm Password Change",
-            message=f"Click the link to confirm your password change:\n{confirm_url}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
+        send_templated_email(
+            subject="TiffinTrack - Confirm Password Change",
             recipient_list=[request.user.email],
+            heading="Confirm Password Change",
+            intro="We received a request to change your password.",
+            details={
+                "User": request.user.username,
+                "Link Validity": "10 minutes",
+            },
+            action_text="Confirm Password Change",
+            action_url=confirm_url,
+            preheader="Security confirmation for your TiffinTrack account.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
             fail_silently=False,
         )
 
