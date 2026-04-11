@@ -1,5 +1,6 @@
 from django import forms
-from .models import RestaurantProfile, MenuCategory, FoodItem, FoodCategory, Review
+from django.db.models import Case, IntegerField, Value, When
+from .models import RestaurantProfile, MenuCategory, FoodItem, FoodCategory, Review, Day
 from django.contrib.gis.geos import Point
 
 
@@ -40,6 +41,27 @@ class FoodItemManageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         restaurant = kwargs.pop('restaurant', None)
         super().__init__(*args, **kwargs)
+
+        weekday_names = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]
+        for day_name in weekday_names:
+            Day.objects.get_or_create(name=day_name)
+        weekday_order = Case(
+            *[When(name=day, then=Value(index)) for index, day in enumerate(weekday_names)],
+            output_field=IntegerField(),
+        )
+        self.fields['days'].queryset = (
+            Day.objects.filter(name__in=weekday_names)
+            .annotate(_weekday_order=weekday_order)
+            .order_by('_weekday_order')
+        )
 
         if restaurant:
             self.fields['menu_category'].queryset = MenuCategory.objects.filter(restaurant=restaurant)
