@@ -46,8 +46,10 @@
                                                                 {% for field in form %}
                                                                 <div class="col-md-6 gy-3">
                                                                     <div class="input-box">
+                                                                        {% if field.name != 'admin_comments' %}
                                                                         <h6>{{ field.label }}</h6>
                                                                         <span>{{ field }}</span>
+                                                                        {% endif %}
                                                                         {% if field.name == 'point' %}
                                                                             <div id="suggestions">
                                                                             </div>
