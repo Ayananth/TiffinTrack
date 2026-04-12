@@ -37,11 +37,24 @@ class RestaurantRegisterForm(forms.ModelForm):
     class Meta:
         model = RestaurantProfile
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Prevent user reassignment when editing an existing restaurant.
+        if self.instance and self.instance.pk and 'user' in self.fields:
+            self.fields['user'].disabled = True
+
     point = forms.CharField(widget=forms.TextInput(attrs={
         'placeholder': 'Search location...',
         'id': 'id_point',
         'autocomplete': 'off'
     }))
+
+    def clean_user(self):
+        if self.instance and self.instance.pk:
+            return self.instance.user
+        return self.cleaned_data['user']
+
     def clean_point(self):
         value = self.cleaned_data['point']
         try:
