@@ -1,0 +1,35 @@
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: django_backend
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      GDAL_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu/libgdal.so
+      GEOS_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu/libgeos_c.so
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgis/postgis:15-3.4
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:-tiffintrack}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+volumes:
+  postgres_data:

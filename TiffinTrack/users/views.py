@@ -19,7 +19,7 @@ from decimal import Decimal
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D  # D for Distance
 from django.contrib.gis.db.models.functions import Distance
-from accounts.utils import get_location_from_point
+from accounts.utils import get_location_from_point, login_redirect_view
 from django.core.paginator import Paginator
 from datetime import timedelta
 from datetime import datetime
@@ -65,18 +65,22 @@ from coupons.models import Referral
 @login_required(login_url='login')
 def home(request):
     user = request.user
+    if not user.is_normal_user:
+        return redirect(login_redirect_view(request))
+
+    profile, _ = UserProfile.objects.get_or_create(user=user)
     restaurant_name = request.GET.get('restaurant_name')
-    reference_point = user.profile.point
+    reference_point = profile.point
 
     referral = request.session.get('referral_code')
     if referral:
         try:
             referral_obj = Referral.objects.get(code=referral)
-            if referral_obj.user != user and not user.profile.referral_code_used and not referral_obj.referred_users.filter(id=user.id).exists():
+            if referral_obj.user != user and not profile.referral_code_used and not referral_obj.referred_users.filter(id=user.id).exists():
                 referral_obj.referred_users.add(user)
                 referral_obj.save()
-                user.profile.referral_code_used = referral
-                user.profile.save()
+                profile.referral_code_used = referral
+                profile.save()
         except Referral.DoesNotExist:
             pass
         del request.session['referral_code']
@@ -200,8 +204,8 @@ def manage_user_address(request, id=None):
 
 from collections import defaultdict
 @login_required(login_url='login')
-def restaurant_details(request, pk):
-    restaurant = get_object_or_404(RestaurantProfile, pk=pk)
+def restaurant_details(request, slug):
+    restaurant = get_object_or_404(RestaurantProfile, slug=slug)
 
     next = request.GET.get('next')
 
@@ -789,8 +793,7 @@ def post_review(request):
 
     restaurant = get_object_or_404(RestaurantProfile, id=restaurant_id)
 
-    restaurant_id = restaurant.id
-    redirect_url = reverse('restaurant-details', kwargs={'pk': restaurant_id})
+    redirect_url = reverse('restaurant-details', kwargs={'slug': restaurant.slug})
     query_string = urlencode({'next': 'review'})
     
 
@@ -810,7 +813,7 @@ def post_review(request):
             else:
                 messages.success(request, "Your review has been submitted successfully.")
 
-            # return redirect('restaurant-details', pk=restaurant.id)
+            # return redirect('restaurant-details', slug=restaurant.slug)
             return redirect(f'{redirect_url}?{query_string}')
         else:
             messages.error(request, "Please correct the errors in the form.")
@@ -826,8 +829,7 @@ def delete_review(request, review_id):
         messages.error(request, "You are not allowed to delete this review.")
         return redirect('restaurant-detail', id=review.restaurant.id)
 
-    restaurant_id = review.restaurant.id
-    redirect_url = reverse('restaurant-details', kwargs={'pk': restaurant_id})
+    redirect_url = reverse('restaurant-details', kwargs={'slug': review.restaurant.slug})
     query_string = urlencode({'next': 'review'})
     review.delete()
     messages.success(request, "Your review has been deleted.")
@@ -1024,7 +1026,7 @@ def report_restaurant(request, restaurant_id):
             report.restaurant = restaurant
             report.save()
             messages.success(request, 'Your report has been submitted.')
-    return redirect('restaurant-details', pk=restaurant.id)
+    return redirect('restaurant-details', slug=restaurant.slug)
 
 
 
@@ -1062,6 +1064,3 @@ def report_order(request):
         })
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
-
-
-

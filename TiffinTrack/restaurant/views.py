@@ -109,7 +109,6 @@ def restaurant_register(request, editing=None):
         restaurant = None
 
 
-    print(f"{restaurant.admin_comments=}")
 
     if restaurant and editing is None:
         return render(request, './restaurant/registration_success.html', {'restaurant_registration': True, 'restaurant':restaurant})  
@@ -122,7 +121,7 @@ def restaurant_register(request, editing=None):
             restaurant = form.save(commit=False)
             restaurant.user_type = 'restaurant'
             restaurant.user = request.user
-            restaurant.is_approved = False
+            restaurant.is_approved = True
             if editing:
                 new_comment = "Request edited"
                 if new_comment:
@@ -161,7 +160,7 @@ def profile(request):
             restaurant = form.save(commit=False)
             restaurant.user_type = 'restaurant'
             restaurant.user = request.user
-            restaurant.is_approved = False
+            restaurant.is_approved = True
             restaurant.save()
             messages.success(request, "Restaurant profile updated.")
             return redirect('restaurant-profile')
@@ -393,10 +392,13 @@ def food_add_or_update(request, pk=None):
         if form.is_valid():
             food_item = form.save(commit=False)
             food_item.restaurant = restaurant_obj
+            food_item.menu_category = (
+                food_item.food_category.menu_category if food_item.food_category else None
+            )
             food_item.save()
             form.save_m2m()  # Save ManyToMany (available_days)
             messages.success(request, f"Food {'Updated' if pk else 'Created'}")
-            return redirect('restaurant-food_items-edit', pk)
+            return redirect('restaurant-food_items-edit', food_item.pk)
         else:
             messages.error(request, "Invalid inputs.")
             logger.error(form.errors)

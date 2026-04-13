@@ -1,5 +1,6 @@
 from django import forms
-from .models import RestaurantProfile, MenuCategory, FoodItem, FoodCategory, Review
+from django.db.models import Case, IntegerField, Value, When
+from .models import RestaurantProfile, MenuCategory, FoodItem, FoodCategory, Review, Day
 from django.contrib.gis.geos import Point
 
 
@@ -41,9 +42,35 @@ class FoodItemManageForm(forms.ModelForm):
         restaurant = kwargs.pop('restaurant', None)
         super().__init__(*args, **kwargs)
 
+        weekday_names = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]
+        for day_name in weekday_names:
+            Day.objects.get_or_create(name=day_name)
+        weekday_order = Case(
+            *[When(name=day, then=Value(index)) for index, day in enumerate(weekday_names)],
+            output_field=IntegerField(),
+        )
+        self.fields['days'].queryset = (
+            Day.objects.filter(name__in=weekday_names)
+            .annotate(_weekday_order=weekday_order)
+            .order_by('_weekday_order')
+        )
+
         if restaurant:
-            self.fields['menu_category'].queryset = MenuCategory.objects.filter(restaurant=restaurant)
             self.fields['food_category'].queryset = FoodCategory.objects.filter(restaurant=restaurant)
+            self.fields['food_category'].label_from_instance = lambda obj: (
+                f"{obj.name}_{obj.menu_category.name}" if obj.menu_category else f"{obj.name}_No Menu"
+            )
+
+        # Menu category is derived from selected food category in the view.
+        self.fields.pop('menu_category', None)
 
 
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .utils import login_redirect_view
+from .utils import login_redirect_view, send_otp_sms, verify_otp_sms, send_templated_email
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -8,11 +8,9 @@ from django.utils import timezone
 from accounts.models import CustomUser
 from datetime import timedelta
 from .forms import UserRegisterForm
-from .utils import send_otp_sms, verify_otp_sms
 import os
 
 import secrets
-from django.core.mail import send_mail
 from django.conf import settings
 
 
@@ -33,50 +31,109 @@ logger = logging.getLogger('myapp')
 #TODO dont give access to admin
 OTP_EXPIRY_SECONDS = 600  # 5 minutes
 
-def accounts_login(request):
+def _login_context(is_restaurant=False):
+    if is_restaurant:
+        return {
+            "auth_heading": "Welcome To TiffinTrack",
+            "auth_subheading": "Log In Your Restaurant Account",
+            "signup_url_name": "restaurant-register-auth",
+            "signup_label": "Create Restaurant Account",
+            "login_url_name": "restaurant-login",
+        }
+    return {
+        "auth_heading": "Welcome To TiffinTrack",
+        "auth_subheading": "Log In Your Account",
+        "signup_url_name": "register",
+        "signup_label": "Create Account",
+        "login_url_name": "login",
+    }
+
+
+def _signup_context(is_restaurant=False):
+    if is_restaurant:
+        return {
+            "signup_heading": "Create your restaurant account",
+            "signup_subheading": "Enter your details to start restaurant onboarding",
+            "login_url_name": "restaurant-login",
+            "login_label": "Restaurant Login",
+        }
+    return {
+        "signup_heading": "Create your account",
+        "signup_subheading": "Enter your personal details to create account",
+        "login_url_name": "login",
+        "login_label": "Login",
+    }
+
+
+def _handle_login(request, required_user_type=None, is_restaurant=False):
 
     if request.method == "POST":
-        username = request.POST.get("username")
+        email = request.POST.get("email", "").strip().lower()
         password = request.POST.get("password")
-        user = authenticate(request, username=username, password=password)
+
+        user = None
+        if email and password:
+            existing_user = CustomUser.objects.filter(email__iexact=email).first()
+            if existing_user:
+                user = authenticate(request, username=existing_user.username, password=password)
+
         if user is not None:
+            if required_user_type and user.user_type != required_user_type:
+                messages.error(request, "Please log in using the correct portal.")
+                return render(request, './accounts/login.html', _login_context(is_restaurant=is_restaurant))
             login(request, user)
             return redirect(login_redirect_view(request))
         else:
             logger.warning("Invalid credentials")
-            messages.error(request, "Invalid username or password")
-    return render(request, './accounts/login.html')
+            messages.error(request, "Invalid email or password")
+    return render(request, './accounts/login.html', _login_context(is_restaurant=is_restaurant))
+
+
+def accounts_login(request):
+    return _handle_login(request)
+
+
+def restaurant_login(request):
+    return _handle_login(request, required_user_type='restaurant', is_restaurant=True)
 
 def accounts_logout(request):
     logout(request)
     request.session.flush() 
     return redirect('user-home')
 
-def accounts_sign_up(request,id=None):
+def _handle_signup(request, id=None, user_type='normal', is_restaurant=False):
 
     if request.method != 'POST':
 
         if id:
             try:
-                user = CustomUser.objects.get(id=id)
+                user = CustomUser.objects.get(id=id, user_type=user_type)
                 form = UserRegisterForm(instance=user) 
-                return render(request, './accounts/sign-up.html', {'form': form})
+                context = {'form': form}
+                context.update(_signup_context(is_restaurant=is_restaurant))
+                return render(request, './accounts/sign-up.html', context)
             except CustomUser.DoesNotExist:
                 form = UserRegisterForm() 
-                return render(request, './accounts/sign-up.html', {'form': form})
+                context = {'form': form}
+                context.update(_signup_context(is_restaurant=is_restaurant))
+                return render(request, './accounts/sign-up.html', context)
             
 
     username = request.POST.get("username")
-    password = request.POST.get("password")
-
     try:
-        user = CustomUser.objects.get(username=username)
+        user = CustomUser.objects.get(username=username, user_type=user_type)
         user.generate_otp()
-        send_mail(
-            subject='TiffinTrack Email Verification',
-            message=f'Your OTP is: {user.otp}',
-            from_email= os.environ.get('EMAIL_HOST_USER'),
+        send_templated_email(
+            subject="TiffinTrack Email Verification",
             recipient_list=[user.email],
+            heading="Email Verification OTP",
+            intro="Use the OTP below to verify your account.",
+            details={
+                "OTP": user.otp,
+                "Valid For": "10 minutes",
+            },
+            preheader="Your verification code from TiffinTrack.",
+            from_email=os.environ.get("EMAIL_HOST_USER"),
             fail_silently=False,
         )
         return redirect('verify_otp', user_id = user.id)
@@ -86,24 +143,31 @@ def accounts_sign_up(request,id=None):
 
 
 
-
-    referral = request.GET.get('ref')
-    if referral:
-        request.session['referral_code'] = referral
+    if user_type == 'normal':
+        referral = request.GET.get('ref')
+        if referral:
+            request.session['referral_code'] = referral
 
 
     if request.method == 'POST':
         form = UserRegisterForm(request.POST) 
         if form.is_valid():
             user = form.save(commit=False)
+            user.user_type = user_type
             user.is_active = False  # Deactivate until email verified
             user.save()
             user.generate_otp()
-            send_mail(
-                subject='TiffinTrack Email Verification',
-                message=f'Your OTP is: {user.otp}',
-                from_email= os.environ.get('EMAIL_HOST_USER'),
+            send_templated_email(
+                subject="TiffinTrack Email Verification",
                 recipient_list=[user.email],
+                heading="Email Verification OTP",
+                intro="Use the OTP below to verify your account.",
+                details={
+                    "OTP": user.otp,
+                    "Valid For": "10 minutes",
+                },
+                preheader="Your verification code from TiffinTrack.",
+                from_email=os.environ.get("EMAIL_HOST_USER"),
                 fail_silently=False,
             )
             username = form.cleaned_data.get('username')
@@ -116,7 +180,16 @@ def accounts_sign_up(request,id=None):
     context = {  
         'form':form  
     } 
+    context.update(_signup_context(is_restaurant=is_restaurant))
     return render(request, './accounts/sign-up.html', context)
+
+
+def accounts_sign_up(request, id=None):
+    return _handle_signup(request, id=id, user_type='normal', is_restaurant=False)
+
+
+def restaurant_sign_up(request, id=None):
+    return _handle_signup(request, id=id, user_type='restaurant', is_restaurant=True)
 
 
 
@@ -165,6 +238,8 @@ def verify_otp(request, user_id):
             request.session.pop('otp_sent', None)
             request.session.pop('otp_sent_time', None)
             request.session.pop('phone', None)
+            if user.user_type == 'restaurant':
+                return redirect('restaurant-register-auth', id=user.id)
             return redirect('register', id=user.id)
         
         if user.otp == entered_otp and timezone.now() <= user.otp_created_at + timedelta(minutes=10):
@@ -174,6 +249,8 @@ def verify_otp(request, user_id):
             user.save()
             
             messages.success(request, "Email verified successfully! You can now log in.")
+            if user.user_type == 'restaurant':
+                return redirect('restaurant-login')
             return redirect('login')
         else:
             messages.error(request, "Invalid or expired OTP.")
@@ -187,14 +264,20 @@ def resend_otp(request,user_id):
         user = CustomUser.objects.get(id=user_id)
     except CustomUser.DoesNotExist:
         messages.error("Something went wrong, Please try again")
-        return redirect('register')
+        return redirect('login')
     
     user.generate_otp()
-    send_mail(
-        subject='TiffinTrack Email Verification',
-        message=f'Your OTP is: {user.otp}',
-        from_email= os.environ.get('EMAIL_HOST_USER'),
+    send_templated_email(
+        subject="TiffinTrack Email Verification",
         recipient_list=[user.email],
+        heading="Email Verification OTP",
+        intro="Here is your new OTP for email verification.",
+        details={
+            "OTP": user.otp,
+            "Valid For": "10 minutes",
+        },
+        preheader="Your new verification code from TiffinTrack.",
+        from_email=os.environ.get("EMAIL_HOST_USER"),
         fail_silently=False,
     )
     messages.success(request, f"OTP SENT")
@@ -302,12 +385,21 @@ def request_email_change(request):
         )
         logger.info("sending mail")
         try:
-            send_mail(
-                "TiffinTrack-Email Confirmation",
-                f"Click here to confirm the email: {confirm_url}",
-                settings.DEFAULT_FROM_EMAIL,
-                [new_email],
-                fail_silently=False  # Force errors to show
+            send_templated_email(
+                subject="TiffinTrack - Email Confirmation",
+                recipient_list=[new_email],
+                heading="Confirm Your New Email Address",
+                intro="Please confirm your new email address using the button below.",
+                details={
+                    "Requested By": request.user.username,
+                    "New Email": new_email,
+                    "Link Validity": "24 hours",
+                },
+                action_text="Confirm Email",
+                action_url=confirm_url,
+                preheader="Secure confirmation for your TiffinTrack email change request.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                fail_silently=False,
             )
         except Exception as e:
             logger.error(f"Email sending failed: {e}")
@@ -369,11 +461,19 @@ def request_password_change(request):
         confirm_url = request.build_absolute_uri(
             reverse("confirm_password_change", args=[token])
         )
-        send_mail(
-            subject="TiffinTrack-Confirm Password Change",
-            message=f"Click the link to confirm your password change:\n{confirm_url}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
+        send_templated_email(
+            subject="TiffinTrack - Confirm Password Change",
             recipient_list=[request.user.email],
+            heading="Confirm Password Change",
+            intro="We received a request to change your password.",
+            details={
+                "User": request.user.username,
+                "Link Validity": "10 minutes",
+            },
+            action_text="Confirm Password Change",
+            action_url=confirm_url,
+            preheader="Security confirmation for your TiffinTrack account.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
             fail_silently=False,
         )
 

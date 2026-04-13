@@ -7,6 +7,7 @@ from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
 from accounts.utils import get_location_from_point
 from cloudinary_storage.storage import MediaCloudinaryStorage
+from django.utils.text import slugify
 
 
 
@@ -45,7 +46,7 @@ class CustomUser(AbstractUser):
     
     @property
     def is_normal_user(self):
-        return self.user_type == 'normal'
+        return self.user_type == 'normal' and not self.is_superuser and not self.is_staff
 
     @property
     def is_restaurant_user(self):
@@ -53,7 +54,7 @@ class CustomUser(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.user_type == 'admin'
+        return self.user_type == 'admin' or self.is_superuser or self.is_staff
 
 class PhoneOTP(models.Model):
     phone = models.CharField(max_length=15, unique=True)
@@ -124,6 +125,18 @@ class RestaurantProfile(models.Model):
     address = models.TextField(max_length=255, blank=True, null=True)
     location_name = models.TextField(blank=True, null=True, max_length=255)
     admin_comments = models.TextField(blank=True, null=True)
+    slug = models.SlugField(max_length=140, unique=True, blank=True, db_index=False)
+
+    def _generate_unique_slug(self):
+        base_slug = slugify(self.restaurant_name) or "restaurant"
+        slug = base_slug
+        counter = 2
+
+        while RestaurantProfile.objects.exclude(pk=self.pk).filter(slug=slug).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+
+        return slug
 
     def save(self, *args, **kwargs):
         if self.pk:
@@ -132,6 +145,9 @@ class RestaurantProfile(models.Model):
                 self.location_name = get_location_from_point(self.point.x, self.point.y)
         else:
             self.location_name = get_location_from_point(self.point.x, self.point.y)
+
+        if not self.slug:
+            self.slug = self._generate_unique_slug()
         super().save(*args, **kwargs)
 
         

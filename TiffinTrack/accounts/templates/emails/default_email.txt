@@ -1,0 +1,16 @@
+{{ project_name }}
+{{ subject }}
+
+{% if heading %}{{ heading }}
+{% endif %}{% if greeting %}{{ greeting }}
+{% endif %}{% if intro %}{{ intro }}
+{% endif %}
+{% if detail_items %}Details:
+{% for item in detail_items %}- {{ item.label }}: {{ item.value }}
+{% endfor %}
+{% endif %}{% if action_url and action_text %}{{ action_text }}: {{ action_url }}
+
+{% endif %}{% if outro %}{{ outro }}
+
+{% endif %}Regards,
+{{ signature|default:"Team TiffinTrack" }}

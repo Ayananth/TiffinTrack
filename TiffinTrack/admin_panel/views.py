@@ -213,6 +213,9 @@ def restaurant_add_or_update(request, pk=None):
         form = RestaurantRegisterForm(request.POST, request.FILES, instance=restaurant_obj)
         if form.is_valid():
             restaurant = form.save(commit=False)
+            # Do not allow changing owner user from edit endpoint.
+            if restaurant_obj:
+                restaurant.user = restaurant_obj.user
             restaurant.user_type = 'restaurant'
             restaurant.save()
             name = form.cleaned_data.get('restaurant_name')
