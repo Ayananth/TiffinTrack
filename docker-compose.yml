@@ -25,7 +25,7 @@ services:
 
   postgres:
     image: postgis/postgis:15-3.4
-    container_name: tiffintrack_postgres   # 🔥 FIXED NAME
+    container_name: tiffintrack_postgres
     restart: always
     environment:
       POSTGRES_DB: ${DB_NAME:-tiffintrack}
