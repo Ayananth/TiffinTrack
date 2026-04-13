@@ -1,11 +1,16 @@
 from django import forms
 from accounts.models import CustomUser
 from django.contrib.auth.forms import UserCreationForm
-from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory
 from django.db.models import DateField, DateTimeField
 from django.contrib.gis.geos import Point
 from users.models import OrderReport
 
+from django.apps import apps
+
+RestaurantProfile = apps.get_model("accounts", "RestaurantProfile")
+FoodItem = apps.get_model("restaurant", "FoodItem")
+MenuCategory = apps.get_model("restaurant", "MenuCategory")
+FoodCategory = apps.get_model("restaurant", "FoodCategory")
 
 class AdminUserRegisterForm(UserCreationForm):
     email = forms.EmailField()

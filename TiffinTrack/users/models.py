@@ -3,7 +3,6 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
-from restaurant.models import FoodCategory, FoodItem, RestaurantProfile, Subscriptions
 import logging
 logger = logging.getLogger('myapp') 
 from cloudinary_storage.storage import MediaCloudinaryStorage
@@ -92,18 +91,18 @@ class Orders(models.Model):
         related_name='orders'
     )
     restaurant = models.ForeignKey(
-        RestaurantProfile,
+        "accounts.RestaurantProfile",
         on_delete=models.CASCADE,
         related_name='received_orders',
     )
     food_category = models.ForeignKey(
-        FoodCategory,
+        "restaurant.FoodCategory",
         on_delete=models.SET_NULL,
         null=True,
         related_name='orders'
     )
     food_item = models.ForeignKey(
-        FoodItem,
+        "restaurant.FoodItem",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -113,7 +112,7 @@ class Orders(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     refund_issued = models.BooleanField(default=False)
     address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
-    subscription_id = models.ForeignKey(Subscriptions, on_delete=models.CASCADE, related_name='orders', null=True, blank=True)
+    subscription_id = models.ForeignKey("restaurant.Subscriptions", on_delete=models.CASCADE, related_name='orders', null=True, blank=True)
 
 
     def cancel(self):
@@ -142,7 +141,7 @@ class Orders(models.Model):
 
 class RestaurantReport(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey("accounts.RestaurantProfile", on_delete=models.CASCADE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -161,7 +160,7 @@ class OrderReport(models.Model):
 
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey("accounts.RestaurantProfile", on_delete=models.CASCADE)
     order = models.ForeignKey(Orders, on_delete=models.CASCADE)
     message = models.TextField(blank=True, null=True)
     image = models.ImageField(storage=MediaCloudinaryStorage(),

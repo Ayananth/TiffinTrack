@@ -8,7 +8,6 @@ from django.contrib import messages
 from .forms import AdminUserRegisterForm, UserUpdateForm, RestaurantRegisterForm, FoodItemManageForm, MenuManageForm, FoodCategoryManageForm, ComplaintsForm
 from accounts.models import CustomUser
 from django.views.decorators.cache import never_cache
-from restaurant.models import RestaurantProfile, FoodItem, MenuCategory, FoodCategory, Subscriptions
 from django.core.paginator import Paginator
 from users.models import Orders, RestaurantReport, OrderReport, Wallet
 from django.utils.timezone import now
@@ -24,6 +23,13 @@ import logging
 logger = logging.getLogger('myapp') 
 
 
+from django.apps import apps
+
+RestaurantProfile = apps.get_model("accounts", "RestaurantProfile")
+FoodItem = apps.get_model("restaurant", "FoodItem")
+MenuCategory = apps.get_model("restaurant", "MenuCategory")
+FoodCategory = apps.get_model("restaurant", "FoodCategory")
+Subscriptions = apps.get_model("restaurant", "Subscriptions")
 
 def redirect_with_get_params(request, url_name):
     base_url = reverse(url_name)

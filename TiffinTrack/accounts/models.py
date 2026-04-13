@@ -157,7 +157,7 @@ class RestaurantProfile(models.Model):
 
 
 class RestaurantImage(models.Model):
-    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='images')
+    restaurant = models.ForeignKey("accounts.RestaurantProfile", on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(storage=MediaCloudinaryStorage(),
                                     upload_to='tiffintrack/prod/restaurant_pics/',
                                     null=True)
