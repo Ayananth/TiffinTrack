@@ -295,3 +295,5 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ['CLOUDINARY_SECRET'],
 }
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
