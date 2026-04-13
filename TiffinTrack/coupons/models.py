@@ -3,7 +3,8 @@ from django.conf import settings
 from django.utils import timezone
 import random
 import string
-from restaurant.models import RestaurantProfile
+
+
 
 class Coupon(models.Model):
     code = models.CharField(max_length=20, unique=True)
@@ -13,7 +14,7 @@ class Coupon(models.Model):
     valid_to = models.DateTimeField()
     active = models.BooleanField(default=True)
     usage_limit = models.PositiveIntegerField(default=1)  # per user
-    restaurant = models.ManyToManyField(RestaurantProfile, blank=True)
+    restaurant = models.ManyToManyField("accounts.RestaurantProfile", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

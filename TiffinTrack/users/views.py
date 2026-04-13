@@ -11,7 +11,6 @@ from django.contrib.auth import authenticate, login, logout
 from accounts.forms import UserUpdateForm, ProfileUpdateForm
 from restaurant.forms import ReviewForm
 from django.contrib.auth.decorators import login_required
-from restaurant.models import RestaurantProfile, FoodItem, FoodCategory, MenuCategory, Subscriptions, Offer, Review
 from accounts.models import UserProfile, Locations, RestaurantImage
 from django.db.models import Avg, Max
 from collections import defaultdict
@@ -44,6 +43,16 @@ load_dotenv()
 
 import logging
 logger = logging.getLogger('myapp') 
+
+from django.apps import apps
+
+RestaurantProfile = apps.get_model("accounts", "RestaurantProfile")
+FoodItem = apps.get_model("restaurant", "FoodItem")
+FoodCategory = apps.get_model("restaurant", "FoodCategory")
+MenuCategory = apps.get_model("restaurant", "MenuCategory")
+Subscriptions = apps.get_model("restaurant", "Subscriptions")
+Offer = apps.get_model("restaurant", "Offer")
+Review = apps.get_model("restaurant", "Review")
 
 
 

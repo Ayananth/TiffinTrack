@@ -7,7 +7,6 @@ from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from coupons.models import Coupon
 from decimal import Decimal
 from decimal import Decimal, ROUND_DOWN
 
@@ -22,7 +21,7 @@ class MenuCategory(models.Model):
     name = models.CharField(max_length=50)  # e.g., Basic, Premium
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    restaurant = models.ForeignKey(RestaurantProfile,on_delete=models.CASCADE,related_name='menu_categories')
+    restaurant = models.ForeignKey("accounts.RestaurantProfile",on_delete=models.CASCADE,related_name='menu_categories')
     is_active = models.BooleanField(default=True)  # To mark if the category is active or not
 
 
@@ -112,7 +111,7 @@ class FoodItem(models.Model):
 
 
 class Review(models.Model):
-    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='reviews')
+    restaurant = models.ForeignKey("accounts.RestaurantProfile", on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     rating = models.PositiveSmallIntegerField()  # e.g., 1 to 5
     comment = models.TextField(null=True, blank=True)
@@ -126,7 +125,7 @@ class Review(models.Model):
 
 class Subscriptions(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='subscriptions', null=True, blank=True)
-    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='subscriptions')
+    restaurant = models.ForeignKey("accounts.RestaurantProfile", on_delete=models.CASCADE, related_name='subscriptions')
     menu_category = models.ForeignKey(MenuCategory,on_delete=models.SET_NULL,null=True,blank=True,related_name='subscriptions')
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField()
@@ -134,7 +133,7 @@ class Subscriptions(models.Model):
     is_active = models.BooleanField(default=False)
     address = models.ForeignKey('users.Address', on_delete=models.SET_NULL, null=True, blank=True, related_name='subscriptions')
     num_days = models.IntegerField(blank=True, null=True)
-    coupon = models.ForeignKey(Coupon, null=True, blank=True, on_delete=models.SET_NULL)
+    coupon = models.ForeignKey("coupons.Coupon", null=True, blank=True, on_delete=models.SET_NULL)
     wallet_amount_used = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -216,7 +215,7 @@ class Subscriptions(models.Model):
 
 
 class Offer(models.Model):
-    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='offers')
+    restaurant = models.ForeignKey("accounts.RestaurantProfile", on_delete=models.CASCADE, related_name='offers')
     name = models.CharField(max_length=100)  # e.g., "10% off on Premium Lunch"
     description = models.TextField(blank=True)
     discount_percent = models.DecimalField(max_digits=5, decimal_places=2)  # e.g., 10.00 for 10%
@@ -243,7 +242,7 @@ class RestaurantTransaction(models.Model):
         ('debit', 'Debit'),
     ]
 
-    restaurant = models.ForeignKey(RestaurantProfile, on_delete=models.CASCADE, related_name='transactions')
+    restaurant = models.ForeignKey("accounts.RestaurantProfile", on_delete=models.CASCADE, related_name='transactions')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_type = models.CharField(max_length=6, choices=TRANSACTION_TYPES)
     description = models.TextField()
