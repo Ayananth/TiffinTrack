@@ -21,7 +21,7 @@ services:
       - postgres
     command: >
       sh -c "python manage.py migrate &&
-            daphne -b 0.0.0.0 -p 8003 TiffinTrack.asgi:application"
+            python manage.py runserver 0.0.0.0:8003"
 
   postgres:
     image: postgis/postgis:15-3.4
