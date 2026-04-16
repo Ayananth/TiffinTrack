@@ -10,11 +10,16 @@ class RedirectAuthenticatedUserMiddleware:
 
     def __init__(self, get_response):
         self.get_response = get_response
-        self.protected_views = ['send_otp', 'verify_otp','login', 'register', ]
+        self.protected_views = [
+            "send_otp",
+            "verify_otp",
+            "login",
+            "register",
+        ]
 
     def __call__(self, request):
 
-        if request.path.startswith('/admin/') or request.path.startswith('/static/'):
+        if request.path.startswith("/admin/") or request.path.startswith("/static/"):
             return self.get_response(request)
 
         if request.user.is_authenticated:
@@ -29,7 +34,7 @@ class RedirectAuthenticatedUserMiddleware:
 
             # Prevent admin/staff/restaurant users from accessing normal-user routes.
             if (
-                current_view.func.__module__.startswith('users.views')
+                current_view.func.__module__.startswith("users.views")
                 and not request.user.is_normal_user
             ):
                 return redirect(login_redirect_view(request))
@@ -43,11 +48,12 @@ class BlockedUserLogoutMiddleware:
 
     def __call__(self, request):
         if request.user.is_authenticated:
-            if hasattr(request.user, 'is_blocked') and request.user.is_blocked:
+            if hasattr(request.user, "is_blocked") and request.user.is_blocked:
                 logout(request)
                 messages.error(request, "Your account has been blocked.")
-                return redirect('login')  # change this to your login or error page name
+                return redirect("login")  # change this to your login or error page name
         return self.get_response(request)
+
 
 class LoginRedirectMessageMiddleware:
     def __init__(self, get_response):
@@ -55,10 +61,9 @@ class LoginRedirectMessageMiddleware:
 
     def __call__(self, request):
         if not request.user.is_authenticated:
-            if '/login/' in request.path and 'next' in request.GET:
+            if "/login/" in request.path and "next" in request.GET:
                 messages.error(request, "Please login to continue.")
         return self.get_response(request)
-    
 
 
 class CheckSubscriptionMiddleware:
@@ -67,10 +72,12 @@ class CheckSubscriptionMiddleware:
 
     def __call__(self, request):
         if request.user.is_authenticated and request.user.is_normal_user:
-            subscriptions = Subscriptions.objects.filter(user=request.user, is_active=True)
+            subscriptions = Subscriptions.objects.filter(
+                user=request.user, is_active=True
+            )
 
             for subscription in subscriptions:
-                if not subscription.orders.filter(status='PENDING').exists():
+                if not subscription.orders.filter(status="PENDING").exists():
                     subscription.is_active = False
                     subscription.save()
 

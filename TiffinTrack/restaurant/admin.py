@@ -8,4 +8,3 @@ admin.site.register(FoodItem)
 admin.site.register(Review)
 admin.site.register(Subscriptions)
 admin.site.register(Offer)
-

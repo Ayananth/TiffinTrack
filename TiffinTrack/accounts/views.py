@@ -1,5 +1,10 @@
 from django.shortcuts import render, redirect
-from .utils import login_redirect_view, send_otp_sms, verify_otp_sms, send_templated_email
+from .utils import (
+    login_redirect_view,
+    send_otp_sms,
+    verify_otp_sms,
+    send_templated_email,
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -25,11 +30,13 @@ from django.core.validators import validate_email
 
 
 import logging
-logger = logging.getLogger('myapp') 
+
+logger = logging.getLogger("myapp")
 
 
-#TODO dont give access to admin
+# TODO dont give access to admin
 OTP_EXPIRY_SECONDS = 600  # 5 minutes
+
 
 def _login_context(is_restaurant=False):
     if is_restaurant:
@@ -75,18 +82,26 @@ def _handle_login(request, required_user_type=None, is_restaurant=False):
         if email and password:
             existing_user = CustomUser.objects.filter(email__iexact=email).first()
             if existing_user:
-                user = authenticate(request, username=existing_user.username, password=password)
+                user = authenticate(
+                    request, username=existing_user.username, password=password
+                )
 
         if user is not None:
             if required_user_type and user.user_type != required_user_type:
                 messages.error(request, "Please log in using the correct portal.")
-                return render(request, './accounts/login.html', _login_context(is_restaurant=is_restaurant))
+                return render(
+                    request,
+                    "./accounts/login.html",
+                    _login_context(is_restaurant=is_restaurant),
+                )
             login(request, user)
             return redirect(login_redirect_view(request))
         else:
             logger.warning("Invalid credentials")
             messages.error(request, "Invalid email or password")
-    return render(request, './accounts/login.html', _login_context(is_restaurant=is_restaurant))
+    return render(
+        request, "./accounts/login.html", _login_context(is_restaurant=is_restaurant)
+    )
 
 
 def accounts_login(request):
@@ -94,30 +109,31 @@ def accounts_login(request):
 
 
 def restaurant_login(request):
-    return _handle_login(request, required_user_type='restaurant', is_restaurant=True)
+    return _handle_login(request, required_user_type="restaurant", is_restaurant=True)
+
 
 def accounts_logout(request):
     logout(request)
-    request.session.flush() 
-    return redirect('user-home')
+    request.session.flush()
+    return redirect("user-home")
 
-def _handle_signup(request, id=None, user_type='normal', is_restaurant=False):
 
-    if request.method != 'POST':
+def _handle_signup(request, id=None, user_type="normal", is_restaurant=False):
+
+    if request.method != "POST":
 
         if id:
             try:
                 user = CustomUser.objects.get(id=id, user_type=user_type)
-                form = UserRegisterForm(instance=user) 
-                context = {'form': form}
+                form = UserRegisterForm(instance=user)
+                context = {"form": form}
                 context.update(_signup_context(is_restaurant=is_restaurant))
-                return render(request, './accounts/sign-up.html', context)
+                return render(request, "./accounts/sign-up.html", context)
             except CustomUser.DoesNotExist:
-                form = UserRegisterForm() 
-                context = {'form': form}
+                form = UserRegisterForm()
+                context = {"form": form}
                 context.update(_signup_context(is_restaurant=is_restaurant))
-                return render(request, './accounts/sign-up.html', context)
-            
+                return render(request, "./accounts/sign-up.html", context)
 
     username = request.POST.get("username")
     try:
@@ -136,21 +152,18 @@ def _handle_signup(request, id=None, user_type='normal', is_restaurant=False):
             from_email=os.environ.get("EMAIL_HOST_USER"),
             fail_silently=False,
         )
-        return redirect('verify_otp', user_id = user.id)
+        return redirect("verify_otp", user_id=user.id)
 
     except CustomUser.DoesNotExist:
         pass
 
-
-
-    if user_type == 'normal':
-        referral = request.GET.get('ref')
+    if user_type == "normal":
+        referral = request.GET.get("ref")
         if referral:
-            request.session['referral_code'] = referral
+            request.session["referral_code"] = referral
 
-
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST) 
+    if request.method == "POST":
+        form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.user_type = user_type
@@ -170,27 +183,24 @@ def _handle_signup(request, id=None, user_type='normal', is_restaurant=False):
                 from_email=os.environ.get("EMAIL_HOST_USER"),
                 fail_silently=False,
             )
-            username = form.cleaned_data.get('username')
-            return redirect('verify_otp', user_id=user.id)
+            username = form.cleaned_data.get("username")
+            return redirect("verify_otp", user_id=user.id)
         else:
             messages.error(request, "Form not valid")
 
     else:
         form = UserRegisterForm()
-    context = {  
-        'form':form  
-    } 
+    context = {"form": form}
     context.update(_signup_context(is_restaurant=is_restaurant))
-    return render(request, './accounts/sign-up.html', context)
+    return render(request, "./accounts/sign-up.html", context)
 
 
 def accounts_sign_up(request, id=None):
-    return _handle_signup(request, id=id, user_type='normal', is_restaurant=False)
+    return _handle_signup(request, id=id, user_type="normal", is_restaurant=False)
 
 
 def restaurant_sign_up(request, id=None):
-    return _handle_signup(request, id=id, user_type='restaurant', is_restaurant=True)
-
+    return _handle_signup(request, id=id, user_type="restaurant", is_restaurant=True)
 
 
 # def send_otp(request):
@@ -224,48 +234,52 @@ def verify_otp(request, user_id):
     user = CustomUser.objects.get(id=user_id)
 
     if user.email_verified:
-        return redirect('login')
-    
-    if request.method == 'POST':
-        entered_otp = request.POST.get('otp')
+        return redirect("login")
+
+    if request.method == "POST":
+        entered_otp = request.POST.get("otp")
         action = request.POST.get("action")
 
         if action == "resend":
-            request.session.pop('otp_sent', None)
-            request.session.pop('otp_sent_time', None)
-            return redirect('resend_otp', user_id=user.id)
+            request.session.pop("otp_sent", None)
+            request.session.pop("otp_sent_time", None)
+            return redirect("resend_otp", user_id=user.id)
         elif action == "edit_phone":
-            request.session.pop('otp_sent', None)
-            request.session.pop('otp_sent_time', None)
-            request.session.pop('phone', None)
-            if user.user_type == 'restaurant':
-                return redirect('restaurant-register-auth', id=user.id)
-            return redirect('register', id=user.id)
-        
-        if user.otp == entered_otp and timezone.now() <= user.otp_created_at + timedelta(minutes=10):
+            request.session.pop("otp_sent", None)
+            request.session.pop("otp_sent_time", None)
+            request.session.pop("phone", None)
+            if user.user_type == "restaurant":
+                return redirect("restaurant-register-auth", id=user.id)
+            return redirect("register", id=user.id)
+
+        if (
+            user.otp == entered_otp
+            and timezone.now() <= user.otp_created_at + timedelta(minutes=10)
+        ):
             user.email_verified = True
             user.is_active = True
             user.otp = None
             user.save()
-            
-            messages.success(request, "Email verified successfully! You can now log in.")
-            if user.user_type == 'restaurant':
-                return redirect('restaurant-login')
-            return redirect('login')
+
+            messages.success(
+                request, "Email verified successfully! You can now log in."
+            )
+            if user.user_type == "restaurant":
+                return redirect("restaurant-login")
+            return redirect("login")
         else:
             messages.error(request, "Invalid or expired OTP.")
-    
-    return render(request, './accounts/verify_otp.html', {'user': user})
+
+    return render(request, "./accounts/verify_otp.html", {"user": user})
 
 
-
-def resend_otp(request,user_id):
+def resend_otp(request, user_id):
     try:
         user = CustomUser.objects.get(id=user_id)
     except CustomUser.DoesNotExist:
         messages.error("Something went wrong, Please try again")
-        return redirect('login')
-    
+        return redirect("login")
+
     user.generate_otp()
     send_templated_email(
         subject="TiffinTrack Email Verification",
@@ -281,19 +295,14 @@ def resend_otp(request,user_id):
         fail_silently=False,
     )
     messages.success(request, f"OTP SENT")
-    return redirect('verify_otp', user_id=user.id)
-    
-
-
-
-
+    return redirect("verify_otp", user_id=user.id)
 
 
 def verify_otp_sms(request):
 
-    phone = request.session.get('phone')
-    otp_sent = request.session.get('otp_sent')
-    sent_time_str = request.session.get('otp_sent_time')
+    phone = request.session.get("phone")
+    otp_sent = request.session.get("otp_sent")
+    sent_time_str = request.session.get("otp_sent_time")
 
     # Check if required session keys exist
     # if not phone or not otp_sent or not sent_time_str:
@@ -315,45 +324,44 @@ def verify_otp_sms(request):
         action = request.POST.get("action")
 
         if action == "resend":
-            request.session.pop('otp_sent', None)
-            request.session.pop('otp_sent_time', None)
-            return redirect('send_otp')
+            request.session.pop("otp_sent", None)
+            request.session.pop("otp_sent_time", None)
+            return redirect("send_otp")
         elif action == "edit_phone":
-            request.session.pop('otp_sent', None)
-            request.session.pop('otp_sent_time', None)
-            request.session.pop('phone', None)
-            return redirect('send_otp')
+            request.session.pop("otp_sent", None)
+            request.session.pop("otp_sent_time", None)
+            request.session.pop("phone", None)
+            return redirect("send_otp")
 
         otp_status = verify_otp_sms(entered_otp)
         if otp_status == "approved":
             # Clear session and login
-            request.session.pop('otp_sent', None)
-            request.session.pop('otp_sent_time', None)
-            request.session.pop('phone', None)
+            request.session.pop("otp_sent", None)
+            request.session.pop("otp_sent_time", None)
+            request.session.pop("phone", None)
 
             if CustomUser.objects.filter(phone=phone).exists():
                 messages.error(request, "This number is already registered")
-                return redirect('login')
+                return redirect("login")
 
-
-            
             try:
-                user, created = CustomUser.objects.get_or_create(username=phone, phone=phone)
+                user, created = CustomUser.objects.get_or_create(
+                    username=phone, phone=phone
+                )
             except Exception as e:
                 messages.error(request, "Please try again")
                 logger.warning("Verify otp error")
                 logger.error(e)
 
-                return redirect('login')
+                return redirect("login")
 
             login(request, user)
             return redirect("user-home")
-            #TODO error message display
+            # TODO error message display
         else:
             return render(request, "./accounts/verify_otp.html", {"error": otp_status})
 
     return render(request, "./accounts/verify_otp.html")
-
 
 
 @login_required
@@ -361,19 +369,23 @@ def request_email_change(request):
     if request.method == "POST":
         new_email = request.POST.get("new_email")
         # Check if email is already used
-        if User.objects.filter(email__iexact=new_email).exclude(id=request.user.id).exists():
+        if (
+            User.objects.filter(email__iexact=new_email)
+            .exclude(id=request.user.id)
+            .exists()
+        ):
             messages.error(request, "This email is already in use.")
-            return redirect('user-profile')
+            return redirect("user-profile")
         try:
             validate_email(new_email)
         except ValidationError:
             messages.error(request, "Invalid email address.")
-            return redirect('user-profile')
+            return redirect("user-profile")
         user = request.user
         if new_email == user.email:
             messages.error(request, "No change in Email")
-            return redirect('user-profile')
-        
+            return redirect("user-profile")
+
         token = secrets.token_urlsafe(32)
         user.pending_email = new_email
         user.email_change_token = token
@@ -404,20 +416,27 @@ def request_email_change(request):
         except Exception as e:
             logger.error(f"Email sending failed: {e}")
         logger.info("mail send")
-        messages.success(request,"Confirmation email sent to your new email. Please check your inbox.")
+        messages.success(
+            request,
+            "Confirmation email sent to your new email. Please check your inbox.",
+        )
 
-    return redirect('user-profile')
-
+    return redirect("user-profile")
 
 
 # accounts/views.py
 from django.http import HttpResponse
 
+
 def confirm_email_change(request):
     token = request.GET.get("token")
     user = CustomUser.objects.filter(email_change_token=token).first()
 
-    if not user or not user.email_change_expiry or user.email_change_expiry < timezone.now():
+    if (
+        not user
+        or not user.email_change_expiry
+        or user.email_change_expiry < timezone.now()
+    ):
         return HttpResponse("Invalid or expired token.", status=400)
 
     user.email = user.pending_email
@@ -431,10 +450,9 @@ def confirm_email_change(request):
     return HttpResponse("Your email has been successfully updated.")
 
 
-
-
 User = get_user_model()
 signer = TimestampSigner()
+
 
 @login_required
 def request_password_change(request):
@@ -444,14 +462,14 @@ def request_password_change(request):
 
         if not request.user.check_password(current_password):
             messages.error(request, "Current password is incorrect")
-            return redirect('user-profile')
-        
+            return redirect("user-profile")
+
         try:
             validate_password(new_password, user=request.user)
         except ValidationError as e:
             for error in e.messages:
                 messages.error(request, error)
-            return redirect('user-profile')
+            return redirect("user-profile")
 
         # Sign the data (user ID and new password)
         data = f"{request.user.id}:{new_password}"
@@ -477,12 +495,12 @@ def request_password_change(request):
             fail_silently=False,
         )
 
+        messages.success(
+            request,
+            "Confirmation email sent to your new email. Please check your inbox.",
+        )
 
-        messages.success(request,"Confirmation email sent to your new email. Please check your inbox.")
-
-    return redirect('user-profile')
-
-
+    return redirect("user-profile")
 
 
 def confirm_password_change(request, token):
@@ -496,3 +514,9 @@ def confirm_password_change(request, token):
         return HttpResponse("Password changed successfully.")
     except (SignatureExpired, BadSignature, ValueError, User.DoesNotExist):
         return HttpResponse("Invalid or expired link.", status=400)
+
+
+class SampleView(APIView):
+    def post(self, request):
+
+        username = request.POST.get("username")

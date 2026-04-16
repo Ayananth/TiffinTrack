@@ -4,12 +4,15 @@ from django.utils import timezone
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import Point
 import logging
-logger = logging.getLogger('myapp') 
+
+logger = logging.getLogger("myapp")
 from cloudinary_storage.storage import MediaCloudinaryStorage
 
 
 class Wallet(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wallet')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wallet"
+    )
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -20,8 +23,8 @@ class Wallet(models.Model):
         WalletTransaction.objects.create(
             wallet=self,
             amount=amount,
-            transaction_type='credit',
-            description=description
+            transaction_type="credit",
+            description=description,
         )
 
     def debit(self, amount, description=""):
@@ -33,20 +36,23 @@ class Wallet(models.Model):
         WalletTransaction.objects.create(
             wallet=self,
             amount=amount,
-            transaction_type='debit',
-            description=description
+            transaction_type="debit",
+            description=description,
         )
 
     def __str__(self):
         return f"{self.user.username}'s Wallet – ₹{self.balance}"
 
+
 class WalletTransaction(models.Model):
     TRANSACTION_CHOICES = (
-        ('credit', 'Credit'),
-        ('debit', 'Debit'),
+        ("credit", "Credit"),
+        ("debit", "Debit"),
     )
 
-    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
+    wallet = models.ForeignKey(
+        Wallet, on_delete=models.CASCADE, related_name="transactions"
+    )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_type = models.CharField(max_length=6, choices=TRANSACTION_CHOICES)
     description = models.TextField(blank=True)
@@ -57,7 +63,9 @@ class WalletTransaction(models.Model):
 
 
 class Address(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='address')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="address"
+    )
     name = models.CharField(max_length=100)  # Name of recipient
     phone = models.CharField(max_length=15)  # Contact number
     address_line = models.CharField("House/Flat/Building", max_length=255)
@@ -70,53 +78,56 @@ class Address(models.Model):
 
     class Meta:
         verbose_name_plural = "Addresses"
-        ordering = ['-is_default', 'created_at']
+        ordering = ["-is_default", "created_at"]
 
     def __str__(self):
         return f"{self.name}, {self.address_line}, {self.city} - {self.pincode}"
 
 
-
-
 class Orders(models.Model):
     STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('DELIVERED', 'Delivered'),
-        ('CANCELLED', 'Cancelled'),
+        ("PENDING", "Pending"),
+        ("DELIVERED", "Delivered"),
+        ("CANCELLED", "Cancelled"),
     ]
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='orders'
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders"
     )
     restaurant = models.ForeignKey(
         "accounts.RestaurantProfile",
         on_delete=models.CASCADE,
-        related_name='received_orders',
+        related_name="received_orders",
     )
     food_category = models.ForeignKey(
         "restaurant.FoodCategory",
         on_delete=models.SET_NULL,
         null=True,
-        related_name='orders'
+        related_name="orders",
     )
     food_item = models.ForeignKey(
         "restaurant.FoodItem",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='orders'
+        related_name="orders",
     )
     delivery_date = models.DateField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")
     refund_issued = models.BooleanField(default=False)
-    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
-    subscription_id = models.ForeignKey("restaurant.Subscriptions", on_delete=models.CASCADE, related_name='orders', null=True, blank=True)
-
+    address = models.ForeignKey(
+        Address, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    subscription_id = models.ForeignKey(
+        "restaurant.Subscriptions",
+        on_delete=models.CASCADE,
+        related_name="orders",
+        null=True,
+        blank=True,
+    )
 
     def cancel(self):
-        if self.status != 'PENDING':
+        if self.status != "PENDING":
             logger.error("Error: order already cancelled")
             return False  # Cannot cancel delivered or already cancelled orders
 
@@ -125,13 +136,16 @@ class Orders(models.Model):
             return False  # Refund already processed
 
         # Update status
-        self.status = 'CANCELLED'
+        self.status = "CANCELLED"
         self.refund_issued = True
         self.save()
 
         # Refund to wallet
         wallet, _ = Wallet.objects.get_or_create(user=self.user)
-        wallet.credit(self.food_category.price, description=f"Refund for cancelled order #{self.id}")
+        wallet.credit(
+            self.food_category.price,
+            description=f"Refund for cancelled order #{self.id}",
+        )
 
         return True
 
@@ -141,34 +155,39 @@ class Orders(models.Model):
 
 class RestaurantReport(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    restaurant = models.ForeignKey("accounts.RestaurantProfile", on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(
+        "accounts.RestaurantProfile", on_delete=models.CASCADE
+    )
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Report by {self.user} on {self.restaurant}"
-    
-    
+
+
 class OrderReport(models.Model):
 
     STATUS_CHOICES = [
-        ('REFUNDED', 'Refunded'),
-        ('REJECTED', 'Rejected'),
-        ('PENDING', 'Pending'),
+        ("REFUNDED", "Refunded"),
+        ("REJECTED", "Rejected"),
+        ("PENDING", "Pending"),
     ]
 
-
-
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    restaurant = models.ForeignKey("accounts.RestaurantProfile", on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(
+        "accounts.RestaurantProfile", on_delete=models.CASCADE
+    )
     order = models.ForeignKey(Orders, on_delete=models.CASCADE)
     message = models.TextField(blank=True, null=True)
-    image = models.ImageField(storage=MediaCloudinaryStorage(),
-                                    upload_to='tiffintrack/prod/complaints/', null=True)
+    image = models.ImageField(
+        storage=MediaCloudinaryStorage(),
+        upload_to="tiffintrack/prod/complaints/",
+        null=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
     resolve_message = models.CharField(blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")
 
     def __str__(self):
         return f"{self.user} on {self.restaurant}, order {self.order}"
