@@ -10,15 +10,14 @@ from .utils import send_templated_email
 from coupons.models import Referral
 from dotenv import load_dotenv
 import os
+
 load_dotenv()
-
-
 
 
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
     if (
-        instance.user_type == 'normal'
+        instance.user_type == "normal"
         and not instance.is_superuser
         and not instance.is_staff
     ):
@@ -29,11 +28,14 @@ def create_user_profile(sender, instance, created, **kwargs):
         # If a user is staff/superuser/non-normal, ensure no normal-user profile exists.
         UserProfile.objects.filter(user=instance).delete()
 
+
 @receiver(post_save, sender=RestaurantProfile)
 def send_email_on_new_restaurant(sender, instance, created, **kwargs):
     if created:
-        admin_emails = list(CustomUser.objects.filter(is_superuser=True).values_list('email', flat=True))
-        url = reverse('restaurants')
+        admin_emails = list(
+            CustomUser.objects.filter(is_superuser=True).values_list("email", flat=True)
+        )
+        url = reverse("restaurants")
         domain = os.environ.get("DOMAIN_URL", "https://ayananth.xyz/")
         send_templated_email(
             subject="TiffinTrack - New Restaurant Registration",

@@ -21,7 +21,6 @@ load_dotenv()
 import cloudinary
 import cloudinary_storage
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,13 +29,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", False)
 
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 
 CSRF_TRUSTED_ORIGINS = os.environ.get(
@@ -48,116 +47,109 @@ SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = [
-    'users.apps.UsersConfig',
-    'restaurant.apps.RestaurantConfig',
-    'admin_panel.apps.AdminPanelConfig',
-    'payments.apps.PaymentsConfig',
-    'accounts.apps.AccountsConfig',
-    'coupons.apps.CouponsConfig',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    'django.contrib.gis',
-    'cloudinary',
-    'cloudinary_storage',
-
+    "users.apps.UsersConfig",
+    "restaurant.apps.RestaurantConfig",
+    "admin_panel.apps.AdminPanelConfig",
+    "payments.apps.PaymentsConfig",
+    "accounts.apps.AccountsConfig",
+    "coupons.apps.CouponsConfig",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "django.contrib.gis",
+    "cloudinary",
+    "cloudinary_storage",
 ]
 
-AUTHENTICATION_BACKENDS = [
-    'allauth.account.auth_backends.AuthenticationBackend'
-]
+AUTHENTICATION_BACKENDS = ["allauth.account.auth_backends.AuthenticationBackend"]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'accounts.middleware.RedirectAuthenticatedUserMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
-    'accounts.middleware.BlockedUserLogoutMiddleware',
-    'accounts.middleware.CheckSubscriptionMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "accounts.middleware.RedirectAuthenticatedUserMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+    "accounts.middleware.BlockedUserLogoutMiddleware",
+    "accounts.middleware.CheckSubscriptionMiddleware",
 ]
 
 
-ROOT_URLCONF = 'TiffinTrack.urls'
+ROOT_URLCONF = "TiffinTrack.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'restaurant.context_processors.has_restaurant',
-                'admin_panel.context_processors.restaurant_requests',
-                'users.context_processors.location_context',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "restaurant.context_processors.has_restaurant",
+                "admin_panel.context_processors.restaurant_requests",
+                "users.context_processors.location_context",
             ],
         },
     },
 ]
 
 
-
-
-#Social login settings
+# Social login settings
 
 SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': os.environ['CLIENT_ID'],
-            'secret': os.environ['GOOGLE_SECRET'],
-
+    "google": {
+        "APP": {
+            "client_id": os.environ["CLIENT_ID"],
+            "secret": os.environ["GOOGLE_SECRET"],
         },
-        'SCOPE': ['profile','email',],
-         'AUTH_PARAMS': {'access_type': 'online'},
-        'METHOD': 'oauth2',
-        'VERIFIED_EMAIL': True,
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {"access_type": "online"},
+        "METHOD": "oauth2",
+        "VERIFIED_EMAIL": True,
     }
-   
 }
 
-SOCIALACCOUNT_LOGIN_ON_GET=True
-LOGIN_REDIRECT_URL = 'user-home'
-LOGOUT_REDIRECT_URL = 'login'
+SOCIALACCOUNT_LOGIN_ON_GET = True
+LOGIN_REDIRECT_URL = "user-home"
+LOGOUT_REDIRECT_URL = "login"
 
 
-SOCIALACCOUNT_ADAPTER = 'accounts.adapters.CustomSocialAccountAdapter'
+SOCIALACCOUNT_ADAPTER = "accounts.adapters.CustomSocialAccountAdapter"
 SOCIALACCOUNT_AUTO_SIGNUP = True
 
 
-
-
-
-WSGI_APPLICATION = 'TiffinTrack.wsgi.application'
+WSGI_APPLICATION = "TiffinTrack.wsgi.application"
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ['DB_NAME'],        # PostgreSQL database name
-        'USER': os.environ['DB_USER'],        # PostgreSQL username
-        'PASSWORD': os.environ['DB_PASSWORD'],# PostgreSQL password
-        'HOST': os.environ['DB_HOST'],           # Or your remote host
-        'PORT': os.environ['DB_PORT'],                # Default PostgreSQL port
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": os.environ["DB_NAME"],  # PostgreSQL database name
+        "USER": os.environ["DB_USER"],  # PostgreSQL username
+        "PASSWORD": os.environ["DB_PASSWORD"],  # PostgreSQL password
+        "HOST": os.environ["DB_HOST"],  # Or your remote host
+        "PORT": os.environ["DB_PORT"],  # Default PostgreSQL port
     },
 }
 
-GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH', None)
-GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH', None)
+GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH", None)
+GEOS_LIBRARY_PATH = os.environ.get("GEOS_LIBRARY_PATH", None)
 
 
 # Password validation
@@ -165,16 +157,16 @@ GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH', None)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -182,9 +174,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -194,107 +186,104 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # final destination for collectstatic
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(
+    BASE_DIR, "staticfiles"
+)  # final destination for collectstatic
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # where your source static files live
+    os.path.join(BASE_DIR, "static"),  # where your source static files live
 ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # settings.py
-TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
-TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
-TWILIO_PHONE_NUMBER = os.environ['TWILIO_PHONE_NUMBER']
+TWILIO_ACCOUNT_SID = os.environ["TWILIO_ACCOUNT_SID"]
+TWILIO_AUTH_TOKEN = os.environ["TWILIO_AUTH_TOKEN"]
+TWILIO_PHONE_NUMBER = os.environ["TWILIO_PHONE_NUMBER"]
 
 
 MESSAGE_TAGS = {
-    messages.SUCCESS: 'success',
-    messages.ERROR: 'danger',  # 'danger' works with Bootstrap alert-danger class
+    messages.SUCCESS: "success",
+    messages.ERROR: "danger",  # 'danger' works with Bootstrap alert-danger class
 }
 
 
-
-#Password reset
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ['EMAIL_HOST']
-EMAIL_PORT = os.environ['EMAIL_PORT']
-EMAIL_USE_TLS = os.environ['EMAIL_USE_TLS']
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-
+# Password reset
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ["EMAIL_HOST"]
+EMAIL_PORT = os.environ["EMAIL_PORT"]
+EMAIL_USE_TLS = os.environ["EMAIL_USE_TLS"]
+EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
 
 
-RAZORPAY_KEY_ID=os.environ['RAZORPAY_KEY_ID']
-RAZORPAY_KEY_SECRET=os.environ['RAZORPAY_KEY_SECRET']
+RAZORPAY_KEY_ID = os.environ["RAZORPAY_KEY_ID"]
+RAZORPAY_KEY_SECRET = os.environ["RAZORPAY_KEY_SECRET"]
 
 
 import os
+
 if DEBUG:
-    handlers = ['console', 'file']
+    handlers = ["console", "file"]
 else:
-    handlers = ['file']
+    handlers = ["file"]
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-
-    'formatters': {
-        'verbose': {
-            'format': '[{asctime}] {levelname} [{name}] {message}',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} [{name}] {message}",
+            "style": "{",
         },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
-            'formatter': 'verbose',
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
         },
     },
-
-    'loggers': {
-        'django': {
-            'handlers': handlers,
-            'level': 'INFO',
-            'propagate': True,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
-        'myapp': {  # Replace with your app name
-            'handlers': handlers,
-            'level': 'INFO',
-            'propagate': False,
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/django.log"),
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": handlers,
+            "level": "INFO",
+            "propagate": True,
+        },
+        "myapp": {  # Replace with your app name
+            "handlers": handlers,
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }
-
 
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
-    'API_KEY': os.environ['CLOUDINARY_API_KEY'],
-    'API_SECRET': os.environ['CLOUDINARY_SECRET'],
+    "CLOUD_NAME": os.environ["CLOUDINARY_CLOUD_NAME"],
+    "API_KEY": os.environ["CLOUDINARY_API_KEY"],
+    "API_SECRET": os.environ["CLOUDINARY_SECRET"],
 }
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

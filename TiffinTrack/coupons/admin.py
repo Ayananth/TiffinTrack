@@ -5,4 +5,3 @@ from . import models
 admin.site.register(models.Coupon)
 admin.site.register(models.CouponUsage)
 admin.site.register(models.Referral)
-
