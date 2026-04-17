@@ -515,8 +515,3 @@ def confirm_password_change(request, token):
     except (SignatureExpired, BadSignature, ValueError, User.DoesNotExist):
         return HttpResponse("Invalid or expired link.", status=400)
 
-
-class SampleView(APIView):
-    def post(self, request):
-
-        username = request.POST.get("username")
