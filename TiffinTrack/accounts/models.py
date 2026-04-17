@@ -10,19 +10,15 @@ from cloudinary_storage.storage import MediaCloudinaryStorage
 from django.utils.text import slugify
 
 
-
-
-
-
-
-
 class CustomUser(AbstractUser):
     USER_TYPE_CHOICES = (
-        ('normal', 'Normal User'),
-        ('restaurant', 'Restaurant User'),
-        ('admin', 'Admin'),
+        ("normal", "Normal User"),
+        ("restaurant", "Restaurant User"),
+        ("admin", "Admin"),
     )
-    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='normal')
+    user_type = models.CharField(
+        max_length=10, choices=USER_TYPE_CHOICES, default="normal"
+    )
     is_blocked = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     email = models.EmailField(unique=True)
@@ -40,21 +36,23 @@ class CustomUser(AbstractUser):
         self.otp_created_at = timezone.now()
         self.save()
 
-
     def __str__(self):
         return self.username
-    
+
     @property
     def is_normal_user(self):
-        return self.user_type == 'normal' and not self.is_superuser and not self.is_staff
+        return (
+            self.user_type == "normal" and not self.is_superuser and not self.is_staff
+        )
 
     @property
     def is_restaurant_user(self):
-        return self.user_type == 'restaurant'
+        return self.user_type == "restaurant"
 
     @property
     def is_admin(self):
-        return self.user_type == 'admin' or self.is_superuser or self.is_staff
+        return self.user_type == "admin" or self.is_superuser or self.is_staff
+
 
 class PhoneOTP(models.Model):
     phone = models.CharField(max_length=15, unique=True)
@@ -68,7 +66,6 @@ class PhoneOTP(models.Model):
         self.save()
 
 
-
 class Locations(models.Model):
     # user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(unique=True, default="thrissur")
@@ -79,14 +76,16 @@ class Locations(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                on_delete=models.CASCADE,
-                                related_name='profile')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
+    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    profile_pic = models.ImageField(storage=MediaCloudinaryStorage(),
-                                    upload_to='tiffintrack/prod/profile_pics/',
-                                    null=True)
+    profile_pic = models.ImageField(
+        storage=MediaCloudinaryStorage(),
+        upload_to="tiffintrack/prod/profile_pics/",
+        null=True,
+    )
     location_name = models.CharField(max_length=255, default="thrissur")
     point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
     referral_code_used = models.CharField(max_length=10, blank=True, null=True)
@@ -101,11 +100,9 @@ class UserProfile(models.Model):
             self.location_name = get_location_from_point(self.point.x, self.point.y)
         super().save(*args, **kwargs)
 
-
-
-
     def __str__(self):
         return self.user.username
+
 
 class RestaurantProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -118,9 +115,11 @@ class RestaurantProfile(models.Model):
     is_active = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    restaurant_image = models.ImageField(storage=MediaCloudinaryStorage(),
-                                    upload_to='tiffintrack/prod/restaurant_pics/',
-                                    null=True)
+    restaurant_image = models.ImageField(
+        storage=MediaCloudinaryStorage(),
+        upload_to="tiffintrack/prod/restaurant_pics/",
+        null=True,
+    )
     point = geomodels.PointField(geography=True, default=Point(76.1626624, 10.436608))
     address = models.TextField(max_length=255, blank=True, null=True)
     location_name = models.TextField(blank=True, null=True, max_length=255)
@@ -150,18 +149,30 @@ class RestaurantProfile(models.Model):
             self.slug = self._generate_unique_slug()
         super().save(*args, **kwargs)
 
-        
     def __str__(self):
         return self.restaurant_name
 
 
-
 class RestaurantImage(models.Model):
-    restaurant = models.ForeignKey("accounts.RestaurantProfile", on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(storage=MediaCloudinaryStorage(),
-                                    upload_to='tiffintrack/prod/restaurant_pics/',
-                                    null=True)
+    restaurant = models.ForeignKey(
+        "accounts.RestaurantProfile", on_delete=models.CASCADE, related_name="images"
+    )
+    image = models.ImageField(
+        storage=MediaCloudinaryStorage(),
+        upload_to="tiffintrack/prod/restaurant_pics/",
+        null=True,
+    )
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Image for {self.restaurant.restaurant_name}"
+
+
+class Author(models.Model):
+    name = models.CharField(max_length=50)
+
+
+class Book(models.Model):
+    title = models.CharField(max_length=100)
+    published_data = models.DateField()
+    author = models.ManyToManyField(Author)
