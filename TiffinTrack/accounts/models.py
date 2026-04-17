@@ -166,3 +166,13 @@ class RestaurantImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.restaurant.restaurant_name}"
+
+
+class Author(models.Model):
+    name = models.CharField(max_length=50)
+
+
+class Book(models.Model):
+    title = models.CharField(max_length=100)
+    published_data = models.DateField()
+    author = models.ManyToManyField(Author)

@@ -5,6 +5,12 @@ from .utils import (
     verify_otp_sms,
     send_templated_email,
 )
+from .utils import (
+    login_redirect_view,
+    send_otp_sms,
+    verify_otp_sms,
+    send_templated_email,
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -34,6 +40,7 @@ import logging
 logger = logging.getLogger("myapp")
 
 
+# TODO dont give access to admin
 # TODO dont give access to admin
 OTP_EXPIRY_SECONDS = 600  # 5 minutes
 
@@ -514,4 +521,3 @@ def confirm_password_change(request, token):
         return HttpResponse("Password changed successfully.")
     except (SignatureExpired, BadSignature, ValueError, User.DoesNotExist):
         return HttpResponse("Invalid or expired link.", status=400)
-
