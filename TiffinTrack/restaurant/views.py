@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from accounts.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
-from .models import RestaurantProfile, MenuCategory, FoodCategory, FoodItem, Offer
+from .models import RestaurantProfile, MenuCategory, FoodCategory, FoodItem, Offer, Day
 from .forms import RestaurantProfileForm, MenuCategoryForm
 from users.models import Orders
 from coupons.models import Coupon
@@ -13,7 +13,7 @@ from coupons.models import Coupon
 
 from django.db.models import Count
 from django.utils.timezone import now
-from django.db.models import Count, Q, Sum
+from django.db.models import Case, Count, IntegerField, Prefetch, Q, Sum, Value, When
 from django.utils.timezone import localtime
 from datetime import datetime
 from accounts.models import CustomUser, UserProfile, RestaurantImage
@@ -31,6 +31,28 @@ def redirect_with_get_params(request, url_name):
     if query_string:
         return redirect(f"{base_url}?{query_string}")
     return redirect(base_url)
+
+
+def _next_url(request):
+    return request.POST.get("next") or request.GET.get("next")
+
+
+def _redirect_to_next_or_default(request, default_url_name):
+    next_url = _next_url(request)
+    if next_url:
+        return redirect(next_url)
+    return redirect(default_url_name)
+
+
+def _form_errors_as_text(form):
+    errors = []
+    for field_name, field_errors in form.errors.items():
+        for error in field_errors:
+            if field_name == "__all__":
+                errors.append(str(error))
+            else:
+                errors.append(f"{field_name}: {error}")
+    return " | ".join(errors)
 
 
 @login_required(login_url="login")
@@ -385,8 +407,10 @@ def food_add_or_update(request, pk=None):
         messages.error(request, "Not restaurant user")
         return redirect("login")
 
-    food_obj = get_object_or_404(FoodItem, pk=pk) if pk else None
     restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
+    food_obj = (
+        get_object_or_404(FoodItem, pk=pk, restaurant=restaurant_obj) if pk else None
+    )
 
     if request.method == "POST":
         form = FoodItemManageForm(
@@ -403,10 +427,18 @@ def food_add_or_update(request, pk=None):
             food_item.save()
             form.save_m2m()  # Save ManyToMany (available_days)
             messages.success(request, f"Food {'Updated' if pk else 'Created'}")
+            next_url = _next_url(request)
+            if next_url:
+                return redirect(next_url)
             return redirect("restaurant-food_items-edit", food_item.pk)
         else:
             messages.error(request, "Invalid inputs.")
+            error_text = _form_errors_as_text(form)
+            if error_text:
+                messages.error(request, error_text)
             logger.error(form.errors)
+            if _next_url(request):
+                return _redirect_to_next_or_default(request, "restaurant-menu_items")
     else:
         form = FoodItemManageForm(instance=food_obj, restaurant=restaurant_obj)
 
@@ -418,27 +450,88 @@ def delete_food_item(request, id):
     if request.user.user_type != "restaurant":
         messages.error(request, "Not restaurant user")
         return redirect("login")
-    food = get_object_or_404(FoodItem, pk=id)
+    restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
+    food = get_object_or_404(FoodItem, pk=id, restaurant=restaurant_obj)
     food.delete()
-    return redirect("restaurant-food_items")
+    messages.success(request, "Food deleted.")
+    return _redirect_to_next_or_default(request, "restaurant-menu_items")
 
 
 @login_required(login_url="login")
 def menus(request):
+    if request.user.user_type != "restaurant":
+        messages.error(request, "Not restaurant user")
+        return redirect("login")
+
     restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
-    menus = MenuCategory.objects.filter(restaurant=restaurant_obj).order_by(
-        "-created_at"
+    weekday_names = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
+    for day_name in weekday_names:
+        Day.objects.get_or_create(name=day_name)
+
+    weekday_order = Case(
+        *[When(name=day, then=Value(index)) for index, day in enumerate(weekday_names)],
+        output_field=IntegerField(),
     )
-    context = {"menus": menus}
-    return render(request, "./restaurant/menus.html", context)
+    day_options = (
+        Day.objects.filter(name__in=weekday_names)
+        .annotate(_weekday_order=weekday_order)
+        .order_by("_weekday_order")
+    )
+
+    menus = MenuCategory.objects.filter(restaurant=restaurant_obj).order_by("created_at")
+    selected_menu_id = request.GET.get("menu_id")
+    if selected_menu_id and menus.filter(id=selected_menu_id).exists():
+        selected_menu = menus.get(id=selected_menu_id)
+    else:
+        selected_menu = menus.first()
+
+    selected_menu_categories = []
+    if selected_menu:
+        selected_menu_categories = (
+            FoodCategory.objects.filter(
+                restaurant=restaurant_obj,
+                menu_category=selected_menu,
+            )
+            .prefetch_related(
+                Prefetch(
+                    "food_items",
+                    queryset=FoodItem.objects.filter(restaurant=restaurant_obj)
+                    .select_related("food_category", "menu_category")
+                    .prefetch_related("days")
+                    .order_by("created_at"),
+                )
+            )
+            .order_by("created_at")
+        )
+
+    category_choices = FoodCategory.objects.filter(restaurant=restaurant_obj).order_by(
+        "menu_category__name", "name"
+    )
+    context = {
+        "menus": menus,
+        "selected_menu": selected_menu,
+        "selected_menu_categories": selected_menu_categories,
+        "category_choices": category_choices,
+        "day_options": day_options,
+    }
+    return render(request, "./restaurant/menu_management.html", context)
 
 
+@login_required(login_url="login")
 def menu_add_or_update(request, pk=None):
+    restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
     if pk:
-        menu_obj = get_object_or_404(MenuCategory, pk=pk)
+        menu_obj = get_object_or_404(MenuCategory, pk=pk, restaurant=restaurant_obj)
     else:
         menu_obj = None
-    restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
 
     if request.method == "POST":
         form = MenuManageForm(request.POST, request.FILES, instance=menu_obj)
@@ -447,19 +540,27 @@ def menu_add_or_update(request, pk=None):
             menu.restaurant = restaurant_obj
             menu.save()
             messages.success(request, f"Menu  {'Updated' if pk else 'Created'} ")
-            return redirect("restaurant-menu_items")
+            return _redirect_to_next_or_default(request, "restaurant-menu_items")
         else:
             messages.error(request, "Invalid inputs.")
+            error_text = _form_errors_as_text(form)
+            if error_text:
+                messages.error(request, error_text)
+            if _next_url(request):
+                return _redirect_to_next_or_default(request, "restaurant-menu_items")
     else:
         form = MenuManageForm(instance=menu_obj)
 
     return render(request, "./restaurant/add-menu.html", {"form": form})
 
 
+@login_required(login_url="login")
 def menu_food_item(request, id):
-    menu = get_object_or_404(MenuCategory, pk=id)
+    restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
+    menu = get_object_or_404(MenuCategory, pk=id, restaurant=restaurant_obj)
     menu.delete()
-    return redirect("restaurant-menu_items")
+    messages.success(request, "Menu deleted.")
+    return _redirect_to_next_or_default(request, "restaurant-menu_items")
 
 
 @login_required(login_url="admin-login")
@@ -472,12 +573,13 @@ def food_category(request):
     return render(request, "./restaurant/food_categories.html", context)
 
 
+@login_required(login_url="login")
 def category_add_or_update(request, pk=None):
+    restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
     if pk:
-        food_obj = get_object_or_404(FoodCategory, pk=pk)
+        food_obj = get_object_or_404(FoodCategory, pk=pk, restaurant=restaurant_obj)
     else:
         food_obj = None
-    restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
 
     if request.method == "POST":
         form = FoodCategoryManageForm(request.POST, request.FILES, instance=food_obj)
@@ -486,19 +588,27 @@ def category_add_or_update(request, pk=None):
             restaurant_form.restaurant = restaurant_obj
             restaurant_form.save()
             messages.success(request, f"Category  {'Updated' if pk else 'Created'} ")
-            return redirect("restaurant-food_category")
+            return _redirect_to_next_or_default(request, "restaurant-menu_items")
         else:
             messages.error(request, "Invalid inputs.")
+            error_text = _form_errors_as_text(form)
+            if error_text:
+                messages.error(request, error_text)
+            if _next_url(request):
+                return _redirect_to_next_or_default(request, "restaurant-menu_items")
     else:
         form = FoodCategoryManageForm(instance=food_obj, restaurant=restaurant_obj)
 
     return render(request, "./restaurant/add-category.html", {"form": form})
 
 
+@login_required(login_url="login")
 def delete_food_category(request, id):
-    food = get_object_or_404(FoodCategory, pk=id)
+    restaurant_obj = get_object_or_404(RestaurantProfile, user=request.user)
+    food = get_object_or_404(FoodCategory, pk=id, restaurant=restaurant_obj)
     food.delete()
-    return redirect("restaurant-food_category")
+    messages.success(request, "Category deleted.")
+    return _redirect_to_next_or_default(request, "restaurant-menu_items")
 
 
 @login_required(login_url="login")

@@ -1,0 +1,547 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+{% with next_q=request.get_full_path|urlencode %}
+<style>
+  .menu-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .menu-tab {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #e6e6e6;
+    background: #f8f8f8;
+    color: #222;
+    font-weight: 600;
+  }
+
+  .menu-tab.active {
+    background: #fff1ec;
+    border-color: #ffb196;
+    color: #ff5f2d;
+  }
+
+  .menu-card {
+    border: 1px solid #ececec;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  }
+
+  .meta-line {
+    margin: 0;
+    color: #444;
+    font-size: 14px;
+  }
+
+  .food-row {
+    border: 1px solid #f1f1f1;
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 10px;
+    background: #fafafa;
+  }
+
+  .day-pill {
+    display: inline-block;
+    min-width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 8px;
+    background: #e8f3ef;
+    color: #2f7e63;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 6px;
+    margin-top: 6px;
+  }
+
+  .page-header-strip {
+    border-radius: 16px;
+    background: linear-gradient(120deg, #f4f3f2, #ebe9e8);
+    padding: 26px;
+    margin-bottom: 20px;
+  }
+
+  .btn-soft {
+    border: 1px solid #e4e4e4;
+    background: #fff;
+    color: #333;
+  }
+
+  .form-check-inline {
+    margin-right: 12px;
+  }
+
+  .empty-state {
+    border: 1px dashed #d8d8d8;
+    border-radius: 12px;
+    padding: 20px;
+    color: #666;
+    background: #fbfbfb;
+  }
+</style>
+
+<div class="container-fluid">
+  <div class="page-header-strip d-flex justify-content-between align-items-start flex-wrap gap-2">
+    <div>
+      <h2 class="mb-1">Menu Management</h2>
+      <p class="mb-0">Manage your restaurant menus, categories, and food items in one place.</p>
+    </div>
+    <button
+      class="btn btn-theme"
+      data-bs-toggle="modal"
+      data-bs-target="#menuModal"
+      data-mode="create"
+      data-action="{% url 'restaurant-menu_items-add' %}?next={{ next_q }}"
+    >
+      <i class="ri-add-line"></i> Create Menu
+    </button>
+  </div>
+
+  <div class="card card-table">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div class="menu-tabs">
+          {% for menu in menus %}
+            <a
+              href="{% url 'restaurant-menu_items' %}?menu_id={{ menu.id }}"
+              class="menu-tab {% if selected_menu and selected_menu.id == menu.id %}active{% endif %}"
+            >
+              {{ menu.name }}
+            </a>
+          {% empty %}
+            <span class="text-muted">No menus yet.</span>
+          {% endfor %}
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          {% if selected_menu %}
+            <button
+              class="btn btn-soft"
+              data-bs-toggle="modal"
+              data-bs-target="#menuModal"
+              data-mode="edit"
+              data-action="{% url 'restaurant-menu_items-edit' selected_menu.id %}?next={{ next_q }}"
+              data-name="{{ selected_menu.name|escape }}"
+            >
+              <i class="ri-pencil-line"></i> Edit Menu
+            </button>
+            <a
+              class="btn btn-soft text-danger"
+              href="{% url 'restaurant-menu_items-delete' selected_menu.id %}?next={{ next_q }}"
+              onclick="return confirm('Delete this menu? Associated categories and foods may also be affected.');"
+            >
+              <i class="ri-delete-bin-line"></i> Delete Menu
+            </a>
+          {% endif %}
+
+          <button
+            class="btn btn-theme"
+            {% if not selected_menu %}disabled{% endif %}
+            data-bs-toggle="modal"
+            data-bs-target="#categoryModal"
+            data-mode="create"
+            data-action="{% url 'restaurant-food_category-add' %}?next={{ next_q }}"
+            data-menu-id="{% if selected_menu %}{{ selected_menu.id }}{% endif %}"
+          >
+            <i class="ri-add-line"></i> Add Category
+          </button>
+        </div>
+      </div>
+
+      {% if selected_menu %}
+        <div class="row g-4">
+          {% for category in selected_menu_categories %}
+            <div class="col-12 col-xl-6">
+              <div class="menu-card p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h4 class="mb-2">{{ category.name }}</h4>
+                    <p class="meta-line"><strong>Price:</strong> ₹{{ category.price }}</p>
+                    <p class="meta-line">
+                      <strong>Time:</strong>
+                      {% if category.start_time %}{{ category.start_time|time:"H:i" }}{% else %}-{% endif %}
+                      -
+                      {% if category.end_time %}{{ category.end_time|time:"H:i" }}{% else %}-{% endif %}
+                    </p>
+                    <p class="meta-line"><strong>Cancel by:</strong> {{ category.cancellation_time|time:"H:i" }}</p>
+                  </div>
+                  <div class="dropdown">
+                    <button class="btn btn-soft btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="ri-more-2-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button
+                          class="dropdown-item"
+                          data-bs-toggle="modal"
+                          data-bs-target="#categoryModal"
+                          data-mode="edit"
+                          data-action="{% url 'restaurant-food_category-edit' category.id %}?next={{ next_q }}"
+                          data-name="{{ category.name|escape }}"
+                          data-price="{{ category.price }}"
+                          data-start-time="{% if category.start_time %}{{ category.start_time|time:'H:i' }}{% endif %}"
+                          data-end-time="{% if category.end_time %}{{ category.end_time|time:'H:i' }}{% endif %}"
+                          data-cancel-time="{{ category.cancellation_time|time:'H:i' }}"
+                          data-menu-id="{% if category.menu_category %}{{ category.menu_category.id }}{% endif %}"
+                          data-is-active="{{ category.is_active|yesno:'true,false' }}"
+                        >
+                          Edit Category
+                        </button>
+                      </li>
+                      <li>
+                        <a
+                          class="dropdown-item text-danger"
+                          href="{% url 'restaurant-food_category-delete' category.id %}?next={{ next_q }}"
+                          onclick="return confirm('Delete this category?');"
+                        >
+                          Delete Category
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <hr>
+
+                {% for food in category.food_items.all %}
+                  <div class="food-row">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div>
+                        <h6 class="mb-1">{{ food.name }}</h6>
+                        <p class="mb-1 text-muted" style="font-size: 13px;">{{ food.description|default:"No description" }}</p>
+                        <div>
+                          {% for day in food.days.all %}
+                            <span class="day-pill">{{ day.name|slice:':1' }}</span>
+                          {% empty %}
+                            <span class="text-muted" style="font-size: 12px;">No days selected</span>
+                          {% endfor %}
+                        </div>
+                      </div>
+                      <div class="dropdown">
+                        <button class="btn btn-soft btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="ri-more-2-fill"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li>
+                            <button
+                              class="dropdown-item"
+                              data-bs-toggle="modal"
+                              data-bs-target="#foodModal"
+                              data-mode="edit"
+                              data-action="{% url 'restaurant-food_items-edit' food.id %}?next={{ next_q }}"
+                              data-name="{{ food.name|escape }}"
+                              data-description="{{ food.description|default:''|escape }}"
+                              data-category-id="{% if food.food_category %}{{ food.food_category.id }}{% endif %}"
+                              data-is-available="{{ food.is_available|yesno:'true,false' }}"
+                              data-is-vegetarian="{{ food.is_vegetarian|yesno:'true,false' }}"
+                              data-days="{% for day in food.days.all %}{{ day.id }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                            >
+                              Edit Food
+                            </button>
+                          </li>
+                          <li>
+                            <a
+                              class="dropdown-item text-danger"
+                              href="{% url 'restaurant-food_items-delete' food.id %}?next={{ next_q }}"
+                              onclick="return confirm('Delete this food item?');"
+                            >
+                              Delete Food
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                {% empty %}
+                  <p class="text-muted mb-2">No food items in this category.</p>
+                {% endfor %}
+
+                <button
+                  class="btn btn-soft w-100 mt-3"
+                  data-bs-toggle="modal"
+                  data-bs-target="#foodModal"
+                  data-mode="create"
+                  data-action="{% url 'restaurant-food_items-add' %}?next={{ next_q }}"
+                  data-category-id="{{ category.id }}"
+                >
+                  <i class="ri-add-line"></i> Add Food Item
+                </button>
+              </div>
+            </div>
+          {% empty %}
+            <div class="col-12">
+              <div class="empty-state">
+                No categories in <strong>{{ selected_menu.name }}</strong> yet. Use <strong>Add Category</strong> to start.
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          No menu created yet. Click <strong>Create Menu</strong> to begin.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="menuModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" id="menuForm" action="{% url 'restaurant-menu_items-add' %}?next={{ next_q }}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <div class="modal-header">
+          <h5 class="modal-title" id="menuModalTitle">Create Menu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label">Menu Name</label>
+          <input type="text" class="form-control" name="name" id="menuName" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-theme">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" id="categoryForm" action="{% url 'restaurant-food_category-add' %}?next={{ next_q }}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <div class="modal-header">
+          <h5 class="modal-title" id="categoryModalTitle">Add Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Category Name</label>
+              <input type="text" class="form-control" name="name" id="categoryName" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Price</label>
+              <input type="number" class="form-control" name="price" id="categoryPrice" min="0" step="0.01" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Start Time</label>
+              <input type="time" class="form-control" name="start_time" id="categoryStartTime">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">End Time</label>
+              <input type="time" class="form-control" name="end_time" id="categoryEndTime">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Cancellation Time</label>
+              <input type="time" class="form-control" name="cancellation_time" id="categoryCancelTime" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Menu</label>
+              <select class="form-select" name="menu_category" id="categoryMenuCategory">
+                <option value="">Select menu</option>
+                {% for menu in menus %}
+                  <option value="{{ menu.id }}">{{ menu.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-12">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="categoryIsActive" name="is_active" checked>
+                <label class="form-check-label" for="categoryIsActive">Active</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-theme">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="foodModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" id="foodForm" action="{% url 'restaurant-food_items-add' %}?next={{ next_q }}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <div class="modal-header">
+          <h5 class="modal-title" id="foodModalTitle">Add Food</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Food Name</label>
+              <input type="text" class="form-control" name="name" id="foodName" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Category</label>
+              <select class="form-select" name="food_category" id="foodCategory" required>
+                <option value="">Select category</option>
+                {% for category in category_choices %}
+                  <option value="{{ category.id }}">{{ category.name }}{% if category.menu_category %} - {{ category.menu_category.name }}{% endif %}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" name="description" id="foodDescription" rows="3"></textarea>
+            </div>
+            <div class="col-md-6">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="foodIsAvailable" name="is_available" checked>
+                <label class="form-check-label" for="foodIsAvailable">Available</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="foodIsVegetarian" name="is_vegetarian">
+                <label class="form-check-label" for="foodIsVegetarian">Vegetarian</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Available Days</label>
+              <div>
+                {% for day in day_options %}
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input food-day-check" type="checkbox" id="foodDay{{ day.id }}" name="days" value="{{ day.id }}">
+                    <label class="form-check-label" for="foodDay{{ day.id }}">{{ day.name }}</label>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-theme">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuModal = document.getElementById("menuModal");
+    const menuForm = document.getElementById("menuForm");
+    const menuModalTitle = document.getElementById("menuModalTitle");
+    const menuName = document.getElementById("menuName");
+
+    menuModal.addEventListener("show.bs.modal", function (event) {
+      const button = event.relatedTarget;
+      const mode = button.getAttribute("data-mode");
+      const action = button.getAttribute("data-action");
+      const name = button.getAttribute("data-name") || "";
+
+      menuForm.setAttribute("action", action);
+      if (mode === "edit") {
+        menuModalTitle.textContent = "Edit Menu";
+        menuName.value = name;
+      } else {
+        menuModalTitle.textContent = "Create Menu";
+        menuName.value = "";
+      }
+    });
+
+    const categoryModal = document.getElementById("categoryModal");
+    const categoryForm = document.getElementById("categoryForm");
+    const categoryModalTitle = document.getElementById("categoryModalTitle");
+
+    const categoryName = document.getElementById("categoryName");
+    const categoryPrice = document.getElementById("categoryPrice");
+    const categoryStartTime = document.getElementById("categoryStartTime");
+    const categoryEndTime = document.getElementById("categoryEndTime");
+    const categoryCancelTime = document.getElementById("categoryCancelTime");
+    const categoryMenuCategory = document.getElementById("categoryMenuCategory");
+    const categoryIsActive = document.getElementById("categoryIsActive");
+
+    categoryModal.addEventListener("show.bs.modal", function (event) {
+      const button = event.relatedTarget;
+      const mode = button.getAttribute("data-mode");
+
+      categoryForm.setAttribute("action", button.getAttribute("data-action"));
+      categoryName.value = button.getAttribute("data-name") || "";
+      categoryPrice.value = button.getAttribute("data-price") || "";
+      categoryStartTime.value = button.getAttribute("data-start-time") || "";
+      categoryEndTime.value = button.getAttribute("data-end-time") || "";
+      categoryCancelTime.value = button.getAttribute("data-cancel-time") || "";
+
+      const menuId = button.getAttribute("data-menu-id") || "";
+      categoryMenuCategory.value = menuId;
+
+      if (mode === "edit") {
+        categoryModalTitle.textContent = "Edit Category";
+        categoryIsActive.checked = button.getAttribute("data-is-active") === "true";
+      } else {
+        categoryModalTitle.textContent = "Add Category";
+        categoryIsActive.checked = true;
+      }
+    });
+
+    const foodModal = document.getElementById("foodModal");
+    const foodForm = document.getElementById("foodForm");
+    const foodModalTitle = document.getElementById("foodModalTitle");
+    const foodName = document.getElementById("foodName");
+    const foodDescription = document.getElementById("foodDescription");
+    const foodCategory = document.getElementById("foodCategory");
+    const foodIsAvailable = document.getElementById("foodIsAvailable");
+    const foodIsVegetarian = document.getElementById("foodIsVegetarian");
+
+    function resetDays() {
+      document.querySelectorAll(".food-day-check").forEach((checkbox) => {
+        checkbox.checked = false;
+      });
+    }
+
+    foodModal.addEventListener("show.bs.modal", function (event) {
+      const button = event.relatedTarget;
+      const mode = button.getAttribute("data-mode");
+      const action = button.getAttribute("data-action");
+
+      foodForm.setAttribute("action", action);
+      foodName.value = button.getAttribute("data-name") || "";
+      foodDescription.value = button.getAttribute("data-description") || "";
+
+      const categoryId = button.getAttribute("data-category-id") || "";
+      foodCategory.value = categoryId;
+
+      if (mode === "edit") {
+        foodModalTitle.textContent = "Edit Food";
+        foodIsAvailable.checked = button.getAttribute("data-is-available") === "true";
+        foodIsVegetarian.checked = button.getAttribute("data-is-vegetarian") === "true";
+      } else {
+        foodModalTitle.textContent = "Add Food";
+        foodIsAvailable.checked = true;
+        foodIsVegetarian.checked = false;
+      }
+
+      resetDays();
+      const days = button.getAttribute("data-days") || "";
+      if (days) {
+        days.split(",").forEach((dayId) => {
+          const el = document.querySelector(`.food-day-check[value="${dayId}"]`);
+          if (el) {
+            el.checked = true;
+          }
+        });
+      }
+    });
+  });
+</script>
+{% endwith %}
+{% endblock %}

@@ -190,20 +190,11 @@
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="{% url 'restaurant-menu_items'%}">
                                         <i class="ri-store-3-line"></i>
-                                        <span>Menu Items</span>
+                                        <span>Menu Management</span>
                                     </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="{% url 'menu_items' %}">Menu Items</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="{% url 'menu_items-add' %}">Add New Menu</a>
-                                        </li>
-                                    </ul>
                                 </li>
                                 <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="{% url 'restaurant-food_category' %}">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="{% url 'restaurant-menu_items' %}">
                                         <i class="ri-bowl-line"></i>
                                         <span>Category</span>
                                     </a>
@@ -212,19 +203,10 @@
 
 
                                 <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="{% url 'restaurant-food_items' %}">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="{% url 'restaurant-menu_items' %}">
                                         <i class="ri-bowl-line"></i>
                                         <span>Foods</span>
                                     </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="{%url 'restaurant-food_items'%}">Food List</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="{%url 'restaurant-food_items-add'%}">Create Food</a>
-                                        </li>
-                                    </ul>
                                 </li>
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="{% url 'restaurant-users' %}">
