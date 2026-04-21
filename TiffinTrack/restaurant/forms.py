@@ -55,6 +55,7 @@ class FoodItemManageForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         restaurant = kwargs.pop("restaurant", None)
+        self.restaurant = restaurant
         super().__init__(*args, **kwargs)
 
         weekday_names = [
@@ -93,6 +94,43 @@ class FoodItemManageForm(forms.ModelForm):
 
         # Menu category is derived from selected food category in the view.
         self.fields.pop("menu_category", None)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        food_category = cleaned_data.get("food_category")
+        days = cleaned_data.get("days")
+
+        if not food_category or not days:
+            return cleaned_data
+
+        restaurant = self.restaurant or getattr(self.instance, "restaurant", None)
+        if not restaurant:
+            return cleaned_data
+
+        conflicts = FoodItem.objects.filter(
+            restaurant=restaurant,
+            food_category=food_category,
+            days__in=days,
+        )
+        if self.instance and self.instance.pk:
+            conflicts = conflicts.exclude(pk=self.instance.pk)
+
+        if conflicts.exists():
+            conflicting_days = (
+                Day.objects.filter(food_items__in=conflicts, id__in=[day.id for day in days])
+                .values_list("name", flat=True)
+                .distinct()
+            )
+            day_text = ", ".join(sorted(conflicting_days))
+            self.add_error(
+                "days",
+                (
+                    f"Only one food item is allowed for {food_category.name} on: {day_text}. "
+                    "Please remove those days or edit the existing food item."
+                ),
+            )
+
+        return cleaned_data
 
 
 class MenuManageForm(forms.ModelForm):
