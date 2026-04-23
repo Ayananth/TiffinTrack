@@ -125,48 +125,48 @@
     {%for menu in menu_data%}
       <div class="menu-content {%if forloop.first%} active {%endif%}" id="menu-{{menu.menu_category|slugify}}">
         <div class="notes">
-          <h3>Information</h3>
-          <h6>Price Information: </h6>
-
-          <div class="price-info ps-4 py-2">
-              <!-- TODO make this dynamic ( category names)  -->
-              <p>Total Per Day: ₹{{ menu.total_price }} </p>
-              {% for category,price in menu.category_prices.items %}
-              <p>{{category}}: ₹{{price}}</p>
-              {%endfor%}
-
-            
-          </div>
-          <h6>Delivery/Dine-in Information: </h6>
-          <div class="time-info ps-4 py-2">
-            {%for category,value in menu.start_end_time.items%}
-            {%if value.start_time or value.end_time %}
-            <p>{{category}}- {{value.start_time}}-{{value.end_time}}</p>
-            {%endif%}
-            {%endfor%}
+          <div class="info-topbar">
+            <h3>Information</h3>
+            <a href="{% url 'subscription-request' menu.menu_id  %}" class="subscribe-btn">Subscribe</a>
           </div>
 
-          <h6>Cancellation Information: </h6>
+          <div class="info-grid">
+            <div class="info-card">
+              <h6>Price Information</h6>
+              <ul class="info-list">
+                <li class="highlight-line"><span>Total Per Day</span><strong>₹{{ menu.total_price }}</strong></li>
+                {% for category,price in menu.category_prices.items %}
+                <li><span>{{category}}</span><strong>₹{{price}}</strong></li>
+                {%endfor%}
+              </ul>
+            </div>
 
-          <div class="cancel-info ps-4 py-2">
-            {%for category,value in menu.start_end_time.items%}
-            {%if value.cancellation_time %}
-            <p>Cancellation Time: {{category}}- {{value.cancellation_time}}</p>
-            {%endif%}
-            {%endfor%}
+            <div class="info-card">
+              <h6>Delivery / Dine-in</h6>
+              <ul class="info-list">
+                {%for category,value in menu.start_end_time.items%}
+                {%if value.start_time or value.end_time %}
+                <li><span>{{category}}</span><strong>{{value.start_time}} - {{value.end_time}}</strong></li>
+                {%endif%}
+                {%endfor%}
+              </ul>
+            </div>
 
+            <div class="info-card">
+              <h6>Cancellation</h6>
+              <ul class="info-list">
+                {%for category,value in menu.start_end_time.items%}
+                {%if value.cancellation_time %}
+                <li><span>{{category}}</span><strong>{{value.cancellation_time}}</strong></li>
+                {%endif%}
+                {%endfor%}
+              </ul>
+            </div>
           </div>
 
-
-
-
-
-          <h6>Other Informations: </h6>
-
-          <div class="other-info ps-4 py-2">
-
+          <div class="other-info">
+            <h6>Other Information</h6>
             <p>{{menu.menu_description}}</p>
-
             <p>Our menu features a variety of options to accommodate different dietary needs. Look for the indicators next to each item.</p>
             <div class="legend">
               <div class="legend-item">
@@ -182,17 +182,7 @@
                 <span>Gluten-Free</span>
               </div>
             </div>
-
-
-            <!-- subscribe button start -->
-        <div class="menu-selector">
-          <!-- <button class="subscribe-btn">Subscribe</button> -->
-          <a href="{% url 'subscription-request' menu.menu_id  %}" class="subscribe-btn">Subscribe</a>
-        </div>
-        <!-- subscribe button end -->
           </div>
-
-
         </div>
         
         <div class="calendar">
@@ -201,7 +191,8 @@
           
           <div class="day-card">
             <div class="day-header">
-                {{ day }}
+              <span>{{ day }}</span>
+              <small>{{ meals|length }} Meal Slots</small>
             </div>
 
 
@@ -210,7 +201,7 @@
                 <div class="meal">
                   <div class="meal-header">
                     <div class="meal-title">
-                      <span class="meal-icon"></span>{{category}}
+                      <span class="meal-icon"><i class="ri-restaurant-line"></i></span>{{category}}
                     </div>
                   </div>
                   <div class="meal-items">
