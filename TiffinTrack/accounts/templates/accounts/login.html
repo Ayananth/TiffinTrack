@@ -65,7 +65,11 @@
         <div class="log-in-button">
             <ul>
                 <li>
-                    <a href="{% provider_login_url 'google' %}" class="btn google-button w-100" target="_blank">
+                    {% if request.GET.next %}
+                    <a href="{% provider_login_url 'google' process='login' next=request.GET.next %}" class="btn google-button w-100">
+                    {% else %}
+                    <a href="{% provider_login_url 'google' process='login' %}" class="btn google-button w-100">
+                    {% endif %}
                         <img src="{% static 'backend/assets/images/google.png' %}" class="blur-up lazyload"
                             alt=""> Log In with Google
                     </a>
