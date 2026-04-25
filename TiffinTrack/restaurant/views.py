@@ -18,6 +18,7 @@ from django.db.models import Case, Count, IntegerField, Prefetch, Q, Sum, Value,
 from django.utils.timezone import localtime
 from datetime import datetime
 from accounts.models import CustomUser, UserProfile, RestaurantImage
+from accounts.utils import get_location_from_point
 from .models import Subscriptions, RestaurantTransaction
 from .forms import FoodItemManageForm, MenuManageForm, FoodCategoryManageForm, OfferForm
 
@@ -203,6 +204,13 @@ def restaurant_register(request, editing=None):
 def profile(request):
     try:
         restaurant = get_object_or_404(RestaurantProfile, user=request.user)
+
+        # Backfill missing display location for existing records.
+        if not restaurant.location_name and restaurant.point:
+            location_name = get_location_from_point(restaurant.point.x, restaurant.point.y)
+            if location_name:
+                restaurant.location_name = location_name
+                restaurant.save(update_fields=["location_name"])
     
         if request.method == "POST":
             form = RestaurantProfileForm(request.POST, request.FILES, instance=restaurant)
