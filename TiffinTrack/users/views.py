@@ -182,10 +182,23 @@ def update_profile(request):
 def update_user_location(request):
 
     try:
-        latitude = float(request.POST.get("latitude"))
-        longitude = float(request.POST.get("longitude"))
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        existing_point = profile.point
+
+        raw_latitude = (request.POST.get("latitude") or "").strip()
+        raw_longitude = (request.POST.get("longitude") or "").strip()
+
+        if not raw_latitude and existing_point:
+            latitude = existing_point.y
+        else:
+            latitude = float(raw_latitude)
+
+        if not raw_longitude and existing_point:
+            longitude = existing_point.x
+        else:
+            longitude = float(raw_longitude)
+
         point = Point(longitude, latitude)
-        profile = request.user.profile
         profile.point = point
         profile.save()
         return redirect("user-home")

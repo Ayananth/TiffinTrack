@@ -76,6 +76,9 @@
             </a>
 
                 {% if user.is_authenticated %}
+                    <a href="{% url 'user-profile' %}" class="btn btn-sm theme-outline mt-0 ms-2 d-lg-none">
+                        <i class="ri-user-line me-1"></i> Manage Profile
+                    </a>
                     <div class="nav-option order-md-2">
                         <div class="dropdown-button">
                             <div class="cart-button">
@@ -276,37 +279,6 @@
     </footer>
     <!-- footer section end -->
 
-    <!-- mobile fix menu start -->
-    <div class="mobile-menu d-md-none d-block mobile-cart">
-        <ul>
-            <li class="active">
-                <a href="index.html" class="menu-box">
-                    <i class="ri-home-4-line"></i>
-                    <span>Home</span>
-                </a>
-            </li>
-            <li>
-                <a href="wishlist.html" class="menu-box">
-                    <i class="ri-heart-3-line"></i>
-                    <span>Wishlist</span>
-                </a>
-            </li>
-            <li>
-                <a href="checkout.html" class="menu-box">
-                    <i class="ri-shopping-cart-2-line"></i>
-                    <span>Cart</span>
-                </a>
-            </li>
-            <li>
-                <a href="index.html" class="menu-box">
-                    <i class="ri-user-line"></i>
-                    <span>Profile</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-    <!-- mobile fix menu end -->
-
     <!-- theme btn start -->
     <!-- theme btn end -->
 
@@ -333,8 +305,8 @@
                         <form class="form_search" method="post" action="{%url 'update-location' %}" role="form" id="location-update-form">
                             {%csrf_token%}
                             <input type="text" name="address" id="searchInput" placeholder="{{location}}" value="{{location}}" autocomplete="off" />
-                            <input type="hidden" name="latitude" id="latitude"> 
-                            <input type="hidden" name="longitude" id="longitude">
+                            <input type="hidden" name="latitude" id="latitude" value="{{ request.user.profile.point.y|default_if_none:'' }}"> 
+                            <input type="hidden" name="longitude" id="longitude" value="{{ request.user.profile.point.x|default_if_none:'' }}">
                             <!-- set the value of lat and long from backend for the default -->
                         </form>
                     </div>
