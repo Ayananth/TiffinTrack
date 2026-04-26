@@ -588,9 +588,17 @@ def menu_add_or_update(request, pk=None):
             menu_obj = get_object_or_404(MenuCategory, pk=pk, restaurant=restaurant_obj)
         else:
             menu_obj = None
-    
+
         if request.method == "POST":
-            form = MenuManageForm(request.POST, request.FILES, instance=menu_obj)
+            menu_post_data = request.POST.copy()
+            if _next_url(request):
+                # Modal submits should keep menu active by default unless explicitly toggled off.
+                if "is_active" not in menu_post_data:
+                    menu_post_data["is_active"] = "on"
+                if pk and "description" not in menu_post_data and menu_obj:
+                    menu_post_data["description"] = menu_obj.description or ""
+
+            form = MenuManageForm(menu_post_data, request.FILES, instance=menu_obj)
             if form.is_valid():
                 menu = form.save(commit=False)
                 menu.restaurant = restaurant_obj
@@ -606,7 +614,7 @@ def menu_add_or_update(request, pk=None):
                     return _redirect_to_next_or_default(request, "restaurant-menu_items")
         else:
             form = MenuManageForm(instance=menu_obj)
-    
+
         return render(request, "./restaurant/add-menu.html", {"form": form})
     except Exception:
         return _handle_view_error(request, "menu_add_or_update")
