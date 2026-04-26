@@ -78,8 +78,7 @@ def home(request):
             messages.error(request, "Not restaurant user")
             return redirect("login")
     
-        today = "2025-05-19"
-        selected_date = today
+    
         restaurant = get_object_or_404(RestaurantProfile, user=request.user)
     
         date_str = request.GET.get("date")
