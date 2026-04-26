@@ -925,27 +925,49 @@ def delete_review(request, review_id):
 @login_required(login_url="login")
 def update_profile_pic(request):
     try:
-        if request.method == "POST" and request.FILES.get("profile_pic"):
-    
-            image_file = request.FILES["profile_pic"]
-            if not image_file.content_type.startswith("image/"):
-                messages.error(request, "Only image files are allowed.")
-                return redirect("user-profile")
-            if image_file.size > 2 * 1024 * 1024:
-                messages.error(request, f"Maximum file size is {2} MB.")
-                return redirect("user-profile")
-    
-            profile = request.user.profile
-            profile.profile_pic = request.FILES["profile_pic"]
-            profile.save()
-            messages.success(request, "Profile picture updated successfully.")
-            return redirect("user-profile")  # Replace with your actual profile view name
-        else:
-            messages.error(request, "Please upload a valid image.")
-    
-        return render(request, "users/update_profile_pic.html")
+        if request.method != "POST":
+            return redirect("user-profile")
+
+        image_file = request.FILES.get("profile_pic")
+        if not image_file:
+            messages.error(request, "Please select an image before uploading.")
+            return redirect("user-profile")
+
+        if not image_file.content_type or not image_file.content_type.startswith("image/"):
+            messages.error(request, "Only image files are allowed.")
+            return redirect("user-profile")
+
+        if image_file.size > 2 * 1024 * 1024:
+            messages.error(request, f"Maximum file size is {2} MB.")
+            return redirect("user-profile")
+
+        profile = request.user.profile
+        profile.profile_pic = image_file
+        profile.save()
+        messages.success(request, "Profile picture updated successfully.")
+        return redirect("user-profile")
     except Exception:
         return _handle_view_error(request, "update_profile_pic")
+
+
+@login_required(login_url="login")
+def remove_profile_pic(request):
+    try:
+        if request.method != "POST":
+            return redirect("user-profile")
+
+        profile = request.user.profile
+        if not profile.profile_pic:
+            messages.error(request, "No profile image to remove.")
+            return redirect("user-profile")
+
+        profile.profile_pic.delete(save=False)
+        profile.profile_pic = None
+        profile.save()
+        messages.success(request, "Profile picture removed successfully.")
+        return redirect("user-profile")
+    except Exception:
+        return _handle_view_error(request, "remove_profile_pic")
 
 
 @login_required
