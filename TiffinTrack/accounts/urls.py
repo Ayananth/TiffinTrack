@@ -18,13 +18,13 @@ urlpatterns = [
     ),
     path("", include("allauth.urls")),
     # path('send_otp/', views.send_otp, name='send_otp'),
-    path("verify_otp/<int:user_id>/", views.verify_otp, name="verify_otp"),
-    path("resend_otp/<int:user_id>/", views.resend_otp, name="resend_otp"),
+    path("verify-otp/<int:user_id>/", views.verify_otp, name="verify_otp"),
+    path("resend-otp/<int:user_id>/", views.resend_otp, name="resend_otp"),
     path(
-        "password_reset/", auth_views.PasswordResetView.as_view(), name="password_reset"
+        "password-reset/", auth_views.PasswordResetView.as_view(), name="password_reset"
     ),
     path(
-        "password_reset/done/",
+        "password-reset/done/",
         auth_views.PasswordResetDoneView.as_view(),
         name="password_reset_done",
     ),
