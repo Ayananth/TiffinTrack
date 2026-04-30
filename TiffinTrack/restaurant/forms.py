@@ -2,9 +2,14 @@ from django import forms
 from django.db.models import Case, IntegerField, Value, When
 from .models import RestaurantProfile, MenuCategory, FoodItem, FoodCategory, Review, Day
 from django.contrib.gis.geos import Point
+import re
 
 
 class RestaurantProfileForm(forms.ModelForm):
+    _WKT_POINT_RE = re.compile(
+        r"^SRID=\d+;POINT\s*\(\s*[-+]?\d*\.?\d+\s+[-+]?\d*\.?\d+\s*\)$"
+    )
+
     class Meta:
         model = RestaurantProfile
         fields = [
@@ -28,15 +33,84 @@ class RestaurantProfileForm(forms.ModelForm):
         )
     )
 
-    def clean_point(self):
-        value = self.cleaned_data["point"]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = getattr(self, "instance", None)
+        if instance and getattr(instance, "pk", None):
+            location_name = (instance.location_name or "").strip()
+            if location_name:
+                self.initial["point"] = location_name
+            else:
+                self.initial["point"] = ""
+
+    @staticmethod
+    def _parse_lon_lat(value):
+        lon, lat = map(float, value.split(","))
+        return Point(lon, lat)
+
+    @classmethod
+    def _is_wkt_point(cls, value):
+        return bool(value and cls._WKT_POINT_RE.match(value.strip()))
+
+    @staticmethod
+    def _is_lon_lat_text(value):
         try:
-            lon, lat = map(float, value.split(","))
-            return Point(lon, lat)
+            parts = [p.strip() for p in value.split(",")]
+            if len(parts) != 2:
+                return False
+            float(parts[0])
+            float(parts[1])
+            return True
         except Exception:
-            raise forms.ValidationError(
-                "Invalid format for coordinates. Expected 'longitude,latitude'."
+            return False
+
+    def clean_point(self):
+        value = self.cleaned_data["point"].strip()
+        selected_coords = (self.data.get("point_coords") or "").strip()
+        selected_name = (self.data.get("point_display") or "").strip()
+
+        # Preferred path: user picked a suggestion, we get coordinates from hidden input.
+        if selected_coords:
+            try:
+                self._selected_location_name = selected_name or value
+                return self._parse_lon_lat(selected_coords)
+            except Exception:
+                pass
+
+        try:
+            point = self._parse_lon_lat(value)
+            self._selected_location_name = selected_name or getattr(
+                self.instance, "location_name", ""
             )
+            return point
+        except Exception:
+            # For existing restaurants, allow keeping current point when the field
+            # contains a human-readable place name and location is not being changed.
+            instance = getattr(self, "instance", None)
+            if instance and getattr(instance, "pk", None) and instance.point:
+                self._selected_location_name = (
+                    selected_name
+                    or instance.location_name
+                    or ""
+                )
+                return instance.point
+            raise forms.ValidationError(
+                "Please select a location from suggestions so coordinates can be saved."
+            )
+
+    def save(self, commit=True):
+        obj = super().save(commit=False)
+        location_name = (getattr(self, "_selected_location_name", "") or "").strip()
+        if (
+            location_name
+            and not self._is_wkt_point(location_name)
+            and not self._is_lon_lat_text(location_name)
+        ):
+            obj.location_name = location_name
+        if commit:
+            obj.save()
+            self.save_m2m()
+        return obj
 
 
 class MenuCategoryForm(forms.ModelForm):

@@ -477,14 +477,20 @@ from django.http import HttpResponse
 def confirm_email_change(request):
     try:
         token = request.GET.get("token")
+        if not token:
+            messages.error(request, "Invalid email confirmation link.")
+            return redirect("user-profile")
+
         user = CustomUser.objects.filter(email_change_token=token).first()
     
         if (
             not user
+            or not user.pending_email
             or not user.email_change_expiry
             or user.email_change_expiry < timezone.now()
         ):
-            return HttpResponse("Invalid or expired token.", status=400)
+            messages.error(request, "This email confirmation link is invalid or expired.")
+            return redirect("user-profile")
     
         user.email = user.pending_email
         user.pending_email = None
@@ -492,9 +498,8 @@ def confirm_email_change(request):
         user.email_change_expiry = None
         user.save()
     
-        messages.success(request, "")
-    
-        return HttpResponse("Your email has been successfully updated.")
+        messages.success(request, "Your email has been updated successfully.")
+        return redirect("user-profile")
     except Exception:
         return _handle_view_error(request, "confirm_email_change")
 

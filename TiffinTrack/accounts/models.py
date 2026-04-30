@@ -140,7 +140,7 @@ class RestaurantProfile(models.Model):
     def save(self, *args, **kwargs):
         if self.pk:
             old = RestaurantProfile.objects.get(pk=self.pk)
-            if old.point != self.point:
+            if old.point != self.point or not self.location_name:
                 self.location_name = get_location_from_point(self.point.x, self.point.y)
         else:
             self.location_name = get_location_from_point(self.point.x, self.point.y)

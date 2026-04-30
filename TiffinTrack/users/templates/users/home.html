@@ -79,20 +79,16 @@
 
 
 
-                        {% for restaurant in restaurants %}                     
+                        {% for restaurant in restaurants %}
                             <div class="col-xl-3 col-lg-4 col-sm-6">
-                                <div class="vertical-product-box">
-                                    <div class="vertical-product-box-img">
+                                <div class="vertical-product-box restaurant-card-modern">
+                                    <div class="vertical-product-box-img restaurant-card-media">
                                         <a href="{% url 'restaurant-details' restaurant.slug %}">
                                             {% if restaurant.restaurant_image %}
-                                                <img class="product-img-top w-100 bg-img" src="{{restaurant.restaurant_image.url}}"
-                                                    alt="vp1">
+                                                <img class="product-img-top w-100 bg-img" src="{{restaurant.restaurant_image.url}}" alt="{{ restaurant.restaurant_name }}">
                                             {% else %}
-                                                <img class="product-img-top w-100 bg-img" src="{% static 'images/placeholder.png' %}"
-                                                    alt="placeholder">
+                                                <img class="product-img-top w-100 bg-img" src="{% static 'images/placeholder.png' %}" alt="placeholder">
                                             {% endif %}
-                                            <img class="product-img-top w-100 bg-img" src="{{restaurant.restaurant_image.url}}"
-                                                alt="vp1">
                                         </a>
 
 
@@ -100,12 +96,9 @@
 
                                 {% with restaurant_offers|get_item:restaurant.id as offers %}
                                 {% if offers %}
-                                        <div class="offers">
+                                        <div class="offers restaurant-offer-chip">
                                             {% for offer in offers %}
-                                            <h6>{{offer.name}}</h6>
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h4>{{ offer.discount_percent|floatformat:0  }}% OFF</h4>
-                                            </div>
+                                            <h6>{{ offer.discount_percent|floatformat:0 }}% OFF</h6>
                                             {% endfor %}
                                         </div>
                                     {%endif%}
@@ -114,27 +107,35 @@
 
 
                                     </div>
-                                    <div class="vertical-product-body">
-                                        <div class="d-flex align-items-center justify-content-between mt-sm-3 mt-2">
+                                    <div class="vertical-product-body restaurant-card-body">
+                                        <div class="restaurant-card-head">
                                             <a href="{% url 'restaurant-details' restaurant.slug %}">
                                                 <h4 class="vertical-product-title">{{restaurant.restaurant_name}}</h4>
                                             </a>
-                                            <h6 class="rating-star">
-                                                <span class="star"><i class="ri-star-s-fill"></i></span>{{ restaurant.avg_rating|default:"No ratings yet" }}
-                                            </h6>
+                                            {% if restaurant.avg_rating %}
+                                            <span class="restaurant-rating-pill">
+                                                <i class="ri-star-s-fill"></i>{{ restaurant.avg_rating|floatformat:1 }}
+                                            </span>
+                                            {% else %}
+                                            <span class="restaurant-rating-pill muted">New</span>
+                                            {% endif %}
                                         </div>
-                                        <h5 class="product-items">
-                                            {{restaurant.address}}
-                                        </h5>
-                                        <div
-                                            class="location-distance d-flex align-items-center justify-content-between pt-sm-3 pt-2">
-                                            <h5 class="place">{{restaurant.description}}</h5>
 
+                                        <h5 class="product-items restaurant-address">{{restaurant.address}}</h5>
+                                        {% with restaurant_price_labels|get_item:restaurant.id as per_day_price %}
+                                            {% if per_day_price %}
+                                                <p class="restaurant-price-line">Per day {{ per_day_price }}</p>
+                                            {% endif %}
+                                        {% endwith %}
 
-                                            <ul class="distance">
-                                                <li><i class="ri-map-pin-fill icon"></i>{{restaurant.distance|km}}</li>
-                                            </ul>
+                                        <div class="restaurant-meta-row">
+                                            <span class="distance-pill">
+                                                <i class="ri-map-pin-fill icon"></i>{{restaurant.distance|km}}
+                                            </span>
                                         </div>
+                                        <a class="restaurant-cta" href="{% url 'restaurant-details' restaurant.slug %}">
+                                            Explore Menu <i class="ri-arrow-right-line"></i>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

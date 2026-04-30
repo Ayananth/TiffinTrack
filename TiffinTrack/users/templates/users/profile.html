@@ -23,14 +23,19 @@
                               <i class="fa-solid fa-x ps-2 close-icon" style="color: #f42a2a; cursor: pointer;"></i>
                             </li>
                           {% endfor %}
-                          <div id="js-error-message" class="messages d-flex align-items-center">
                         </ul>
                         {% endif %}
+                        <ul id="js-error-message" class="messages d-flex align-items-center d-none">
+                            <li class="d-flex align-items-center">
+                                <h4 class="text-danger m-0" id="js-error-text"></h4>
+                                <i class="fa-solid fa-x ps-2 close-icon" id="js-error-close" style="color: #f42a2a; cursor: pointer;"></i>
+                            </li>
+                        </ul>
                         <div class="title">
                             <div class="loader-line"></div>
                             <h3>Change Profile</h3>
                         </div>
-                        <form method="post" enctype="multipart/form-data" action="{% url 'update-profile-pic' %}">
+                        <form method="post" enctype="multipart/form-data" action="{% url 'update-profile-pic' %}" id="profile-pic-form">
                             {% csrf_token %}
                             <ul class="profile-details-list">
                                 <li>
@@ -39,13 +44,27 @@
                                             <i class="ri-file-image-line"></i>
                                             <span>Profile Image :</span>
                                         </div>
-                                        <label id="current_profile" for="profile_pic">{{request.user.profile.profile_pic}}</label>
-                                        <h6><input type="file" name="profile_pic" id="profile_pic"></h6>
+                                        <h6><input type="file" name="profile_pic" id="profile_pic" accept="image/*"></h6>
                                     </div>
-                                    <button type="submit" class="btn theme-outline mt-0" data-bs-toggle="modal">Change</button>
+                                    <div class="d-flex flex-column align-items-end">
+                                        <button type="submit" class="btn theme-outline mt-0" id="profile-pic-submit-btn" data-default-text="Change">
+                                            <span id="profile-pic-submit-text">Change</span>
+                                            <span id="profile-pic-submit-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                                        </button>
+                                        {% if request.user.profile.profile_pic %}
+                                        <button type="button" class="btn btn-link text-danger p-0 mt-2" data-bs-toggle="modal" data-bs-target="#removeProfileImageModal">
+                                            Remove image
+                                        </button>
+                                        {% endif %}
+                                    </div>
                                 </li>
                             </ul>
                         </form>
+                        {% if request.user.profile.profile_pic %}
+                        <form method="post" action="{% url 'remove-profile-pic' %}" id="remove-profile-pic-form" class="d-none" data-skip-change-check="true">
+                            {% csrf_token %}
+                        </form>
+                        {% endif %}
                         <form method="post" enctype="multipart/form-data" action="{% url 'change-user-name' %}">
                             {% csrf_token %}
                             <ul class="profile-details-list">
@@ -181,11 +200,63 @@
     </div>
     <!-- edit password number modal end -->
 
+    {% if request.user.profile.profile_pic %}
+    <div class="modal profile-modal fade" id="removeProfileImageModal" aria-hidden="true" aria-labelledby="removeProfileImageLabel" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="removeProfileImageLabel">Remove Profile Image</h1>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Are you sure you want to remove your current profile image?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn theme-outline" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger" form="remove-profile-pic-form">Yes, Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const forms = document.querySelectorAll("form");
+    const profilePicForm = document.getElementById("profile-pic-form");
+    const profilePicInput = document.getElementById("profile_pic");
+    const profilePicSubmitBtn = document.getElementById("profile-pic-submit-btn");
+    const profilePicSubmitText = document.getElementById("profile-pic-submit-text");
+    const profilePicSubmitSpinner = document.getElementById("profile-pic-submit-spinner");
+    const jsErrorContainer = document.getElementById("js-error-message");
+    const jsErrorText = document.getElementById("js-error-text");
+    const jsErrorClose = document.getElementById("js-error-close");
+
+    const showJsError = function (message) {
+        if (!jsErrorContainer || !jsErrorText) {
+            return;
+        }
+        jsErrorText.textContent = message;
+        jsErrorContainer.classList.remove("d-none");
+    };
+
+    const hideJsError = function () {
+        if (!jsErrorContainer) {
+            return;
+        }
+        jsErrorContainer.classList.add("d-none");
+        if (jsErrorText) {
+            jsErrorText.textContent = "";
+        }
+    };
+
+    if (jsErrorClose) {
+        jsErrorClose.addEventListener("click", hideJsError);
+    }
 
     forms.forEach(form => {
+        if (form.dataset.skipChangeCheck === "true") {
+            return;
+        }
         const inputs = form.querySelectorAll("input[name]");
 
         // Save the original values
@@ -214,25 +285,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!hasChanged) {
                 e.preventDefault();
-              
+                if (form === profilePicForm) {
+                    showJsError("Please select an image before uploading.");
+                }
             }
         });
     });
-});
-</script>
 
+    if (profilePicForm && profilePicInput) {
+        profilePicInput.addEventListener("change", hideJsError);
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const link = document.getElementById('current_profile');
-    if (link) {
-        const fileName = link.textContent.replace('tiffintrack/prod/profile_pics/', '');
-        link.textContent = fileName;
+        profilePicForm.addEventListener("submit", function (e) {
+            const selectedFile = profilePicInput.files[0];
+            if (!selectedFile) {
+                e.preventDefault();
+                showJsError("Please select an image before uploading.");
+                return;
+            }
+
+            if (!selectedFile.type || !selectedFile.type.startsWith("image/")) {
+                e.preventDefault();
+                showJsError("Only image files are allowed.");
+                return;
+            }
+
+            if (selectedFile.size > 2 * 1024 * 1024) {
+                e.preventDefault();
+                showJsError("Maximum file size is 2 MB.");
+                return;
+            }
+
+            hideJsError();
+            if (profilePicSubmitBtn) {
+                profilePicSubmitBtn.disabled = true;
+            }
+            if (profilePicSubmitText) {
+                profilePicSubmitText.textContent = "Uploading...";
+            }
+            if (profilePicSubmitSpinner) {
+                profilePicSubmitSpinner.classList.remove("d-none");
+            }
+        });
     }
 });
 </script>
-
-
 
 
 {% endblock content %}

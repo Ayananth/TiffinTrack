@@ -1,9 +1,42 @@
 # TiffinTrack
-Django application to manage mess ( monthly food scheme )
 
-What if there is an application to order food for monthly basis? 
+TiffinTrack is a Django-based tiffin/mess subscription platform where users can discover nearby mess providers, subscribe to daily meal plans, and manage deliveries from one place.
 
-This application will allow you to search for nearby mess services and you can order/canel food from them.
+## What The Project Is
+
+TiffinTrack supports three roles:
+- `Users`: browse nearby restaurants/mess providers, subscribe to menu plans, track orders, cancel eligible meals, manage addresses, and raise order/restaurant reports.
+- `Restaurant owners`: register their restaurant, manage menu categories and food items, handle subscriptions/orders, and run offers.
+- `Admins`: review and manage users/restaurants, monitor platform orders and revenue, and handle complaints/reporting.
+
+## Core Features
+
+- Location-aware restaurant discovery using GeoDjango/PostGIS
+- Monthly/daily-style subscription flow for meal plans
+- Menu management (menu categories, food categories, day-wise food items)
+- Order lifecycle with cancellation and wallet refund handling
+- Wallet and transaction tracking
+- Coupon, referral, and offer support
+- Razorpay payment integration
+- OTP/password flows and Google social login (`django-allauth`)
+- Cloudinary media storage for uploaded images
+
+## Tech Stack
+
+- Python + Django 5
+- PostgreSQL + PostGIS
+- GeoDjango
+- Razorpay, Twilio, WeasyPrint, Cloudinary
+- Docker / Docker Compose
+
+## Project Apps
+
+- `accounts`: authentication, profiles, role handling, OTP/email flows
+- `users`: user-facing discovery, subscriptions, orders, wallet, reporting
+- `restaurant`: restaurant dashboard, menu/offer/subscription management
+- `admin_panel`: admin dashboard, moderation, analytics, exports
+- `payments`: Razorpay payment flow
+- `coupons`: coupons, usage tracking, referrals
 
 ## Docker Setup
 

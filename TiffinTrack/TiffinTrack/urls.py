@@ -19,12 +19,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from . import error_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("users.urls")),
     path("restaurant/", include("restaurant.urls")),
-    path("admin_panel/", include("admin_panel.urls")),
+    path("admin-panel/", include("admin_panel.urls")),
     path("accounts/", include("accounts.urls")),
     path("coupons/", include("coupons.urls")),
     path("payments/", include("payments.urls")),
@@ -32,3 +33,8 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler400 = "TiffinTrack.error_views.bad_request"
+handler403 = "TiffinTrack.error_views.permission_denied"
+handler404 = "TiffinTrack.error_views.page_not_found"
+handler500 = "TiffinTrack.error_views.server_error"

@@ -12,7 +12,7 @@ from accounts.forms import UserUpdateForm, ProfileUpdateForm
 from restaurant.forms import ReviewForm
 from django.contrib.auth.decorators import login_required
 from accounts.models import UserProfile, Locations, RestaurantImage
-from django.db.models import Avg, Max
+from django.db.models import Avg, Max, Sum
 from collections import defaultdict
 from decimal import Decimal
 from django.contrib.gis.geos import Point
@@ -140,6 +140,45 @@ def home(request):
     
         # Collect restaurant IDs shown on this page
         restaurant_ids = [restaurant.id for restaurant in page_obj]
+
+        # Build per-day price range from active menu totals for each restaurant
+        menu_totals = (
+            FoodCategory.objects.filter(
+                restaurant_id__in=restaurant_ids,
+                is_active=True,
+                menu_category__is_active=True,
+            )
+            .values("restaurant_id", "menu_category_id")
+            .annotate(menu_total=Sum("price"))
+        )
+
+        restaurant_price_ranges = {}
+        for row in menu_totals:
+            restaurant_id = row["restaurant_id"]
+            menu_total = row["menu_total"] or 0
+            if restaurant_id not in restaurant_price_ranges:
+                restaurant_price_ranges[restaurant_id] = {
+                    "min": menu_total,
+                    "max": menu_total,
+                }
+            else:
+                restaurant_price_ranges[restaurant_id]["min"] = min(
+                    restaurant_price_ranges[restaurant_id]["min"], menu_total
+                )
+                restaurant_price_ranges[restaurant_id]["max"] = max(
+                    restaurant_price_ranges[restaurant_id]["max"], menu_total
+                )
+
+        restaurant_price_labels = {}
+        for restaurant_id, value in restaurant_price_ranges.items():
+            min_price = value["min"]
+            max_price = value["max"]
+            if min_price == max_price:
+                restaurant_price_labels[restaurant_id] = f"₹{min_price:.0f}"
+            else:
+                restaurant_price_labels[restaurant_id] = (
+                    f"₹{min_price:.0f} - ₹{max_price:.0f}"
+                )
     
         # Get active offers for those restaurants
         now = timezone.now()
@@ -162,6 +201,7 @@ def home(request):
         context = {
             "restaurants": page_obj,
             "restaurant_offers": dict(restaurant_offers),
+            "restaurant_price_labels": restaurant_price_labels,
             "offer": True,
         }
     
@@ -182,10 +222,23 @@ def update_profile(request):
 def update_user_location(request):
 
     try:
-        latitude = float(request.POST.get("latitude"))
-        longitude = float(request.POST.get("longitude"))
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        existing_point = profile.point
+
+        raw_latitude = (request.POST.get("latitude") or "").strip()
+        raw_longitude = (request.POST.get("longitude") or "").strip()
+
+        if not raw_latitude and existing_point:
+            latitude = existing_point.y
+        else:
+            latitude = float(raw_latitude)
+
+        if not raw_longitude and existing_point:
+            longitude = existing_point.x
+        else:
+            longitude = float(raw_longitude)
+
         point = Point(longitude, latitude)
-        profile = request.user.profile
         profile.point = point
         profile.save()
         return redirect("user-home")
@@ -912,27 +965,49 @@ def delete_review(request, review_id):
 @login_required(login_url="login")
 def update_profile_pic(request):
     try:
-        if request.method == "POST" and request.FILES.get("profile_pic"):
-    
-            image_file = request.FILES["profile_pic"]
-            if not image_file.content_type.startswith("image/"):
-                messages.error(request, "Only image files are allowed.")
-                return redirect("user-profile")
-            if image_file.size > 2 * 1024 * 1024:
-                messages.error(request, f"Maximum file size is {2} MB.")
-                return redirect("user-profile")
-    
-            profile = request.user.profile
-            profile.profile_pic = request.FILES["profile_pic"]
-            profile.save()
-            messages.success(request, "Profile picture updated successfully.")
-            return redirect("user-profile")  # Replace with your actual profile view name
-        else:
-            messages.error(request, "Please upload a valid image.")
-    
-        return render(request, "users/update_profile_pic.html")
+        if request.method != "POST":
+            return redirect("user-profile")
+
+        image_file = request.FILES.get("profile_pic")
+        if not image_file:
+            messages.error(request, "Please select an image before uploading.")
+            return redirect("user-profile")
+
+        if not image_file.content_type or not image_file.content_type.startswith("image/"):
+            messages.error(request, "Only image files are allowed.")
+            return redirect("user-profile")
+
+        if image_file.size > 2 * 1024 * 1024:
+            messages.error(request, f"Maximum file size is {2} MB.")
+            return redirect("user-profile")
+
+        profile = request.user.profile
+        profile.profile_pic = image_file
+        profile.save()
+        messages.success(request, "Profile picture updated successfully.")
+        return redirect("user-profile")
     except Exception:
         return _handle_view_error(request, "update_profile_pic")
+
+
+@login_required(login_url="login")
+def remove_profile_pic(request):
+    try:
+        if request.method != "POST":
+            return redirect("user-profile")
+
+        profile = request.user.profile
+        if not profile.profile_pic:
+            messages.error(request, "No profile image to remove.")
+            return redirect("user-profile")
+
+        profile.profile_pic.delete(save=False)
+        profile.profile_pic = None
+        profile.save()
+        messages.success(request, "Profile picture removed successfully.")
+        return redirect("user-profile")
+    except Exception:
+        return _handle_view_error(request, "remove_profile_pic")
 
 
 @login_required

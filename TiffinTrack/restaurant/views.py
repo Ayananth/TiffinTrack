@@ -18,6 +18,7 @@ from django.db.models import Case, Count, IntegerField, Prefetch, Q, Sum, Value,
 from django.utils.timezone import localtime
 from datetime import datetime
 from accounts.models import CustomUser, UserProfile, RestaurantImage
+from accounts.utils import get_location_from_point
 from .models import Subscriptions, RestaurantTransaction
 from .forms import FoodItemManageForm, MenuManageForm, FoodCategoryManageForm, OfferForm
 
@@ -77,8 +78,7 @@ def home(request):
             messages.error(request, "Not restaurant user")
             return redirect("login")
     
-        today = "2025-05-19"
-        selected_date = today
+    
         restaurant = get_object_or_404(RestaurantProfile, user=request.user)
     
         date_str = request.GET.get("date")
@@ -203,6 +203,13 @@ def restaurant_register(request, editing=None):
 def profile(request):
     try:
         restaurant = get_object_or_404(RestaurantProfile, user=request.user)
+
+        # Backfill missing display location for existing records.
+        if not restaurant.location_name and restaurant.point:
+            location_name = get_location_from_point(restaurant.point.x, restaurant.point.y)
+            if location_name:
+                restaurant.location_name = location_name
+                restaurant.save(update_fields=["location_name"])
     
         if request.method == "POST":
             form = RestaurantProfileForm(request.POST, request.FILES, instance=restaurant)
@@ -581,9 +588,17 @@ def menu_add_or_update(request, pk=None):
             menu_obj = get_object_or_404(MenuCategory, pk=pk, restaurant=restaurant_obj)
         else:
             menu_obj = None
-    
+
         if request.method == "POST":
-            form = MenuManageForm(request.POST, request.FILES, instance=menu_obj)
+            menu_post_data = request.POST.copy()
+            if _next_url(request):
+                # Modal submits should keep menu active by default unless explicitly toggled off.
+                if "is_active" not in menu_post_data:
+                    menu_post_data["is_active"] = "on"
+                if pk and "description" not in menu_post_data and menu_obj:
+                    menu_post_data["description"] = menu_obj.description or ""
+
+            form = MenuManageForm(menu_post_data, request.FILES, instance=menu_obj)
             if form.is_valid():
                 menu = form.save(commit=False)
                 menu.restaurant = restaurant_obj
@@ -599,7 +614,7 @@ def menu_add_or_update(request, pk=None):
                     return _redirect_to_next_or_default(request, "restaurant-menu_items")
         else:
             form = MenuManageForm(instance=menu_obj)
-    
+
         return render(request, "./restaurant/add-menu.html", {"form": form})
     except Exception:
         return _handle_view_error(request, "menu_add_or_update")

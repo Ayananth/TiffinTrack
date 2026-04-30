@@ -1,6 +1,250 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block content %}
+<style>
+    .subscription-shell {
+        --tt-ink: #1d2433;
+        --tt-muted: #6a7283;
+        --tt-card: #ffffff;
+        --tt-stroke: #e8ecf4;
+        --tt-warm: #ff8d2f;
+        --tt-warm-soft: #fff3e8;
+        --tt-bg: radial-gradient(circle at 2% 0%, #fff8f1 0%, #f5f8ff 48%, #f2f5fb 100%);
+        background: var(--tt-bg);
+        border: 1px solid var(--tt-stroke);
+        border-radius: 24px;
+        padding: 28px;
+    }
+
+    .tt-subscription-card {
+        background: var(--tt-card);
+        border: 1px solid var(--tt-stroke);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 14px 40px rgba(14, 24, 46, 0.08);
+    }
+
+    .tt-sub-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .tt-sub-brand {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        min-width: 0;
+    }
+
+    .tt-sub-brand img {
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
+        object-fit: cover;
+        border: 1px solid var(--tt-stroke);
+        flex-shrink: 0;
+    }
+
+    .tt-sub-brand h5 {
+        margin: 0;
+        color: var(--tt-ink);
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .tt-sub-brand p {
+        margin: 4px 0 0;
+        color: var(--tt-muted);
+        font-size: 0.93rem;
+    }
+
+    .tt-sub-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 10px;
+        flex-shrink: 0;
+        text-align: right;
+    }
+
+    .tt-status-pill {
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 6px 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .tt-status-pill.active {
+        color: #0d7f4f;
+        background: #e8fff4;
+        border: 1px solid #b9efd5;
+    }
+
+    .tt-invoice-link {
+        color: #2a5bff;
+        font-weight: 600;
+        font-size: 0.94rem;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .tt-invoice-link:hover {
+        text-decoration: underline;
+    }
+
+    .sub-kpis {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .kpi-box {
+        background: #fbfcff;
+        border: 1px solid var(--tt-stroke);
+        border-radius: 14px;
+        padding: 12px 14px;
+    }
+
+    .kpi-box .k-label {
+        display: block;
+        color: var(--tt-muted);
+        font-size: 0.82rem;
+        margin-bottom: 4px;
+    }
+
+    .kpi-box .k-value {
+        color: var(--tt-ink);
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .meal-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .meal-card {
+        border: 1px solid var(--tt-stroke);
+        border-radius: 14px;
+        padding: 14px;
+        background: #fff;
+    }
+
+    .meal-card h6 {
+        margin: 0 0 10px;
+        color: var(--tt-ink);
+        font-size: 0.98rem;
+        font-weight: 700;
+    }
+
+    .meal-stats {
+        display: grid;
+        gap: 8px;
+    }
+
+    .meal-stat-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 10px;
+        padding: 7px 10px;
+        font-size: 0.88rem;
+    }
+
+    .meal-stat-row span:last-child {
+        font-weight: 700;
+    }
+
+    .delivered {
+        background: #ecfff6;
+        color: #0f7e52;
+    }
+
+    .cancelled {
+        background: #fff1ef;
+        color: #b9342d;
+    }
+
+    .pending {
+        background: var(--tt-warm-soft);
+        color: #b15a12;
+    }
+
+    .sub-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        border-top: 1px solid var(--tt-stroke);
+        padding-top: 16px;
+    }
+
+    .sub-total {
+        margin: 0;
+        font-size: 1.03rem;
+        color: var(--tt-ink);
+    }
+
+    .sub-total strong {
+        color: #0b1f44;
+    }
+
+    .subscription-empty {
+        text-align: center;
+        border: 1px dashed #d8dfef;
+        border-radius: 16px;
+        padding: 36px 20px;
+        background: #fcfdff;
+        color: var(--tt-muted);
+        font-weight: 500;
+    }
+
+    @media (max-width: 1200px) {
+        .sub-kpis {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 992px) {
+        .subscription-shell {
+            padding: 20px;
+        }
+
+        .tt-sub-header {
+            grid-template-columns: 1fr;
+            align-items: flex-start;
+        }
+
+        .tt-sub-actions {
+            align-items: flex-start;
+            margin-left: 0;
+        }
+
+        .meal-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .sub-kpis {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .sub-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
 <!-- page head section starts -->
      {% include "./head.html" %}
     <!-- page head section end -->
@@ -19,101 +263,81 @@
                             <div class="loader-line"></div>
                             <h3>Subscription</h3>
                         </div>
-                        <ul class="order-box-list">
-
-                            <li>
-                                <div class="order-box">
-                                    <div class="order-box-content">
-
-                                        {%if subscription%}
-
-
-
-                                        <div class="brand-icon align-self-start">
-                                            <img class="img-fluid icon" src="{{subscription.restaurant.restaurant_image.url }}"
-                                                alt="brand3">
+                        <div class="subscription-shell">
+                            {% if subscription %}
+                            <article class="tt-subscription-card">
+                                <div class="tt-sub-header">
+                                    <div class="tt-sub-brand">
+                                        <img src="{{subscription.restaurant.restaurant_image.url}}" alt="{{subscription.restaurant.restaurant_name}}">
+                                        <div>
+                                            <h5>{{subscription.restaurant.restaurant_name}}</h5>
+                                            <p>{{subscription.menu_category}} Plan</p>
                                         </div>
-                                        <div class="order-details">
-                                            <div class="d-flex align-items-center justify-content-between w-100">
-                                                <h5 class="brand-name dark-text fw-medium">
-                                                    {{subscription.restaurant.restaurant_name}}
-                                                </h5>
-                                                <div class="right">
-                                                    <h6 class="fw-medium content-color text-end">
-                                                        {% if subscription.is_active %}
-                                                        <h6 class="order-deliver-label text-success">active</h6>
-                                                        {%endif%}
-                                                    </h6>
-                                                    <h6 class="fw-medium content-color text-end">
-                                                        {% if subscription.is_active %}
-                                                        <h6 class="order-deliver-label text-primary"><a href="{% url 'invoice_pdf' subscription.id%}" target="_blank">Invoice</a></h6>
-                                                        {%endif%}
-                                                    </h6>
-                                                </div>
-                                            </div>
-                                            <table class="fw-medium dark-text">
-                                                <tr class="">
-                                                    <td> Subscription Id</td>
-                                                    <td>{{subscription.id}}</td>
-                                                </tr>
-                                                <tr class="">
-                                                    <td> Menu</td>
-                                                    <td>{{subscription.menu_category}}</td>
-                                                </tr>
-                                                <tr class="">
-                                                    <td> Start Date</td>
-                                                    <td>{{subscription.start_date|date}}</td>
-                                                </tr>
-                                                <tr class="">
-                                                    <td> End Date</td>
-                                                    <td>{{subscription.end_date|date}}</td>
-                                                </tr>
-                                                <tr class="">
-                                                    <td> Total Number of Days</td>
-                                                    <td>{{subscription.num_days}}</td>
-                                                </tr>
-
-                                                {% for category,values in delivery_data.items %}
-
-
-
-                                                <tr class="">
-                                                    <td>{{category.name}} - Delivered</td>
-                                                    <td>{{values.delivered}}</td>
-                                                </tr>  
-                                                <tr class="">
-                                                    <td>{{category.name}} - Cancelled</td>
-                                                    <td>{{values.cancelled}}</td>
-                                                </tr>  
-                                                <tr class="">
-                                                    <td>{{category.name}} - Pending</td>
-                                                    <td>{{values.pending}}</td>
-                                                </tr>  
-
-                                                {%endfor%}
-
-                                            </table>
-
-
-
-                                        </div>
-                                        {%else%}
-                                        You dont have any active subscription
-                                        {%endif%}
                                     </div>
-                                    {%if subscription%}
-                                    <div class="d-flex align-items-center justify-content-between mt-sm-3 mt-2">
-                                        <h6 class="fw-medium dark-text">
-                                            <span class="fw-normal content-color">Total Amount Paid :</span>
-                                            Rs. {{subscription.final_total}}
-                                        </h6>
-                                        <a href="#order" class="btn theme-outline details-btn"
-                                            data-bs-toggle="modal">Cancel</a>
+                                    <div class="tt-sub-actions">
+                                        {% if subscription.is_active %}
+                                        <span class="tt-status-pill active">Active</span>
+                                        <a class="tt-invoice-link" href="{% url 'invoice_pdf' subscription.id%}" target="_blank">View Invoice</a>
+                                        {% endif %}
                                     </div>
-                                    {% endif%}
                                 </div>
-                            </li>
-                        </ul>
+
+                                <div class="sub-kpis">
+                                    <div class="kpi-box">
+                                        <span class="k-label">Subscription ID</span>
+                                        <span class="k-value">#{{subscription.id}}</span>
+                                    </div>
+                                    <div class="kpi-box">
+                                        <span class="k-label">Start Date</span>
+                                        <span class="k-value">{{subscription.start_date|date:"M d, Y"}}</span>
+                                    </div>
+                                    <div class="kpi-box">
+                                        <span class="k-label">End Date</span>
+                                        <span class="k-value">{{subscription.end_date|date:"M d, Y"}}</span>
+                                    </div>
+                                    <div class="kpi-box">
+                                        <span class="k-label">Duration</span>
+                                        <span class="k-value">{{subscription.num_days}} Days</span>
+                                    </div>
+                                    <div class="kpi-box">
+                                        <span class="k-label">Total Paid</span>
+                                        <span class="k-value">Rs. {{subscription.final_total}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="meal-grid">
+                                    {% for category,values in delivery_data.items %}
+                                    <div class="meal-card">
+                                        <h6>{{category.name}}</h6>
+                                        <div class="meal-stats">
+                                            <div class="meal-stat-row delivered">
+                                                <span>Delivered</span>
+                                                <span>{{values.delivered}}</span>
+                                            </div>
+                                            <div class="meal-stat-row cancelled">
+                                                <span>Cancelled</span>
+                                                <span>{{values.cancelled}}</span>
+                                            </div>
+                                            <div class="meal-stat-row pending">
+                                                <span>Pending</span>
+                                                <span>{{values.pending}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="sub-footer">
+                                    <p class="sub-total">Total Amount Paid: <strong>Rs. {{subscription.final_total}}</strong></p>
+                                    <a href="#order" class="btn theme-outline details-btn" data-bs-toggle="modal">Cancel Subscription</a>
+                                </div>
+                            </article>
+                            {% else %}
+                            <div class="subscription-empty">
+                                {{ message|default:"You don't have any active subscription." }}
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
