@@ -150,8 +150,16 @@ table th, table td {
         <td>₹{{subscription.item_total}}</td>
       </tr>
       <tr>
-        <td>Discount:</td>
+        <td>Offer Discount:</td>
         <td>₹{{subscription.offer_discount}}</td>
+      </tr>
+      <tr>
+        <td>Coupon Discount:</td>
+        <td>₹{{subscription.discount}}</td>
+      </tr>
+      <tr>
+        <td><strong>Total Discount:</strong></td>
+        <td><strong>₹{{subscription.offer_discount|add:subscription.discount}}</strong></td>
       </tr>
       <tr>
         <td><strong>Total after discount:</strong></td>
