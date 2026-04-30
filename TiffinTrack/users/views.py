@@ -12,7 +12,7 @@ from accounts.forms import UserUpdateForm, ProfileUpdateForm
 from restaurant.forms import ReviewForm
 from django.contrib.auth.decorators import login_required
 from accounts.models import UserProfile, Locations, RestaurantImage
-from django.db.models import Avg, Max
+from django.db.models import Avg, Max, Sum
 from collections import defaultdict
 from decimal import Decimal
 from django.contrib.gis.geos import Point
@@ -140,6 +140,45 @@ def home(request):
     
         # Collect restaurant IDs shown on this page
         restaurant_ids = [restaurant.id for restaurant in page_obj]
+
+        # Build per-day price range from active menu totals for each restaurant
+        menu_totals = (
+            FoodCategory.objects.filter(
+                restaurant_id__in=restaurant_ids,
+                is_active=True,
+                menu_category__is_active=True,
+            )
+            .values("restaurant_id", "menu_category_id")
+            .annotate(menu_total=Sum("price"))
+        )
+
+        restaurant_price_ranges = {}
+        for row in menu_totals:
+            restaurant_id = row["restaurant_id"]
+            menu_total = row["menu_total"] or 0
+            if restaurant_id not in restaurant_price_ranges:
+                restaurant_price_ranges[restaurant_id] = {
+                    "min": menu_total,
+                    "max": menu_total,
+                }
+            else:
+                restaurant_price_ranges[restaurant_id]["min"] = min(
+                    restaurant_price_ranges[restaurant_id]["min"], menu_total
+                )
+                restaurant_price_ranges[restaurant_id]["max"] = max(
+                    restaurant_price_ranges[restaurant_id]["max"], menu_total
+                )
+
+        restaurant_price_labels = {}
+        for restaurant_id, value in restaurant_price_ranges.items():
+            min_price = value["min"]
+            max_price = value["max"]
+            if min_price == max_price:
+                restaurant_price_labels[restaurant_id] = f"₹{min_price:.0f}"
+            else:
+                restaurant_price_labels[restaurant_id] = (
+                    f"₹{min_price:.0f} - ₹{max_price:.0f}"
+                )
     
         # Get active offers for those restaurants
         now = timezone.now()
@@ -162,6 +201,7 @@ def home(request):
         context = {
             "restaurants": page_obj,
             "restaurant_offers": dict(restaurant_offers),
+            "restaurant_price_labels": restaurant_price_labels,
             "offer": True,
         }
     
