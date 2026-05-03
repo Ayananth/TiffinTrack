@@ -1,12 +1,24 @@
-venv
+# Python
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Django
 db.sqlite3
-__pycache__
-migrations
 .env
-logs
-prod_env
-staticfiles
-django.log
-uploads
-env
-TiffinTrack/media/uploads/
+logs/
+*.log
+
+# Static (generated)
+staticfiles/
+
+# Media uploads
+media/
+TiffinTrack/media/
+
+# OS
+.DS_Store
+
+# Optional
+prod_env/
