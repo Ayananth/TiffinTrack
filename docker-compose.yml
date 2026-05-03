@@ -15,13 +15,8 @@ services:
       DB_PORT: 5432
       GDAL_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu/libgdal.so
       GEOS_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu/libgeos_c.so
-    ports:
-      - "8003:8003"
     depends_on:
       - postgres
-    command: >
-      sh -c "python manage.py migrate &&
-            python manage.py runserver 0.0.0.0:8003"
 
   postgres:
     image: postgis/postgis:15-3.4
