@@ -2,6 +2,7 @@ from django import forms
 from django.db.models import Case, IntegerField, Value, When
 from .models import RestaurantProfile, MenuCategory, FoodItem, FoodCategory, Review, Day
 from django.contrib.gis.geos import Point
+from django.utils.html import strip_tags
 import re
 
 
@@ -235,6 +236,11 @@ class FoodCategoryManageForm(forms.ModelForm):
 
 
 class ReviewForm(forms.ModelForm):
+    _SCRIPT_LIKE_RE = re.compile(
+        r"(<\s*script\b|javascript:|data:text/html)",
+        re.IGNORECASE,
+    )
+
     class Meta:
         model = Review
         fields = ["rating", "comment", "description"]
@@ -267,6 +273,36 @@ class ReviewForm(forms.ModelForm):
             "comment": "Short Comment",
             "description": "Detailed Review (optional)",
         }
+
+    def clean_rating(self):
+        rating = self.cleaned_data.get("rating")
+        if rating is None or rating < 1 or rating > 5:
+            raise forms.ValidationError("Rating must be between 1 and 5.")
+        return rating
+
+    def _validate_review_text(self, value, field_label):
+        if not value:
+            return value
+
+        text = value.strip()
+        if not text:
+            return ""
+
+        if strip_tags(text) != text or self._SCRIPT_LIKE_RE.search(text):
+            raise forms.ValidationError(
+                f"{field_label} contains invalid content. HTML/JS is not allowed."
+            )
+        return text
+
+    def clean_comment(self):
+        return self._validate_review_text(
+            self.cleaned_data.get("comment"), "Comment"
+        )
+
+    def clean_description(self):
+        return self._validate_review_text(
+            self.cleaned_data.get("description"), "Description"
+        )
 
 
 from .models import Offer
