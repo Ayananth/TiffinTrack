@@ -394,6 +394,9 @@ def restaurant_details(request, slug):
         report_form = RestaurantReportForm()
     
         images = RestaurantImage.objects.filter(restaurant=restaurant)
+        has_active_subscription = Subscriptions.objects.filter(
+            user=request.user, is_active=True
+        ).exists()
     
         context = {
             "restaurant": restaurant,
@@ -406,6 +409,7 @@ def restaurant_details(request, slug):
             "next": next,
             "images": images,
             "report_form": report_form,
+            "has_active_subscription": has_active_subscription,
         }
     
         print(f"{context=}")
@@ -423,6 +427,12 @@ def subscription_cart(request, id=None):
 
     try:
         user = request.user
+        if Subscriptions.objects.filter(user=user, is_active=True).exists():
+            messages.error(
+                request, "You already have an active subscription. Please manage it first."
+            )
+            return redirect("manage_subscription")
+
         addresses = Address.objects.filter(user=user)
         menu = get_object_or_404(MenuCategory, id=id)
     

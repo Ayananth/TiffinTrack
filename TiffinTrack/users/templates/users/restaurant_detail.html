@@ -124,7 +124,11 @@
         <div class="notes">
           <div class="info-topbar">
             <h3>Information</h3>
+            {% if has_active_subscription %}
+            <a href="{% url 'manage_subscription' %}" class="subscribe-btn">Manage Subscription</a>
+            {% else %}
             <a href="{% url 'subscription-request' menu.menu_id  %}" class="subscribe-btn">Subscribe</a>
+            {% endif %}
           </div>
 
           <div class="info-grid">
