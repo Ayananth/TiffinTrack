@@ -311,7 +311,9 @@ def restaurant_details(request, slug):
         ]
     
         # Get active menu categories
-        menu_categories = MenuCategory.objects.filter(is_active=True, restaurant=restaurant)
+        menu_categories = MenuCategory.objects.filter(
+            is_active=True, restaurant=restaurant
+        )
         menu_data = []
     
         for menu_category in menu_categories:
@@ -322,8 +324,16 @@ def restaurant_details(request, slug):
     
             # Get available food items in this menu category
             food_items = FoodItem.objects.filter(
-                menu_category=menu_category, is_available=True
-            )
+                menu_category=menu_category,
+                restaurant=restaurant,
+                is_available=True,
+                food_category__in=food_categories,
+                days__name__in=days_order,
+            ).distinct()
+
+            # Do not expose active menus that have no available food items.
+            if not food_items.exists():
+                continue
     
             # Category price and timing info
             category_prices = {}
