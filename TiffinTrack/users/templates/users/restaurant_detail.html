@@ -333,6 +333,7 @@
 
                                 <div class="col-md-6">
                                     <div class="address-box new-address-box">
+                                    {% if has_subscription_history_with_restaurant %}
                                     <a href="#address-details" class="btn new-address-btn theme-outline rounded-2 mt-0"
                                         data-bs-toggle="modal">
                                         {% if has_reviewed %}
@@ -341,6 +342,9 @@
                                         Post Review
                                         {%endif%}
                                     </a>
+                                    {% else %}
+                                    <p class="mb-0">You can post a review only after subscribing to this restaurant.</p>
+                                    {% endif %}
                                     </div>
                                 </div>
 

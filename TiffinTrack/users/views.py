@@ -407,6 +407,9 @@ def restaurant_details(request, slug):
         has_active_subscription = Subscriptions.objects.filter(
             user=request.user, is_active=True
         ).exists()
+        has_subscription_history_with_restaurant = Subscriptions.objects.filter(
+            user=request.user, restaurant=restaurant
+        ).exists()
     
         context = {
             "restaurant": restaurant,
@@ -420,6 +423,7 @@ def restaurant_details(request, slug):
             "images": images,
             "report_form": report_form,
             "has_active_subscription": has_active_subscription,
+            "has_subscription_history_with_restaurant": has_subscription_history_with_restaurant,
         }
     
         print(f"{context=}")
@@ -927,7 +931,16 @@ def post_review(request):
             return redirect("user-home")
     
         restaurant = get_object_or_404(RestaurantProfile, id=restaurant_id)
-    
+
+        if not Subscriptions.objects.filter(
+            user=request.user, restaurant=restaurant
+        ).exists():
+            messages.error(
+                request,
+                "You can review this restaurant only after you have a subscription history with it.",
+            )
+            return redirect("restaurant-details", slug=restaurant.slug)
+
         redirect_url = reverse("restaurant-details", kwargs={"slug": restaurant.slug})
         query_string = urlencode({"next": "review"})
     
