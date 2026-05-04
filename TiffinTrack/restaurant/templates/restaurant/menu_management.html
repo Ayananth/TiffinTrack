@@ -241,7 +241,6 @@
                               data-description="{{ food.description|default:''|escape }}"
                               data-category-id="{% if food.food_category %}{{ food.food_category.id }}{% endif %}"
                               data-is-available="{{ food.is_available|yesno:'true,false' }}"
-                              data-is-vegetarian="{{ food.is_vegetarian|yesno:'true,false' }}"
                               data-days="{% for day in food.days.all %}{{ day.id }}{% if not forloop.last %},{% endif %}{% endfor %}"
                             >
                               Edit Food
@@ -419,14 +418,12 @@
                 <label class="form-check-label" for="foodIsAvailable">Available</label>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="foodIsVegetarian" name="is_vegetarian">
-                <label class="form-check-label" for="foodIsVegetarian">Vegetarian</label>
-              </div>
-            </div>
             <div class="col-12">
               <label class="form-label">Available Days</label>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="foodSelectAllDays">
+                <label class="form-check-label" for="foodSelectAllDays">Select all days</label>
+              </div>
               <div>
                 {% for day in day_options %}
                   <div class="form-check form-check-inline">
@@ -520,13 +517,31 @@
     const foodDescription = document.getElementById("foodDescription");
     const foodCategory = document.getElementById("foodCategory");
     const foodIsAvailable = document.getElementById("foodIsAvailable");
-    const foodIsVegetarian = document.getElementById("foodIsVegetarian");
+    const foodSelectAllDays = document.getElementById("foodSelectAllDays");
+    const foodDayChecks = document.querySelectorAll(".food-day-check");
 
     function resetDays() {
-      document.querySelectorAll(".food-day-check").forEach((checkbox) => {
+      foodDayChecks.forEach((checkbox) => {
         checkbox.checked = false;
       });
+      foodSelectAllDays.checked = false;
     }
+
+    function syncSelectAllDaysState() {
+      const totalDays = foodDayChecks.length;
+      const checkedDays = Array.from(foodDayChecks).filter((checkbox) => checkbox.checked).length;
+      foodSelectAllDays.checked = totalDays > 0 && checkedDays === totalDays;
+    }
+
+    foodSelectAllDays.addEventListener("change", function () {
+      foodDayChecks.forEach((checkbox) => {
+        checkbox.checked = foodSelectAllDays.checked;
+      });
+    });
+
+    foodDayChecks.forEach((checkbox) => {
+      checkbox.addEventListener("change", syncSelectAllDaysState);
+    });
 
     foodModal.addEventListener("show.bs.modal", function (event) {
       const button = event.relatedTarget;
@@ -543,11 +558,9 @@
       if (mode === "edit") {
         foodModalTitle.textContent = "Edit Food";
         foodIsAvailable.checked = button.getAttribute("data-is-available") === "true";
-        foodIsVegetarian.checked = button.getAttribute("data-is-vegetarian") === "true";
       } else {
         foodModalTitle.textContent = "Add Food";
         foodIsAvailable.checked = true;
-        foodIsVegetarian.checked = false;
       }
 
       resetDays();
@@ -560,6 +573,7 @@
           }
         });
       }
+      syncSelectAllDaysState();
     });
   });
 </script>
