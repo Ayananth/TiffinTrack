@@ -205,7 +205,8 @@
 
           newRefund.addEventListener('click', function () {
             console.log("User asked for refund");
-            window.location.href = `cancel/${orderId}`;  // Use correct URL format
+            const cancelUrlTemplate = "{% url 'cancel_order' 0 %}";
+            window.location.href = cancelUrlTemplate.replace("/0/", `/${orderId}/`);
           });
         }
 
@@ -215,8 +216,8 @@
 
           newExtend.addEventListener('click', function () {
             console.log("User asked for extension");
-            window.location.href = `extend/${orderId}`;  // Use correct URL format
-
+            const extendUrlTemplate = "{% url 'extend_order' 0 %}";
+            window.location.href = extendUrlTemplate.replace("/0/", `/${orderId}/`);
           });
         }
       });
