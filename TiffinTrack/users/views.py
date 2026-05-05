@@ -666,12 +666,29 @@ def manage_subscription(request):
         if request.method == "POST":
             id = request.POST.get("subscription_id")
             if id:
-                subscription = get_object_or_404(Subscriptions, id=id)
+                subscription = get_object_or_404(Subscriptions, id=id, user=user)
                 subscription.is_active = False
                 subscription.save()
-                orders = subscription.orders.filter(status="PENDING")
-                for order in orders:
-                    order.cancel()
+                pending_orders = subscription.orders.filter(status="PENDING")
+                refund_amount = sum(
+                    (
+                        order.food_category.price
+                        if order.food_category and order.food_category.price
+                        else Decimal("0.00")
+                    )
+                    for order in pending_orders.select_related("food_category")
+                )
+                pending_orders.update(status="CANCELLED", refund_issued=True)
+
+                if refund_amount > Decimal("0.00"):
+                    wallet, _ = Wallet.objects.get_or_create(user=user)
+                    wallet.credit(
+                        refund_amount,
+                        description=(
+                            f"Subscription cancellation refund "
+                            f"(subscription #{subscription.id})"
+                        ),
+                    )
                 messages.success(request, "Your subscription and orders are cancelled")
                 context = {"headers": headers}
                 return render(request, "./users/manage_subscription.html", context)
