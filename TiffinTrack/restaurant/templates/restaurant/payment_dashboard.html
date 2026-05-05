@@ -113,6 +113,22 @@
   </tbody>
 </table>
 
+{% if subscriptions.paginator.num_pages > 1 %}
+<div class="pagination p-2 mb-4">
+  <span class="step-links">
+    {% if subscriptions.has_previous %}
+      <a class="p-2" href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&subs_page=1&refunds_page={{ refunds.number }}">&laquo; first</a>
+      <a class="p-2" href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&subs_page={{ subscriptions.previous_page_number }}&refunds_page={{ refunds.number }}">previous</a>
+    {% endif %}
+    <span class="current p-2">Subscriptions Page {{ subscriptions.number }} of {{ subscriptions.paginator.num_pages }}</span>
+    {% if subscriptions.has_next %}
+      <a class="p-2" href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&subs_page={{ subscriptions.next_page_number }}&refunds_page={{ refunds.number }}">next</a>
+      <a class="p-2" href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&subs_page={{ subscriptions.paginator.num_pages }}&refunds_page={{ refunds.number }}">last &raquo;</a>
+    {% endif %}
+  </span>
+</div>
+{% endif %}
+
 
 <h4>Recent Refunds</h4>
 <table class="table table-bordered table-striped">
@@ -138,30 +154,21 @@
   </tbody>
 </table>
 
-
-
-
-
-                        <!-- Pagination Controls -->
-                                                    {% include "./pagination.html" with page_obj=orders %}
-
-                        <!-- <div class=" pagination p-4">
-                        <span class="step-links">
-                            {% if orders.has_previous %}
-                            <a href="?page=1" class="p-2">&laquo; first</a>
-                            <a href="?page={{ orders.previous_page_number }}" class="p-2">previous</a>
-                            {% endif %}
-
-                            <span class="current p-2">
-                            Page {{ orders.number }} of {{ orders.paginator.num_pages }}
-                            </span>
-
-                            {% if orders.has_next %}
-                            <a href="?page={{ orders.next_page_number }}" class="p-2">next</a>
-                            <a href="?page={{ orders.paginator.num_pages }}" class="p-2">last &raquo;</a>
-                            {% endif %}
-                        </span>
-                        </div> -->
+{% if refunds.paginator.num_pages > 1 %}
+<div class="pagination p-2">
+  <span class="step-links">
+    {% if refunds.has_previous %}
+      <a class="p-2" href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&subs_page={{ subscriptions.number }}&refunds_page=1">&laquo; first</a>
+      <a class="p-2" href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&subs_page={{ subscriptions.number }}&refunds_page={{ refunds.previous_page_number }}">previous</a>
+    {% endif %}
+    <span class="current p-2">Refunds Page {{ refunds.number }} of {{ refunds.paginator.num_pages }}</span>
+    {% if refunds.has_next %}
+      <a class="p-2" href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&subs_page={{ subscriptions.number }}&refunds_page={{ refunds.next_page_number }}">next</a>
+      <a class="p-2" href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&subs_page={{ subscriptions.number }}&refunds_page={{ refunds.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+  </span>
+</div>
+{% endif %}
 
 
 

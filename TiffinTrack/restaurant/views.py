@@ -322,7 +322,14 @@ def users(request):
         restaurant = get_object_or_404(RestaurantProfile, user=request.user)
         subscriptions = Subscriptions.objects.filter(
             restaurant=restaurant, user__isnull=False
-        )
+        ).order_by("-start_date")
+
+        username = (request.POST.get("username") or "").strip()
+        if username:
+            subscriptions = subscriptions.filter(
+                Q(user__username__icontains=username) | Q(user__email__icontains=username)
+            )
+
         paginator = Paginator(subscriptions, 10)  # Show 10 users per page
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
@@ -871,10 +878,18 @@ def payment_dashboard(request):
             [order.food_category.price for order in refunds if order.food_category]
         )
         net_balance = total_credits - total_debits
-    
+
+        subs_paginator = Paginator(subscriptions, 10)
+        subs_page_number = request.GET.get("subs_page")
+        subs_page_obj = subs_paginator.get_page(subs_page_number)
+
+        refunds_paginator = Paginator(refunds, 10)
+        refunds_page_number = request.GET.get("refunds_page")
+        refunds_page_obj = refunds_paginator.get_page(refunds_page_number)
+
         context = {
-            "subscriptions": subscriptions,
-            "refunds": refunds,
+            "subscriptions": subs_page_obj,
+            "refunds": refunds_page_obj,
             "total_credits": total_credits,
             "total_debits": total_debits,
             "net_balance": net_balance,
