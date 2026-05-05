@@ -669,7 +669,11 @@ def manage_subscription(request):
                 subscription = get_object_or_404(Subscriptions, id=id, user=user)
                 subscription.is_active = False
                 subscription.save()
-                pending_orders = subscription.orders.filter(status="PENDING")
+                today = timezone.now().date()
+                pending_orders = subscription.orders.filter(
+                    status="PENDING",
+                    delivery_date__gte=today,
+                )
                 refund_amount = sum(
                     (
                         order.food_category.price
@@ -724,9 +728,9 @@ def manage_subscription(request):
     
         # }
     
-        refund = 0
         delivery_data = {}
-    
+        today = timezone.now().date()
+
         for food_category in food_categories:
             data = {}
             delivered = orders.filter(
@@ -736,14 +740,25 @@ def manage_subscription(request):
                 food_category=food_category, status="CANCELLED"
             ).count()
             pending = orders.filter(food_category=food_category, status="PENDING").count()
-    
+
             data["delivered"] = delivered
             data["cancelled"] = cancelled
             data["pending"] = pending
-    
-            refund += delivered * food_category.price
-            refund = subscription.final_total - refund
+
             delivery_data[food_category] = data  # or food_category.name if it has one
+
+        pending_orders_for_refund = orders.filter(
+            status="PENDING",
+            delivery_date__gte=today,
+        ).select_related("food_category")
+        refund = sum(
+            (
+                order.food_category.price
+                if order.food_category and order.food_category.price
+                else Decimal("0.00")
+            )
+            for order in pending_orders_for_refund
+        )
     
         context = {
             "headers": headers,
