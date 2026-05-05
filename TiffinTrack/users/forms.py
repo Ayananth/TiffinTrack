@@ -23,6 +23,8 @@ class SubscriptionForm(forms.ModelForm):
             )
             if start_date_only < today:
                 self.add_error("start_date", "Start date cannot be in the past.")
+            if start_date_only == today:
+                self.add_error("start_date", "Start date cannot be today.")
 
         if start and end:
             if start > end:

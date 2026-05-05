@@ -256,11 +256,11 @@
                                 </div>
                                 <div class="sub-total">
                                     <h6 class="content-color fw-normal">Start Date</h6>
-                                    <h6 class="fw-semibold">{{subscription.start_date.date}}</h6>
+                                    <h6 class="fw-semibold">{{ subscription.start_date|date:"M j, Y" }}</h6>
                                 </div>
                                 <div class="sub-total">
                                     <h6 class="content-color fw-normal">End Date</h6>
-                                    <h6 class="fw-semibold">{{subscription.end_date.date}}</h6>
+                                    <h6 class="fw-semibold">{{ subscription.end_date|date:"M j, Y" }}</h6>
                                 </div>
                                 <div class="sub-total">
                                     <h6 class="content-color fw-normal">Number of Days</h6>
