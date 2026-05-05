@@ -862,9 +862,10 @@ def payment_dashboard(request):
     
         subscriptions = Subscriptions.objects.filter(
             restaurant=restaurant,
-            is_active=True,
+            user__isnull=False,
+            orders__isnull=False,
             created_at__date__range=(start_date, end_date),
-        ).order_by("-created_at")
+        ).distinct().order_by("-created_at")
     
         refunds = Orders.objects.filter(
             restaurant=restaurant,
@@ -935,9 +936,10 @@ def export_payments_csv(request):
         # Get data
         subscriptions = Subscriptions.objects.filter(
             restaurant=restaurant,
-            is_active=True,
+            user__isnull=False,
+            orders__isnull=False,
             created_at__date__range=(start_date, end_date),
-        ).order_by("-created_at")
+        ).distinct().order_by("-created_at")
     
         refunds = Orders.objects.filter(
             restaurant=restaurant,
