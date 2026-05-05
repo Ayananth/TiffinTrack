@@ -1,38 +1,91 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block content %}
-
-
-  <div class="container py-5">
-    <h2 class="mb-4">📊 {{restaurant}} Dashboard {{selected_date}}</h2>
-      <form method="get" class="form-inline mb-3">
-    <label for="date" class="mr-2">Select Date:</label>
-    <input type="date" id="date" name="date" class="form-control mr-2" value="{{ selected_date|date:'Y-m-d' }}">
-    <button type="submit" class="btn btn-primary">Filter</button>
-  </form>
-
-    <table class="table table-bordered table-striped shadow">
-      <thead class="table">
-        <tr>
-          <th>Food Category</th>
-          <th>Total Orders</th>
-          <th>Cancelled Orders</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in dashboard_data %}
-          <tr>
-            <td>{{ item.category }}</td>
-            <td>{{ item.total_orders }}</td>
-            <td>{{ item.cancelled_orders }}</td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="3" class="text-center">No orders placed today.</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="container-fluid py-4">
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <h3 class="mb-1">{{ restaurant.restaurant_name }} Dashboard</h3>
+          <p class="text-muted mb-0">Order insights for {{ selected_date|date:"M d, Y" }}</p>
+        </div>
+        <form method="get" class="d-flex align-items-center gap-2">
+          <label for="date" class="mb-0 text-muted">Select Date:</label>
+          <input type="date" id="date" name="date" class="form-control" value="{{ selected_date|date:'Y-m-d' }}">
+          <button type="submit" class="btn btn-primary">Apply</button>
+        </form>
+      </div>
+    </div>
   </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <p class="text-muted mb-1">Total Orders</p>
+          <h4 class="mb-0">{{ totals.total_orders }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <p class="text-muted mb-1">Delivered</p>
+          <h4 class="mb-0 text-success">{{ totals.delivered_orders }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <p class="text-muted mb-1">Pending</p>
+          <h4 class="mb-0 text-warning">{{ totals.pending_orders }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <p class="text-muted mb-1">Cancelled</p>
+          <h4 class="mb-0 text-danger">{{ totals.cancelled_orders }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h5 class="mb-3">Category-wise Orders</h5>
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Food Category</th>
+              <th>Total Orders</th>
+              <th>Delivered</th>
+              <th>Pending</th>
+              <th>Cancelled</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in dashboard_data %}
+              <tr>
+                <td>{{ item.category }}</td>
+                <td>{{ item.total_orders }}</td>
+                <td class="text-success fw-semibold">{{ item.delivered_orders }}</td>
+                <td class="text-warning fw-semibold">{{ item.pending_orders }}</td>
+                <td class="text-danger fw-semibold">{{ item.cancelled_orders }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4">No orders found for the selected date.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Container-fluid Ends-->
 {% endblock content %}

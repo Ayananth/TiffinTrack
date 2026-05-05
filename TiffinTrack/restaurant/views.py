@@ -89,44 +89,42 @@ def home(request):
         except ValueError:
             selected_date = now().date()
     
-        # Total orders per food category for today
-        food_category_orders = (
+        category_orders = (
             Orders.objects.filter(delivery_date=selected_date, restaurant=restaurant)
             .values("food_category__name")
-            .annotate(total_orders=Count("id"))
-            .order_by("food_category__name")
-        )
-        # Cancelled orders per food category for today
-        cancelled_orders = (
-            Orders.objects.filter(
-                delivery_date=selected_date, restaurant=restaurant, status="CANCELLED"
+            .annotate(
+                total_orders=Count("id"),
+                cancelled_orders=Count("id", filter=Q(status="CANCELLED")),
+                delivered_orders=Count("id", filter=Q(status="DELIVERED")),
+                pending_orders=Count("id", filter=Q(status="PENDING")),
             )
-            .values("food_category__name")
-            .annotate(cancelled_orders=Count("id"))
             .order_by("food_category__name")
         )
-        # Merge both querysets into a single list of dicts
-        data = {}
-        for item in food_category_orders:
-            name = item["food_category__name"] or "Unknown"
-            data[name] = {
-                "category": name,
-                "total_orders": item["total_orders"],
-                "cancelled_orders": 0,
-            }
-        for item in cancelled_orders:
-            name = item["food_category__name"] or "Unknown"
-            if name in data:
-                data[name]["cancelled_orders"] = item["cancelled_orders"]
-            else:
-                data[name] = {
-                    "category": name,
-                    "total_orders": 0,
+
+        totals = Orders.objects.filter(
+            delivery_date=selected_date, restaurant=restaurant
+        ).aggregate(
+            total_orders=Count("id"),
+            cancelled_orders=Count("id", filter=Q(status="CANCELLED")),
+            delivered_orders=Count("id", filter=Q(status="DELIVERED")),
+            pending_orders=Count("id", filter=Q(status="PENDING")),
+        )
+
+        data = []
+        for item in category_orders:
+            data.append(
+                {
+                    "category": item["food_category__name"] or "Unknown",
+                    "total_orders": item["total_orders"],
                     "cancelled_orders": item["cancelled_orders"],
+                    "delivered_orders": item["delivered_orders"],
+                    "pending_orders": item["pending_orders"],
                 }
-    
+            )
+
         context = {
-            "dashboard_data": data.values(),
+            "dashboard_data": data,
+            "totals": totals,
             "restaurant": restaurant,
             "selected_date": selected_date,
         }
