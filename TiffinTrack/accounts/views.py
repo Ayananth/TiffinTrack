@@ -34,6 +34,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.http import JsonResponse
+from urllib.parse import urlencode
 
 
 import logging
@@ -58,6 +59,7 @@ def _handle_view_error(request, view_name, redirect_name="login"):
 # TODO dont give access to admin
 # TODO dont give access to admin
 OTP_EXPIRY_SECONDS = 600  # 5 minutes
+SOCIAL_SIGNUP_USER_TYPE_SESSION_KEY = "social_signup_user_type"
 
 
 def _login_context(is_restaurant=False):
@@ -85,12 +87,14 @@ def _signup_context(is_restaurant=False):
             "signup_subheading": "Enter your details to start restaurant onboarding",
             "login_url_name": "restaurant-login",
             "login_label": "Restaurant Login",
+            "social_signup_user_type": "restaurant",
         }
     return {
         "signup_heading": "Create your account",
         "signup_subheading": "Enter your personal details to create account",
         "login_url_name": "login",
         "login_label": "Login",
+        "social_signup_user_type": "normal",
     }
 
 
@@ -150,6 +154,7 @@ def accounts_logout(request):
 
 
 def _handle_signup(request, id=None, user_type="normal", is_restaurant=False):
+    request.session[SOCIAL_SIGNUP_USER_TYPE_SESSION_KEY] = user_type
 
     if request.method != "POST":
 
@@ -238,6 +243,19 @@ def restaurant_sign_up(request, id=None):
         return _handle_signup(request, id=id, user_type="restaurant", is_restaurant=True)
     except Exception:
         return _handle_view_error(request, "restaurant_sign_up")
+
+
+def restaurant_google_login(request):
+    try:
+        request.session[SOCIAL_SIGNUP_USER_TYPE_SESSION_KEY] = "restaurant"
+        params = {"process": "login"}
+        next_url = request.GET.get("next")
+        if next_url:
+            params["next"] = next_url
+        query_string = urlencode(params)
+        return redirect(f"/accounts/google/login/?{query_string}")
+    except Exception:
+        return _handle_view_error(request, "restaurant_google_login")
 
 
 # def send_otp(request):

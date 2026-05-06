@@ -68,10 +68,18 @@
         <div class="log-in-button">
             <ul>
                 <li>
+                    {% if social_signup_user_type == "restaurant" %}
+                    {% if request.GET.next %}
+                    <a href="{% url 'restaurant-google-login' %}?next={{ request.GET.next|urlencode }}" class="btn google-button w-100">
+                    {% else %}
+                    <a href="{% url 'restaurant-google-login' %}" class="btn google-button w-100">
+                    {% endif %}
+                    {% else %}
                     {% if request.GET.next %}
                     <a href="{% provider_login_url 'google' process='login' next=request.GET.next %}" class="btn google-button w-100">
                     {% else %}
                     <a href="{% provider_login_url 'google' process='login' %}" class="btn google-button w-100">
+                    {% endif %}
                     {% endif %}
                         <img src="{% static 'backend/assets/images/google.png' %}" class="blur-up lazyload"
                             alt=""> Log In with Google

@@ -16,6 +16,11 @@ urlpatterns = [
         views.restaurant_sign_up,
         name="restaurant-register-auth",
     ),
+    path(
+        "google/login/restaurant/",
+        views.restaurant_google_login,
+        name="restaurant-google-login",
+    ),
     path("", include("allauth.urls")),
     # path('send_otp/', views.send_otp, name='send_otp'),
     path("verify-otp/<int:user_id>/", views.verify_otp, name="verify_otp"),
