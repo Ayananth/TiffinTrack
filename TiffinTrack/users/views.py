@@ -426,8 +426,6 @@ def restaurant_details(request, slug):
             "has_subscription_history_with_restaurant": has_subscription_history_with_restaurant,
         }
     
-        print(f"{context=}")
-    
         return render(request, "users/restaurant_detail.html", context)
     except Exception:
         return _handle_view_error(request, "restaurant_details")

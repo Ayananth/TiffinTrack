@@ -343,7 +343,6 @@ def users(request):
 @login_required(login_url="admin-login")
 def orders(request):
     try:
-        print(request.GET)
     
         user = request.user
         restaurant = get_object_or_404(RestaurantProfile, user=request.user)
@@ -401,7 +400,6 @@ def cancel_order(request, order_id):
 @login_required
 def deliver_order(request, order_id):
     try:
-        print(request.GET)
         try:
             order = get_object_or_404(Orders, id=order_id)
             # Prevent marking as delivered before the delivery date

@@ -842,11 +842,10 @@ def refund_report(request, id):
 @login_required
 def reject_report(request):
     try:
-        print("Reject request received")
+        logger.info("Reject request received")
         id = request.POST.get("id")
         msg = request.POST.get("reason")
     
-        print(id)
         if not id:
             return redirect("admin-report-order")
         try:
