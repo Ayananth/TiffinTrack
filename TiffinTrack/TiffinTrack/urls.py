@@ -19,9 +19,12 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 from . import error_views
 
 urlpatterns = [
+    path("admin", RedirectView.as_view(url="/admin/", permanent=False)),
+    path("admin-panel", RedirectView.as_view(url="/admin-panel/", permanent=False)),
     path("admin/", admin.site.urls),
     path("", include("users.urls")),
     path("restaurant/", include("restaurant.urls")),
