@@ -138,7 +138,7 @@ def restaurant_logout(request):
     try:
         logout(request)
         request.session.flush()
-        return redirect("login")
+        return redirect("restaurant-login")
     except Exception:
         return _handle_view_error(request, "restaurant_logout")
 
