@@ -7,7 +7,7 @@ import re
 
 
 class RestaurantProfileForm(forms.ModelForm):
-    MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024  # 2 MB
+    MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024
     _WKT_POINT_RE = re.compile(
         r"^SRID=\d+;POINT\s*\(\s*[-+]?\d*\.?\d+\s+[-+]?\d*\.?\d+\s*\)$"
     )
