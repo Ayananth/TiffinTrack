@@ -27,6 +27,7 @@ from django.db.models import Count, Sum, Q
 from django.utils import timezone
 from datetime import timedelta
 from datetime import date
+from decimal import Decimal
 import logging
 
 logger = logging.getLogger("myapp")
@@ -111,12 +112,12 @@ def home(request):
 
         orders = Orders.objects.filter(delivery_date__range=(start_date, end_date))
         total_orders = orders.count()
-        total_revenue = (
-            orders.filter(status="DELIVERED").aggregate(
-                revenue=Sum("food_category__price")
-            )["revenue"]
-            or 0
+        # Revenue should reflect successful subscription purchases, including
+        # future-dated plans, not only delivered orders.
+        paid_subscriptions = Subscriptions.objects.select_related("restaurant").filter(
+            user__isnull=False, created_at__date__range=(start_date, end_date)
         )
+        total_revenue = sum((sub.final_total for sub in paid_subscriptions), Decimal("0.00"))
         total_subscriptions = Subscriptions.objects.filter(is_active=True).count()
         active_restaurants = (
             RestaurantProfile.objects.filter(
@@ -132,15 +133,20 @@ def home(request):
             .first()
         )
     
-        top_restaurants = (
-            orders.filter(status="DELIVERED")
-            .values(
-                "restaurant__id",
-                "restaurant__restaurant_name",
-            )
-            .annotate(revenue=Sum("food_category__price"))
-            .order_by("-revenue")[:3]
-        )
+        restaurant_revenue_map = {}
+        for sub in paid_subscriptions:
+            restaurant_id = sub.restaurant_id
+            if restaurant_id not in restaurant_revenue_map:
+                restaurant_revenue_map[restaurant_id] = {
+                    "restaurant__id": restaurant_id,
+                    "restaurant__restaurant_name": sub.restaurant.restaurant_name,
+                    "revenue": Decimal("0.00"),
+                }
+            restaurant_revenue_map[restaurant_id]["revenue"] += sub.final_total
+
+        top_restaurants = sorted(
+            restaurant_revenue_map.values(), key=lambda x: x["revenue"], reverse=True
+        )[:3]
 
         # Keep status counts within the same selected date window.
         pending_orders = orders.filter(status="PENDING").count()
