@@ -105,7 +105,10 @@ def home(request):
             start_date = timezone.datetime.strptime(start_date, "%Y-%m-%d").date()
         if isinstance(end_date, str):
             end_date = timezone.datetime.strptime(end_date, "%Y-%m-%d").date()
-    
+
+        if start_date > end_date:
+            start_date, end_date = end_date, start_date
+
         orders = Orders.objects.filter(delivery_date__range=(start_date, end_date))
         total_orders = orders.count()
         total_revenue = (
@@ -114,9 +117,7 @@ def home(request):
             )["revenue"]
             or 0
         )
-        total_subscriptions = Subscriptions.objects.filter(
-            created_at__date__range=(start_date, end_date)
-        ).count()
+        total_subscriptions = Subscriptions.objects.filter(is_active=True).count()
         active_restaurants = (
             RestaurantProfile.objects.filter(
                 received_orders__delivery_date__range=(start_date, end_date)
@@ -140,10 +141,11 @@ def home(request):
             .annotate(revenue=Sum("food_category__price"))
             .order_by("-revenue")[:3]
         )
-        total_orders = Orders.objects.count()
-        pending_orders = Orders.objects.filter(status="PENDING").count()
-        delivered_orders = Orders.objects.filter(status="DELIVERED").count()
-        cancelled_orders = Orders.objects.filter(status="CANCELLED").count()
+
+        # Keep status counts within the same selected date window.
+        pending_orders = orders.filter(status="PENDING").count()
+        delivered_orders = orders.filter(status="DELIVERED").count()
+        cancelled_orders = orders.filter(status="CANCELLED").count()
     
         # For chart
         order_status_labels = ["Pending", "Delivered", "Cancelled"]
@@ -167,7 +169,6 @@ def home(request):
                 else "N/A"
             ),
             "top_restaurants": top_restaurants,
-            "total_orders": total_orders,
             "pending_orders": pending_orders,
             "delivered_orders": delivered_orders,
             "cancelled_orders": cancelled_orders,
