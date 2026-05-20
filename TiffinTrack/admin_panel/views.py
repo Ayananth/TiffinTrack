@@ -243,12 +243,42 @@ def restaurants(request):
     try:
         if not request.user.is_superuser:
             return redirect("admin-login")
-    
-        restaurants = RestaurantProfile.objects.all().order_by("is_approved", "-created_at")
+
+        restaurants = RestaurantProfile.objects.all()
+
+        restaurant_name = request.GET.get("restaurant_name")
+        owner_name = request.GET.get("owner_name")
+        status = request.GET.get("status")
+
+        if restaurant_name:
+            restaurants = restaurants.filter(restaurant_name__icontains=restaurant_name)
+        if owner_name:
+            restaurants = restaurants.filter(owner_name__icontains=owner_name)
+        if status == "approved":
+            restaurants = restaurants.filter(is_approved=True)
+        elif status == "pending":
+            restaurants = restaurants.filter(is_approved=False)
+
+        sort_by = request.GET.get("sort", "created_at")
+        direction = request.GET.get("dir", "desc")
+        valid_sort_fields = {
+            "id": "id",
+            "restaurant_name": "restaurant_name",
+            "owner_name": "owner_name",
+            "created_at": "created_at",
+        }
+        sort_field = valid_sort_fields.get(sort_by, "created_at")
+        order_prefix = "-" if direction == "desc" else ""
+        restaurants = restaurants.order_by(f"{order_prefix}{sort_field}")
+
         paginator = Paginator(restaurants, 10)  # Show 10 users per page
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
-        context = {"restaurants": page_obj}
+        context = {
+            "restaurants": page_obj,
+            "sort": sort_by,
+            "dir": direction,
+        }
         return render(request, "./admin_panel/restaurants.html", context)
     except Exception:
         return _handle_view_error(request, "restaurants")
@@ -618,6 +648,45 @@ def orders(request):
         return render(request, "./admin_panel/orders.html", context)
     except Exception:
         return _handle_view_error(request, "orders")
+
+
+@login_required(login_url="admin-login")
+def subscriptions(request):
+    try:
+        if not request.user.is_superuser:
+            return redirect("admin-login")
+
+        subscriptions = Subscriptions.objects.select_related(
+            "user", "restaurant", "menu_category"
+        ).order_by("-created_at")
+
+        restaurant = request.GET.get("restaurant")
+        user = request.GET.get("user")
+        status = request.GET.get("status")
+        start_date = request.GET.get("start_date")
+        end_date = request.GET.get("end_date")
+
+        if restaurant:
+            subscriptions = subscriptions.filter(
+                restaurant__restaurant_name__icontains=restaurant
+            )
+        if user:
+            subscriptions = subscriptions.filter(user__username__icontains=user)
+        if status in ["active", "inactive"]:
+            subscriptions = subscriptions.filter(is_active=(status == "active"))
+        if start_date:
+            subscriptions = subscriptions.filter(start_date__date=start_date)
+        if end_date:
+            subscriptions = subscriptions.filter(end_date__date=end_date)
+
+        paginator = Paginator(subscriptions, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
+        context = {"subscriptions": page_obj}
+        return render(request, "./admin_panel/subscriptions.html", context)
+    except Exception:
+        return _handle_view_error(request, "subscriptions")
 
 
 @login_required

@@ -20,6 +20,37 @@
                                     </div>
 
                                     <div class="table-responsive theme-scrollbar table-product">
+                                        <form method="get" class="row g-3 align-items-center mb-3">
+                                            <div class="col-auto">
+                                                <label for="restaurant_name" class="form-label">Restaurant</label>
+                                                <input type="text" class="form-control" name="restaurant_name" value="{{ request.GET.restaurant_name }}">
+                                            </div>
+                                            <div class="col-auto">
+                                                <label for="owner_name" class="form-label">Owner</label>
+                                                <input type="text" class="form-control" name="owner_name" value="{{ request.GET.owner_name }}">
+                                            </div>
+                                            <div class="col-auto">
+                                                <label for="status" class="form-label">Status</label>
+                                                <select name="status" class="form-select">
+                                                    <option value="">All</option>
+                                                    <option value="approved" {% if request.GET.status == "approved" %}selected{% endif %}>Approved</option>
+                                                    <option value="pending" {% if request.GET.status == "pending" %}selected{% endif %}>Pending</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-auto mt-4">
+                                                <button type="submit" class="btn btn-primary">Filter</button>
+                                                <a href="?" class="btn btn-secondary">Reset</a>
+                                            </div>
+                                        </form>
+
+                                        <div class="sorting d-flex justify-content-end">
+                                            <p class="p-2">Sort By</p>
+                                            <p class="p-2"><a href="?{{ request.GET.urlencode }}&sort=id&dir={% if sort == 'id' and dir == 'asc' %}desc{% else %}asc{% endif %}">ID</a></p>
+                                            <p class="p-2"><a href="?{{ request.GET.urlencode }}&sort=restaurant_name&dir={% if sort == 'restaurant_name' and dir == 'asc' %}desc{% else %}asc{% endif %}">Restaurant</a></p>
+                                            <p class="p-2"><a href="?{{ request.GET.urlencode }}&sort=owner_name&dir={% if sort == 'owner_name' and dir == 'asc' %}desc{% else %}asc{% endif %}">Owner</a></p>
+                                            <p class="p-2"><a href="?{{ request.GET.urlencode }}&sort=created_at&dir={% if sort == 'created_at' and dir == 'asc' %}desc{% else %}asc{% endif %}">Created</a></p>
+                                        </div>
+
                                         <table class="table category-table dataTable no-footer" id="table_id">
                                             <thead>
                                                 <tr>

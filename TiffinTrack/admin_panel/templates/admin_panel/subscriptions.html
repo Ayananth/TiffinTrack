@@ -1,0 +1,88 @@
+{% extends "./base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    {% include "./messages.html" %}
+                    <div class="title-header option-title">
+                        <h5>Subscribed Users</h5>
+                    </div>
+
+                    <div class="table-responsive theme-scrollbar">
+                        <form method="get" class="row g-3 align-items-center mb-3">
+                            <div class="col-auto">
+                                <label for="restaurant" class="form-label">Restaurant</label>
+                                <input type="text" class="form-control" name="restaurant" value="{{ request.GET.restaurant }}">
+                            </div>
+                            <div class="col-auto">
+                                <label for="user" class="form-label">User</label>
+                                <input type="text" class="form-control" name="user" value="{{ request.GET.user }}">
+                            </div>
+                            <div class="col-auto">
+                                <label for="status" class="form-label">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="active" {% if request.GET.status == "active" %}selected{% endif %}>Active</option>
+                                    <option value="inactive" {% if request.GET.status == "inactive" %}selected{% endif %}>Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" name="start_date" value="{{ request.GET.start_date }}">
+                            </div>
+                            <div class="col-auto">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" name="end_date" value="{{ request.GET.end_date }}">
+                            </div>
+                            <div class="col-auto mt-4">
+                                <button type="submit" class="btn btn-primary">Filter</button>
+                                <a href="?" class="btn btn-secondary">Reset</a>
+                            </div>
+                        </form>
+
+                        <table class="table category-table dataTable no-footer" id="table_id">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>User</th>
+                                    <th>Restaurant</th>
+                                    <th>Menu</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subscription in subscriptions %}
+                                <tr>
+                                    <td>{{ subscription.id }}</td>
+                                    <td>{{ subscription.user.username|default:"N/A" }}</td>
+                                    <td>{{ subscription.restaurant.restaurant_name }}</td>
+                                    <td>{{ subscription.menu_category.name|default:"N/A" }}</td>
+                                    <td>{{ subscription.start_date|date:"Y-m-d" }}</td>
+                                    <td>{{ subscription.end_date|date:"Y-m-d" }}</td>
+                                    <td>
+                                        <span class="{% if subscription.is_active %}font-success{% else %}font-danger{% endif %} f-w-500">
+                                            {% if subscription.is_active %}ACTIVE{% else %}INACTIVE{% endif %}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No subscription records found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        {% include "./pagination.html" with page_obj=subscriptions %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

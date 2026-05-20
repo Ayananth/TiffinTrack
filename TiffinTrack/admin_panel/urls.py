@@ -55,6 +55,7 @@ urlpatterns = [
         name="food_category-delete",
     ),
     path("orders/", views.orders, name="admin-orders"),
+    path("subscriptions/", views.subscriptions, name="admin-subscriptions"),
     path(
         "orders/cancel/<int:order_id>/", views.cancel_order, name="admin-cancel_order"
     ),
