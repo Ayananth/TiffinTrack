@@ -7,6 +7,7 @@ import re
 
 
 class RestaurantProfileForm(forms.ModelForm):
+    MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024  # 2 MB
     _WKT_POINT_RE = re.compile(
         r"^SRID=\d+;POINT\s*\(\s*[-+]?\d*\.?\d+\s+[-+]?\d*\.?\d+\s*\)$"
     )
@@ -98,6 +99,20 @@ class RestaurantProfileForm(forms.ModelForm):
             raise forms.ValidationError(
                 "Please select a location from suggestions so coordinates can be saved."
             )
+
+    def clean_restaurant_image(self):
+        image_file = self.cleaned_data.get("restaurant_image")
+        if not image_file:
+            return image_file
+
+        content_type = getattr(image_file, "content_type", "") or ""
+        if not content_type.startswith("image/"):
+            raise forms.ValidationError("Only image files are allowed.")
+
+        if image_file.size > self.MAX_IMAGE_SIZE_BYTES:
+            raise forms.ValidationError("Image size should not exceed 2 MB.")
+
+        return image_file
 
     def save(self, commit=True):
         obj = super().save(commit=False)
