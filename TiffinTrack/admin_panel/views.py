@@ -28,6 +28,7 @@ from django.utils import timezone
 from datetime import timedelta
 from datetime import date
 from decimal import Decimal
+import calendar
 import logging
 
 logger = logging.getLogger("myapp")
@@ -616,8 +617,22 @@ def delete_food_category(request, id):
 @login_required(login_url="admin-login")
 def orders(request):
     try:
-        user = request.user
-    
+        if not request.user.is_superuser:
+            return redirect("admin-login")
+
+        today = timezone.now().date()
+        end_of_month_day = calendar.monthrange(today.year, today.month)[1]
+        end_of_month = today.replace(day=end_of_month_day)
+
+        restaurant = request.GET.get("restaurant", "")
+        user = request.GET.get("user", "")
+        status = request.GET.get("status", "PENDING")
+        start_date = request.GET.get("start_date") or today.strftime("%Y-%m-%d")
+        end_date = request.GET.get("end_date") or end_of_month.strftime("%Y-%m-%d")
+
+        if start_date > end_date:
+            start_date, end_date = end_date, start_date
+
         sort_by = request.GET.get("sort", "delivery_date")  # default: delivery_date
         direction = request.GET.get("dir", "asc")
         order_prefix = "" if direction == "asc" else "-"
@@ -625,11 +640,6 @@ def orders(request):
         sort_field = sort_by if sort_by in valid_sort_fields else "delivery_date"
     
         orders = Orders.objects.all().order_by(f"{order_prefix}{sort_field}")
-    
-        restaurant = request.GET.get("restaurant")
-        user = request.GET.get("user")
-        status = request.GET.get("status")
-        delivery_date = request.GET.get("delivery_date")
     
         if restaurant:
             orders = orders.filter(restaurant__restaurant_name__icontains=restaurant)
@@ -639,9 +649,9 @@ def orders(request):
     
         if status:
             orders = orders.filter(status=status)
-    
-        if delivery_date:
-            orders = orders.filter(delivery_date=delivery_date)
+
+        if start_date and end_date:
+            orders = orders.filter(delivery_date__range=(start_date, end_date))
     
         paginator = Paginator(orders, 10)  # Show 5 orders per page
         page_number = request.GET.get("page")
@@ -651,6 +661,11 @@ def orders(request):
             "orders": page_obj,
             "sort": sort_field,
             "dir": direction,
+            "restaurant": restaurant,
+            "user_filter": user,
+            "status": status,
+            "start_date": start_date,
+            "end_date": end_date,
         }
         return render(request, "./admin_panel/orders.html", context)
     except Exception:
@@ -717,7 +732,7 @@ def cancel_order(request, order_id):
         logger.error(f"{e=}")
         messages.error(request, "Server error")
     finally:
-        return redirect("admin-orders")
+        return redirect_with_get_params(request, "admin-orders")
 
 
 @login_required(login_url="admin-login")
@@ -735,7 +750,7 @@ def deliver_order(request, order_id):
         logger.error(f"{e=}")
         messages.error(request, "Server error")
     finally:
-        return redirect("admin-orders")
+        return redirect_with_get_params(request, "admin-orders")
 
 
 @login_required(login_url="admin-login")

@@ -22,24 +22,28 @@
                                             <form method="get" class="row g-3 align-items-center mb-3">
                                                 <div class="col-auto">
                                                     <label for="restaurant" class="form-label">Restaurant</label>
-                                                    <input type="text" class="form-control" name="restaurant" value="{{ request.GET.restaurant }}">
+                                                    <input type="text" class="form-control" name="restaurant" value="{{ restaurant }}">
                                                 </div>
                                                 <div class="col-auto">
                                                     <label for="user" class="form-label">User</label>
-                                                    <input type="text" class="form-control" name="user" value="{{ request.GET.user }}">
+                                                    <input type="text" class="form-control" name="user" value="{{ user_filter }}">
                                                 </div>
                                                 <div class="col-auto">
                                                     <label for="status" class="form-label">Status</label>
                                                     <select name="status" class="form-select">
                                                         <option value="">All</option>
-                                                        <option value="PENDING" {% if request.GET.status == "PENDING" %}selected{% endif %}>PENDING</option>
-                                                        <option value="DELIVERED" {% if request.GET.status == "DELIVERED" %}selected{% endif %}>DELIVERED</option>
-                                                        <option value="CANCELLED" {% if request.GET.status == "CANCELLED" %}selected{% endif %}>CANCELLED</option>
+                                                        <option value="PENDING" {% if status == "PENDING" %}selected{% endif %}>PENDING</option>
+                                                        <option value="DELIVERED" {% if status == "DELIVERED" %}selected{% endif %}>DELIVERED</option>
+                                                        <option value="CANCELLED" {% if status == "CANCELLED" %}selected{% endif %}>CANCELLED</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-auto">
-                                                    <label for="delivery_date" class="form-label">Delivery Date</label>
-                                                    <input type="date" class="form-control" name="delivery_date" value="{{ request.GET.delivery_date }}">
+                                                    <label for="start_date" class="form-label">Start Date</label>
+                                                    <input type="date" class="form-control" name="start_date" value="{{ start_date }}">
+                                                </div>
+                                                <div class="col-auto">
+                                                    <label for="end_date" class="form-label">End Date</label>
+                                                    <input type="date" class="form-control" name="end_date" value="{{ end_date }}">
                                                 </div>
                                                 <div class="col-auto mt-4">
                                                     <button type="submit" class="btn btn-primary">Filter</button>
@@ -51,8 +55,8 @@
  
                                             <div class="sorting d-flex justify-content-end">
                                                 <p class="p-2">Sort By</p>
-                                                <p class="p-2"><a href="?sort=delivery_date&dir={% if sort == 'delivery_date' and dir == 'asc' %}desc{% else %}asc{% endif %}">Delivery Date</a></p>
-                                                <p class="p-2"><a href="?sort=status&dir={% if sort == 'status' and dir == 'asc' %}desc{% else %}asc{% endif %}">Status</a></p>
+                                                <p class="p-2"><a href="?restaurant={{ restaurant|urlencode }}&user={{ user_filter|urlencode }}&status={{ status|urlencode }}&start_date={{ start_date|urlencode }}&end_date={{ end_date|urlencode }}&sort=delivery_date&dir={% if sort == 'delivery_date' and dir == 'asc' %}desc{% else %}asc{% endif %}">Delivery Date</a></p>
+                                                <p class="p-2"><a href="?restaurant={{ restaurant|urlencode }}&user={{ user_filter|urlencode }}&status={{ status|urlencode }}&start_date={{ start_date|urlencode }}&end_date={{ end_date|urlencode }}&sort=status&dir={% if sort == 'status' and dir == 'asc' %}desc{% else %}asc{% endif %}">Status</a></p>
                                             </div>
                                             <table class="table category-table dataTable no-footer" id="table_id">
                                                 <thead>
@@ -96,10 +100,6 @@
 
                                                         <td>
                                                             {% if order.status == 'PENDING'%}
-                                                                <a class=""
-                                                                    href="{% url 'admin-cancel_order' order.id%}?{{ request.GET.urlencode }}">
-                                                                    Cancel
-                                                                </a>, 
                                                                 <a href="{% url 'admin-deliver-order' order.id %}?{{ request.GET.urlencode }}">
                                                                     Mark Delivered
                                                                 </a>
