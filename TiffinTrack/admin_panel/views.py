@@ -675,10 +675,18 @@ def subscriptions(request):
             subscriptions = subscriptions.filter(user__username__icontains=user)
         if status in ["active", "inactive"]:
             subscriptions = subscriptions.filter(is_active=(status == "active"))
-        if start_date:
-            subscriptions = subscriptions.filter(start_date__date=start_date)
-        if end_date:
-            subscriptions = subscriptions.filter(end_date__date=end_date)
+        # Treat start/end filters as a range window instead of exact-date matching.
+        if start_date and end_date and start_date > end_date:
+            start_date, end_date = end_date, start_date
+        if start_date and end_date:
+            subscriptions = subscriptions.filter(
+                start_date__date__lte=end_date,
+                end_date__date__gte=start_date,
+            )
+        elif start_date:
+            subscriptions = subscriptions.filter(end_date__date__gte=start_date)
+        elif end_date:
+            subscriptions = subscriptions.filter(start_date__date__lte=end_date)
 
         paginator = Paginator(subscriptions, 10)
         page_number = request.GET.get("page")
