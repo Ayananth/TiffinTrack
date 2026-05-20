@@ -99,8 +99,10 @@ def home(request):
         if not request.user.is_superuser:
             return redirect("admin-login")
         today = date.today()
+        end_of_month_day = calendar.monthrange(today.year, today.month)[1]
+        end_of_month = today.replace(day=end_of_month_day)
         start_date = today.replace(day=1)
-        end_date = today
+        end_date = end_of_month
         start_date = request.GET.get("start_date", start_date)
         end_date = request.GET.get("end_date", end_date)
         if isinstance(start_date, str):
